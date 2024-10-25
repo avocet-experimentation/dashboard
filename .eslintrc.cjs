@@ -5,8 +5,11 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
+    'airbnb-base',
+    'airbnb-typescript',
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
+  ignores: ['vite.config.ts'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
@@ -21,4 +24,9 @@ module.exports = {
       { allowConstantExport: true },
     ],
   },
-}
+  settings: {
+    'import/resolver': {
+      typescript: {},
+    },
+  },
+};
