@@ -1,4 +1,4 @@
-import { Flag, Span } from "./types";
+import { Flag, Span } from "../lib/types";
 
 export const exampleFlags: Flag[] = [
   {

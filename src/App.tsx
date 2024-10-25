@@ -3,17 +3,28 @@ import './assets/stylesheets/App.css';
 import Navbar from './components/Navbar';
 import FlagTable from './components/FlagTable';
 import EventTable from './components/EventTable';
-import { Flag, Span } from './types';
+import { Flag, Span } from './lib/types';
 import { useEffect, useState } from 'react';
-import { exampleFlags, exampleSpans } from './exampleData';
+import './services/FlagService';
+import { exampleFlags, exampleSpans } from './services/exampleData';
+import EventService from './services/EventService';
 
 export default function App() {
   const [flags, setFlags] = useState<Flag[]>([]);
   const [events, setEvents] = useState<Span[]>([]);
 
-  useEffect(function fetchData() {
-    setFlags(exampleFlags);
-    setEvents(exampleSpans);
+  const eventService = new EventService();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const allEvents = await eventService.getAllEvents();
+      setFlags(exampleFlags);
+      if (allEvents) {
+        setEvents(allEvents);
+      }
+    }
+
+    fetchData();
   }, []);
 
   return (

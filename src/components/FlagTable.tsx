@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Flag } from '#/types';
+import { Flag } from '#/lib/types';
 import Table from './Table';
 
 interface FlagTableProps {
