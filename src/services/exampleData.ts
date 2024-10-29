@@ -1,6 +1,6 @@
-import { Flag, Span } from "../lib/types";
+import { FeatureFlag, Flag, Span } from "../lib/types";
 
-export const exampleFlags: Flag[] = [
+export const exampleFlags: FeatureFlag[] = [
   {
     "name": "newTestFlag", // must be unique
     "description": "This is an A/B test.", // hypothesis
@@ -10,7 +10,7 @@ export const exampleFlags: Flag[] = [
     },
     "state": "in_test", // draft | active | in_test | paused | completed | disabled | archived
     "targetingRules": { // OPTIONAL
-      "geo": "US"
+      "geo": ["US"]
     },
     "environments": { // the client will receive properties in here
       "testing": {

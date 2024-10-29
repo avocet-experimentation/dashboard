@@ -1,6 +1,38 @@
-export interface Flag {
-  name: string,
-  description: string,
+// export interface Flag {
+//   name: string,
+//   description: string,
+// }
+
+export interface FeatureFlag {
+  name: string;
+  description: string;
+  metrics: {
+    primary: string;
+    secondary: string;
+  };
+  state: "in_test" | "completed" | "archived";
+  targetingRules: {
+    geo?: string[];
+  };
+  environments: {
+    testing: {
+      rollout: number;
+      userGroups: {
+        control: {
+          rollout: number;
+          trackingEvents: string[];
+          enabled: boolean;
+          value: number;
+        };
+        treatment: {
+          rollout: number;
+          trackingEvents: string[];
+          enabled: boolean;
+          value: number;
+        };
+      };
+    };
+  };
 }
 
 export interface Event {
