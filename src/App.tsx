@@ -1,9 +1,10 @@
 import { Route, Switch } from "wouter";
 // import "./assets/stylesheets/App.css";
 import Navbar from "./components/Navbar";
-import FlagTable from "./components/FlagTable";
-import EventTable from "./components/EventTable";
-import { Flag, Span } from "./lib/types";
+import FlagTable from "components/FlagTable";
+import EventTable from "components/EventTable";
+import { FeatureFlag } from "@fflags/types";
+import { Span } from "./lib/types";
 import { useEffect, useState } from "react";
 import "./services/FlagService";
 import { exampleFlags, exampleSpans } from "./services/exampleData";
@@ -11,7 +12,7 @@ import EventService from "./services/EventService";
 import { Flex } from "@chakra-ui/react";
 
 export default function App() {
-  const [flags, setFlags] = useState<Flag[]>([]);
+  const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [events, setEvents] = useState<Span[]>([]);
 
   const eventService = new EventService();
