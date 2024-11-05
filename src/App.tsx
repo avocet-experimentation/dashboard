@@ -10,14 +10,25 @@ import EventService from "./services/EventService";
 import { Flex } from "@chakra-ui/react";
 
 import Features from "./components/Features";
-import FlagTable from "components/FlagTable";
+import FeatureTable from "#/components/FeatureTable";
 import EventTable from "components/EventTable";
+import Experiments from "./components/Experiments";
 
 export default function App() {
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [events, setEvents] = useState<Span[]>([]);
 
   const eventService = new EventService();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const allFeatures = await fetch("http://localhost:3524/admin/fflags");
+      const data = await allFeatures.json();
+      setFlags(allFeatures);
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,8 +49,13 @@ export default function App() {
         <Switch>
           <Route
             path="/features"
-            component={() => <Features><FlagTable data={flags} /></Features>}
+            component={() => (
+              <Features>
+                <FeatureTable data={flags} />
+              </Features>
+            )}
           />
+          <Route path="/experiments" component={() => <Experiments />} />
           <Route
             path="/events"
             component={() => <EventTable data={events} />}
