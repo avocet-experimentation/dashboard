@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Button,
   chakra,
   createListCollection,
   Flex,
@@ -34,26 +35,67 @@ const valueTypes = createListCollection({
   ],
 });
 
+// const handleValueType = (value: string | string[]): string => {
+//   if (typeof value === "string") {
+//     return value;
+//   } else if (typeof value === "object") {
+//     return value[0];
+//   }
+//   return "";
+// };
+
 const FeatureCreationForm = ({ setShowForm }) => {
   const [valueType, setValueType] = useState("boolean");
   const {
     control,
+    register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  } = useForm<Inputs>({
+    defaultValues: {
+      name: "",
+      description: "",
+      environments: {
+        dev: {
+          enabled: false,
+        },
+        prod: {
+          enabled: false,
+        },
+        testing: {
+          enabled: false,
+        },
+      },
+      valueType: "boolean",
+      defaultValue: false,
+    },
+  });
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    console.log("data", data);
+    try {
+      const res = await fetch("http://localhost:3524/admin/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <Flex
       direction="column"
       bg="white"
       borderRadius="5px"
-      width="60%"
-      height="80vh"
-      position="relative"
+      width="40%"
+      height="55vh"
+      position="absolute"
       top="50%"
       left="50%"
-      transform="translate(-50%, -80%)"
+      transform="translate(-50%, -50%)"
       padding="25px"
     >
       <Flex
@@ -65,14 +107,19 @@ const FeatureCreationForm = ({ setShowForm }) => {
         Create New Feature
         <X cursor="pointer" onClick={() => setShowForm(false)} />
       </Flex>
-      <chakra.form id="flag-management-form">
+      <chakra.form id="flag-management-form" onSubmit={handleSubmit(onSubmit)}>
         <Stack gap="4">
           <Controller
             name="name"
             control={control}
             render={({ field }) => (
               <Field label="Feature Name">
-                <Input placeholder="my-first-flag" />
+                <Input
+                  placeholder="my-first-flag"
+                  {...register("name", {
+                    required: "Feature name is required.",
+                  })}
+                />
               </Field>
             )}
           />
@@ -81,7 +128,12 @@ const FeatureCreationForm = ({ setShowForm }) => {
             control={control}
             render={({ field }) => (
               <Field label="Description">
-                <Input placeholder="A human-readable description of your feature flag." />
+                <Input
+                  placeholder="A human-readable description of your feature flag."
+                  {...register("description", {
+                    required: "A description of your feature is required.",
+                  })}
+                />
               </Field>
             )}
           />
@@ -89,13 +141,14 @@ const FeatureCreationForm = ({ setShowForm }) => {
             <Flex direction="row" width="100%" justifyContent="space-evenly">
               {environments.items.map((env) => (
                 <Controller
+                  key={env}
                   name={`environments.${env}.enabled`}
                   control={control}
                   render={({ field }) => (
-                    <Flex>
+                    <Flex position="relative">
                       <Text marginRight="5px">{`${env}:`}</Text>
                       <Switch
-                        width="fit-content"
+                        value={field.value}
                         name={field.name}
                         checked={field.value}
                         onCheckedChange={({ checked }) =>
@@ -113,30 +166,32 @@ const FeatureCreationForm = ({ setShowForm }) => {
             <Controller
               control={control}
               name="valueType"
-              render={({ field }) => (
-                <SelectRoot
-                  name={field.name}
-                  value={field.value}
-                  defaultValue={["boolean"]}
-                  onValueChange={({ value }) => {
-                    field.onChange(value);
-                    setValueType(value[0]);
-                  }}
-                  onInteractOutside={() => field.onBlur()}
-                  collection={valueTypes}
-                >
-                  <SelectTrigger>
-                    <SelectValueText />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {valueTypes.items.map((type) => (
-                      <SelectItem item={type} key={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </SelectRoot>
-              )}
+              render={({ field }) => {
+                console.log(field.value[0]);
+                return (
+                  <SelectRoot
+                    name={field.name}
+                    value={field.value}
+                    onValueChange={({ value }) => {
+                      field.onChange(value[0]);
+                      setValueType(value[0]);
+                    }}
+                    onInteractOutside={() => field.onBlur()}
+                    collection={valueTypes}
+                  >
+                    <SelectTrigger>
+                      <SelectValueText />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {valueTypes.items.map((type) => (
+                        <SelectItem item={type} key={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectRoot>
+                );
+              }}
             />
           </Field>
           {valueType === "boolean" && (
@@ -161,7 +216,13 @@ const FeatureCreationForm = ({ setShowForm }) => {
               control={control}
               render={({ field }) => (
                 <Field label="Default Value">
-                  <Input type="text" placeholder="A string value" />
+                  <Input
+                    type="text"
+                    placeholder="A string value"
+                    {...register("defaultValue", {
+                      required: "A default value is required.",
+                    })}
+                  />
                 </Field>
               )}
             />
@@ -169,14 +230,24 @@ const FeatureCreationForm = ({ setShowForm }) => {
           {valueType === "number" && (
             <Controller
               name="defaultValue"
+              defaultValue={0}
               control={control}
               render={({ field }) => (
                 <Field label="Default Value">
-                  <Input type="number" placeholder="A number value" />
+                  <Input
+                    type="number"
+                    placeholder="A number value"
+                    {...register("defaultValue", {
+                      required: "A default value is required.",
+                    })}
+                  />
                 </Field>
               )}
             />
           )}
+          <Button color="black" size="sm" type="submit" mt="4">
+            Create
+          </Button>
         </Stack>
       </chakra.form>
     </Flex>
