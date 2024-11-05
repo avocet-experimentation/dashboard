@@ -24,7 +24,7 @@ const handleEnvironmentSwitch = async (fflagId: string): Promise<void> => {
 export default function FlagTable({ data }: FlagTableProps) {
   const [flags, setFlags] = useState(data);
   return (
-    <Table.Root className="table">
+    <Table.Root className="table" >
       <Table.Header>
         <Table.Row>
           <Table.ColumnHeader>Feature Name</Table.ColumnHeader>

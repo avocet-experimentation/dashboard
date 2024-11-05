@@ -32,7 +32,7 @@ export default function App() {
   }, []);
 
   return (
-    <Flex direction="row" width="100vw" height="100vh">
+    <Flex direction="row" width="100vw" height="100vh" overflow="hidden">
       <Navbar />
       <Flex direction="column" width="80%" bg="whitesmoke">
         <Switch>

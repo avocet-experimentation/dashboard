@@ -42,6 +42,7 @@ export default function Navbar() {
       direction="column"
       width="20%"
       height="100%"
+      paddingTop="25px"
       bg="white"
       alignItems="center"
     >
@@ -50,7 +51,7 @@ export default function Navbar() {
           <Flag />
         </Icon>
         <Link href="/features" draggable={false}>
-          <NavText>Feature Flags</NavText>
+          <NavText>Features</NavText>
         </Link>
       </NavBox>
       <NavBox>
