@@ -8,20 +8,20 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { Field } from "./ui/field";
+import { Field } from "../ui/field";
 import {
   SelectContent,
   SelectItem,
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-} from "./ui/select";
+} from "../ui/select";
 import { FeatureFlag } from "@fflags/types";
 import { X } from "lucide-react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { Switch } from "./ui/switch";
+import { Switch } from "../ui/switch";
 
-type Inputs = Omit<FeatureFlag, "id" | "createdAt" | "updatedAt">;
+type Inputs = Omit<FeatureFlag, "id">;
 
 const environments = createListCollection({
   items: ["dev", "prod", "testing"],
@@ -34,6 +34,106 @@ const valueTypes = createListCollection({
     { label: "Number", value: "number" },
   ],
 });
+
+const defaultFeatureFlag: Inputs = {
+  name: "New Feature Flag",
+  valueType: "string", // Defaulting to string, but adjust as needed
+  defaultValue: "", // Adjust based on default behavior for string type
+
+  environments: {
+    prod: {
+      name: "prod",
+      enabled: false,
+      overrideRules: [
+        {
+          id: "rule-1",
+          description: "Default production rule",
+          status: "draft",
+          enrollment: {
+            attributes: [
+              {
+                name: "attribute-name",
+                dataType: "string",
+              },
+            ],
+            proportion: 0.0,
+          },
+          startTimestamp: undefined,
+          endTimestamp: undefined,
+        },
+      ],
+    },
+    dev: {
+      name: "dev",
+      enabled: true,
+      overrideRules: [
+        {
+          id: "rule-1",
+          description: "Default development rule",
+          status: "draft",
+          enrollment: {
+            attributes: [
+              {
+                name: "attribute-name",
+                dataType: "string",
+              },
+            ],
+            proportion: 0.0,
+          },
+          startTimestamp: undefined,
+          endTimestamp: undefined,
+        },
+      ],
+    },
+    testing: {
+      name: "testing",
+      enabled: true,
+      overrideRules: [
+        {
+          id: "rule-1",
+          description: "Default testing rule",
+          status: "draft",
+          enrollment: {
+            attributes: [
+              {
+                name: "attribute-name",
+                dataType: "string",
+              },
+            ],
+            proportion: 0.0,
+          },
+          startTimestamp: undefined,
+          endTimestamp: undefined,
+        },
+      ],
+    },
+    staging: {
+      name: "Staging",
+      enabled: false,
+      overrideRules: [
+        {
+          id: "rule-1",
+          description: "Default staging rule",
+          status: "draft",
+          enrollment: {
+            attributes: [
+              {
+                name: "attribute-name",
+                dataType: "string",
+              },
+            ],
+            proportion: 0.0,
+          },
+          startTimestamp: undefined,
+          endTimestamp: undefined,
+        },
+      ],
+    },
+  },
+  description: "A new feature flag for experimentation",
+  createdAt: Date.now(),
+  updatedAt: Date.now(),
+};
 
 // const handleValueType = (value: string | string[]): string => {
 //   if (typeof value === "string") {
@@ -52,23 +152,7 @@ const FeatureCreationForm = ({ setShowForm }) => {
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>({
-    defaultValues: {
-      name: "",
-      description: "",
-      environments: {
-        dev: {
-          enabled: false,
-        },
-        prod: {
-          enabled: false,
-        },
-        testing: {
-          enabled: false,
-        },
-      },
-      valueType: "boolean",
-      defaultValue: false,
-    },
+    defaultValues: defaultFeatureFlag,
   });
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log("data", data);
@@ -77,6 +161,7 @@ const FeatureCreationForm = ({ setShowForm }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          mode: "cors",
         },
         body: JSON.stringify(data),
       });

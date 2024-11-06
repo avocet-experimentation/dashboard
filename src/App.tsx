@@ -4,36 +4,24 @@ import Navbar from "./components/Navbar";
 import { FeatureFlag } from "@fflags/types";
 import { Span } from "./lib/types";
 import { useEffect, useState } from "react";
-import "./services/FlagService";
+import "./services/FeatureService";
 import { exampleFlags, exampleSpans } from "./services/exampleData";
 import EventService from "./services/EventService";
 import { Flex } from "@chakra-ui/react";
 
-import Features from "./components/Features";
-import FeatureTable from "#/components/FeatureTable";
-import EventTable from "components/EventTable";
-import Experiments from "./components/Experiments";
+import Features from "./components/features/Features";
+import FeatureTable from "./components/features/FeatureTable";
+import EventTable from "./components/EventTable";
+import Experiments from "./components/experiments/Experiments";
 
 export default function App() {
-  const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [events, setEvents] = useState<Span[]>([]);
 
   const eventService = new EventService();
 
   useEffect(() => {
     const fetchData = async () => {
-      const allFeatures = await fetch("http://localhost:3524/admin/fflags");
-      const data = await allFeatures.json();
-      setFlags(allFeatures);
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
       const allEvents = await eventService.getAllEvents();
-      setFlags(exampleFlags);
       if (allEvents) {
         setEvents(allEvents);
       }
@@ -51,7 +39,7 @@ export default function App() {
             path="/features"
             component={() => (
               <Features>
-                <FeatureTable data={flags} />
+                <FeatureTable />
               </Features>
             )}
           />

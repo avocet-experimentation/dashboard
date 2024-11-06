@@ -7,14 +7,14 @@ import {
   Input,
   Stack,
 } from "@chakra-ui/react";
-import { Field } from "./ui/field";
+import { Field } from "../ui/field";
 import {
   SelectContent,
   SelectItem,
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-} from "./ui/select";
+} from "../ui/select";
 import { X } from "lucide-react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { Experiment } from "@fflags/types";
