@@ -1,5 +1,6 @@
 {
-  "name": "dashboard",
+  "name": "mangrove",
+  "description": "Dashboard application for managing feature flags, experiments, and events",
   "private": true,
   "version": "0.0.0",
   "type": "module",
