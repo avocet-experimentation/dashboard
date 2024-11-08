@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { Table } from "@chakra-ui/react";
+import { Table, Text } from "@chakra-ui/react";
 import { Switch } from "../ui/switch";
-import { FeatureFlag } from "@fflags/types";
+import { FeatureFlag } from "@estuary/types";
+import { Link } from "wouter";
 import FeatureService from "#/services/FeatureService";
+import { Tooltip } from "../ui/tooltip";
+import { lastUpdated, formatDate } from "#/lib/timeFunctions";
 
 interface FlagTableProps {
   data: FeatureFlag[];
@@ -54,10 +57,12 @@ export default function FeatureTable() {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {features &&
+        {features.length &&
           features.map((datum: FeatureFlag) => (
             <Table.Row key={datum.id}>
-              <Table.Cell>{datum.name}</Table.Cell>
+              <Table.Cell color="black" textDecor="none">
+                <Link href={`/features/${datum.id}`}>{datum.name}</Link>
+              </Table.Cell>
               <Table.Cell>
                 <Switch
                   checked={datum.environments.dev.enabled}
@@ -70,9 +75,22 @@ export default function FeatureTable() {
               <Table.Cell>
                 <Switch checked={datum.environments.testing.enabled} />
               </Table.Cell>
-              <Table.Cell>{datum.defaultValue}</Table.Cell>
+              <Table.Cell>
+                <Tooltip showArrow content={datum.valueType}>
+                  <Text width="fit-content">{datum.defaultValue}</Text>
+                </Tooltip>
+              </Table.Cell>
               <Table.Cell>TBD</Table.Cell>
-              <Table.Cell>{datum.updatedAt}</Table.Cell>
+              <Table.Cell>
+                <Tooltip
+                  showArrow
+                  content={formatDate(Number(datum.updatedAt))}
+                >
+                  <Text width="fit-content">
+                    {lastUpdated(Number(datum.updatedAt))}
+                  </Text>
+                </Tooltip>
+              </Table.Cell>
             </Table.Row>
           ))}
       </Table.Body>
