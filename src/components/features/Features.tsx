@@ -1,24 +1,11 @@
-import { useState } from "react";
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { Flex, Heading, Text } from "@chakra-ui/react";
 import { CirclePlus } from "lucide-react";
 import FeatureCreationForm from "./FeatureForm";
+import FormModalTrigger from "../Modal";
 
-const ModalBackground = () => {
-  return (
-    <Box
-      bg="gray"
-      opacity="0.5"
-      width="100%"
-      height="100%"
-      position="absolute"
-      top="0"
-      left="0"
-    ></Box>
-  );
-};
+const CREATE_FEATURE_FORM_ID = "create-feature-form";
 
 const Features = ({ children }) => {
-  const [showForm, setShowForm] = useState(false);
   return (
     <Flex direction="column" padding="25px">
       <Flex
@@ -28,21 +15,19 @@ const Features = ({ children }) => {
         alignItems="center"
       >
         <Heading size="3xl">Features</Heading>
-        <Button onClick={() => setShowForm(true)} color="black">
-          <CirclePlus />
-          Add Feature
-        </Button>
+        <FormModalTrigger
+          triggerButtonIcon={<CirclePlus />}
+          triggerButtonText={"Add Feature"}
+          title={"Create a New Feature"}
+          form={<FeatureCreationForm formId={CREATE_FEATURE_FORM_ID} />}
+          formId={CREATE_FEATURE_FORM_ID}
+          confirmButtonText={"Create"}
+        />
       </Flex>
       <Text margin="25px 0">
         Features enable you to change your app's behavior from within this UI.
       </Text>
       {children}
-      {showForm && (
-        <>
-          <ModalBackground />
-          <FeatureCreationForm setShowForm={setShowForm} />
-        </>
-      )}
     </Flex>
   );
 };
