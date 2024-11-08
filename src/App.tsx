@@ -13,6 +13,8 @@ import Features from "./components/features/Features";
 import FeatureTable from "./components/features/FeatureTable";
 import EventTable from "./components/EventTable";
 import Experiments from "./components/experiments/Experiments";
+import FeaturePage from "./components/features/FeaturePage";
+import TopBar from "./components/TopBar";
 
 export default function App() {
   const [events, setEvents] = useState<Span[]>([]);
@@ -34,6 +36,7 @@ export default function App() {
     <Flex direction="row" width="100vw" height="100vh" overflow="hidden">
       <Navbar />
       <Flex direction="column" width="80%" bg="whitesmoke">
+        <TopBar />
         <Switch>
           <Route
             path="/features"
@@ -43,6 +46,7 @@ export default function App() {
               </Features>
             )}
           />
+          <Route path="/features/:id" component={() => <FeaturePage />} />
           <Route path="/experiments" component={() => <Experiments />} />
           <Route
             path="/events"
