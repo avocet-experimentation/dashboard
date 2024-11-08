@@ -1,7 +1,7 @@
 /* for now, links to EventTable and FlagTable only
  */
 
-import { Flex, chakra, Icon } from "@chakra-ui/react";
+import { Flex, chakra, Icon, Box } from "@chakra-ui/react";
 import {
   Flag,
   Microscope,
@@ -36,16 +36,28 @@ const NavText = chakra("p", {
   },
 });
 
+const LogoBox = () => {
+  return (
+    <Box
+      borderBottom="1px solid gray"
+      width="100%"
+      height="60px"
+      marginBottom="25px"
+    ></Box>
+  );
+};
+
 export default function Navbar() {
   return (
     <Flex
       direction="column"
       width="20%"
       height="100%"
-      paddingTop="25px"
       bg="white"
       alignItems="center"
+      borderRight="1px solid gray"
     >
+      <LogoBox />
       <NavBox>
         <Icon>
           <Flag />
