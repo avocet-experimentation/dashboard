@@ -4,6 +4,14 @@
 // fetch all experiments
 // CRUD individual experiments
 */
+import { FeatureFlag } from "@estuary/types";
+
+type FastifyError = {
+  error: {
+    code: number;
+    message: string;
+  };
+};
 
 export default class FeatureService {
   baseUrl: string;
@@ -12,13 +20,66 @@ export default class FeatureService {
     this.baseUrl = import.meta.env.VITE_FLAG_SERVICE_URL;
   }
 
-  async getAllFeatures() {
-    const allFlags = await fetch(this.baseUrl + "/admin/fflags", {
+  async getAllFeatures(): Promise<FeatureFlag[]> {
+    const allFeatures = await fetch(this.baseUrl + "/admin/fflags", {
       headers: {
         "Content-Type": "application/json",
         mode: "cors",
       },
     });
-    return await allFlags.json();
+    return await allFeatures.json();
+  }
+
+  async getFeature(featureId: string): Promise<FeatureFlag> {
+    const feature = await fetch(
+      this.baseUrl + `/admin/fflags/id/${featureId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          mode: "cors",
+        },
+      }
+    );
+    const featureJSON = await feature.json();
+    if (feature.status === 404) {
+      console.log(featureJSON.error);
+    }
+    return featureJSON;
+  }
+
+  async createFeature(
+    featureContent: Omit<FeatureFlag, "id">
+  ): Promise<Response> {
+    try {
+      const res = await fetch("http://localhost:3524/admin/fflags", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          mode: "cors",
+        },
+        body: JSON.stringify(featureContent),
+      });
+      return res;
+    } catch (error) {
+      console.dir(error);
+    }
+  }
+
+  async patchFeature(featureId: string, updateContent) {
+    const updateRes = await fetch(
+      this.baseUrl + `/admin/fflags/id/${featureId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          mode: "cors",
+        },
+        body: JSON.stringify(updateContent),
+      }
+    );
+    const updateJSON = await updateRes.json();
+    if (updateJSON.status === 404) {
+      console.log(updateJSON.error);
+    }
   }
 }
