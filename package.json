@@ -1,5 +1,6 @@
 {
-  "name": "dashboard",
+  "name": "mangrove",
+  "description": "Dashboard application for managing feature flags, experiments, and events",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,17 +14,16 @@
   "dependencies": {
     "@chakra-ui/react": "^3.0.2",
     "@emotion/react": "^11.13.3",
-    "@fflags/types": "file:../packages/fflags-types",
     "@vitejs/plugin-react": "^4.2.1",
+    "@estuary/types": "file:../packages/estuary-types",
     "lucide-react": "^0.454.0",
+    "react-icons": "^5.3.0",
     "next-themes": "^0.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.53.1",
-    "react-icons": "^5.3.0",
     "vite": "^5.2.0",
-    "wouter": "^3.3.5",
-    "zod": "^3.23.8"
+    "wouter": "^3.3.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.6",
@@ -40,7 +40,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "jsdom": "^24.1.0",
-    "msw": "^1.3.5",
+    "msw": "^2.5.1",
     "typescript": "^5.2.2",
     "vite-tsconfig-paths": "^5.0.1",
     "vitest": "^1.6.0"
