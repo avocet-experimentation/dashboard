@@ -138,6 +138,7 @@ const RuleForm = ({ formId, setIsLoading, valueType, defaultValue }) => {
                         type="number"
                         placeholder="A number value"
                         {...register("value", {
+                          valueAsNumber: true,
                           required: "A default value is required.",
                         })}
                       />
