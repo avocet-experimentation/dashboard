@@ -15,15 +15,16 @@ import {
 } from "../ui/select";
 import { Field } from "../ui/field";
 import { Switch } from "../ui/switch";
-import { useState } from "react";
-import { useForm, SubmitHandler, Controller, set } from "react-hook-form";
-import { FeatureFlag } from "@estuary/types";
+import { useEffect, useState } from "react";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { FeatureFlag, FlagValueType } from "@estuary/types";
 import FeatureService from "#/services/FeatureService";
+import { useLocation } from "wouter";
 
 type Inputs = Omit<FeatureFlag, "id">;
 
 const environments = createListCollection({
-  items: ["dev", "prod", "testing"],
+  items: ["dev", "prod", "testing", "staging"],
 });
 
 const valueTypes = createListCollection({
@@ -36,8 +37,10 @@ const valueTypes = createListCollection({
 
 const defaultFeatureFlag: Inputs = {
   name: "",
-  valueType: "boolean", // Defaulting to string, but adjust as needed
-  defaultValue: "true", // Adjust based on default behavior for string type
+  value: {
+    type: "boolean",
+    default: true,
+  },
   description: "",
   environments: {
     prod: {
@@ -67,11 +70,21 @@ const defaultFeatureFlag: Inputs = {
 
 const featureService = new FeatureService();
 
-const FeatureCreationForm = ({ formId }) => {
-  const [valueType, setValueType] = useState("boolean");
+const getDefaultValue = (valueType: string) => {
+  if (valueType === "string") return String("true");
+  if (valueType === "number") return Number(1);
+  return Boolean(true); // matches default valueType
+};
+
+const FeatureCreationForm = ({ formId, setIsLoading }) => {
+  const [valueType, setValueType] = useState<FlagValueType>(
+    defaultFeatureFlag.value.type
+  );
   const [isError, setIsError] = useState(null);
+  const [location, navigate] = useLocation();
   const {
     control,
+    setValue,
     register,
     handleSubmit,
     formState: { errors },
@@ -79,14 +92,22 @@ const FeatureCreationForm = ({ formId }) => {
     defaultValues: defaultFeatureFlag,
   });
   const onSubmit: SubmitHandler<Inputs> = async (featureContent) => {
+    setIsLoading(true);
     const response = await featureService.createFeature(featureContent);
     if (response.status === 409) {
       const { error } = await response.json();
       setIsError(error);
     } else if (response.status === 201) {
-      const featureId = response.text();
+      const featureId = await response.text();
+      navigate(`/features/${featureId}`);
     }
+    setIsLoading(false);
   };
+
+  useEffect(() => {
+    // Update value.default whenever valueType changes
+    setValue("value.default", getDefaultValue(valueType));
+  }, [valueType, setValue]);
 
   return (
     <chakra.form id={formId} onSubmit={handleSubmit(onSubmit)}>
@@ -94,7 +115,7 @@ const FeatureCreationForm = ({ formId }) => {
         <Controller
           name="name"
           control={control}
-          render={({ field }) => (
+          render={() => (
             <Field
               label="Feature Name"
               invalid={!!errors.name}
@@ -115,10 +136,10 @@ const FeatureCreationForm = ({ formId }) => {
         <Controller
           name="description"
           control={control}
-          render={({ field }) => (
+          render={() => (
             <Field
               label="Description"
-              invalid={!!errors.name}
+              invalid={!!errors.description}
               errorText={errors.description?.message}
             >
               <Input
@@ -141,6 +162,7 @@ const FeatureCreationForm = ({ formId }) => {
                   <Flex>
                     <Text marginRight="5px">{`${env}:`}</Text>
                     <Switch
+                      key={`${env}-switch`}
                       id={env}
                       name={field.name}
                       checked={!!field.value}
@@ -157,7 +179,7 @@ const FeatureCreationForm = ({ formId }) => {
         <Field label="Value Type" width="320px">
           <Controller
             control={control}
-            name="valueType"
+            name="value.type"
             render={({ field }) => (
               <SelectRoot
                 name={field.name}
@@ -183,57 +205,49 @@ const FeatureCreationForm = ({ formId }) => {
             )}
           />
         </Field>
-        {valueType === "boolean" && (
-          <Controller
-            name="defaultValue"
-            control={control}
-            render={({ field }) => (
-              <Switch
-                name={field.name}
-                checked={!!field.value}
-                onCheckedChange={({ checked }) => field.onChange(checked)}
-                inputProps={{ onBlur: field.onBlur }}
-              >
-                {!!field.value ? "on" : "off"}
-              </Switch>
-            )}
-          />
-        )}
-        {valueType === "string" && (
-          <Controller
-            name="defaultValue"
-            control={control}
-            render={({ field }) => (
-              <Field label="Default Value">
-                <Input
-                  type="text"
-                  placeholder="A string value"
-                  {...register("defaultValue", {
-                    required: "A default value is required.",
-                  })}
-                />
-              </Field>
-            )}
-          />
-        )}
-        {valueType === "number" && (
-          <Controller
-            name="defaultValue"
-            defaultValue={0}
-            control={control}
-            render={({ field }) => (
-              <Field label="Default Value">
-                <Input
-                  type="number"
-                  placeholder="A number value"
-                  {...register("defaultValue", {
-                    required: "A default value is required.",
-                  })}
-                />
-              </Field>
-            )}
-          />
-        )}
+        <Controller
+          name="value.default"
+          control={control}
+          render={({ field }) => {
+            if (valueType === "boolean")
+              return (
+                <Switch
+                  name={field.name}
+                  checked={!!field.value}
+                  onCheckedChange={({ checked }) => field.onChange(checked)}
+                  inputProps={{ onBlur: field.onBlur }}
+                >
+                  {!!field.value ? "on" : "off"}
+                </Switch>
+              );
+
+            if (valueType === "string")
+              return (
+                <Field label="Default Value">
+                  <Input
+                    type="text"
+                    placeholder="A string value"
+                    {...register("value.default", {
+                      required: "A default value is required.",
+                    })}
+                  />
+                </Field>
+              );
+
+            if (valueType === "number")
+              return (
+                <Field label="Default Value">
+                  <Input
+                    type="number"
+                    placeholder="A number value"
+                    {...register("value.default", {
+                      required: "A default value is required.",
+                    })}
+                  />
+                </Field>
+              );
+          }}
+        />
       </Stack>
     </chakra.form>
   );
