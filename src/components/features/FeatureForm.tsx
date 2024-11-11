@@ -241,6 +241,7 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
                     type="number"
                     placeholder="A number value"
                     {...register("value.default", {
+                      valueAsNumber: true,
                       required: "A default value is required.",
                     })}
                   />
