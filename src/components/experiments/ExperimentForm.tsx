@@ -21,7 +21,7 @@ import { Experiment } from "@fflags/types";
 
 type Inputs = Experiment;
 
-const ExperimentCreationForm = ({ setShowForm }) => {
+const ExperimentCreationForm = ({ formId, setIsLoading }) => {
   const [allFeatures, setAllFeatures] = useState(
     createListCollection({
       items: [{ name: "test-flag", id: "abc123" }],
