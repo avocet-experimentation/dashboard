@@ -11,13 +11,13 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { IconButton } from "@chakra-ui/react";
-import { ReactNode } from "react";
+import { ReactNode, useState, cloneElement } from "react";
 
 type FormModal = {
   triggerButtonIcon: ReactNode;
   triggerButtonText: string;
   title: string;
-  form: ReactNode;
+  children: ReactNode;
   formId: string;
   confirmButtonText: string;
 };
@@ -26,10 +26,19 @@ const FormModalTrigger = ({
   triggerButtonIcon,
   triggerButtonText,
   title,
-  form,
   formId,
   confirmButtonText,
+  children,
 }: FormModal) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+
+  // Clone the child element and add the additional props to it
+  const childWithProps = cloneElement(children, {
+    setIsLoading: setIsLoading,
+    formId: formId,
+  });
+
   return (
     <DialogRoot placement="center" motionPreset="slide-in-bottom">
       <DialogTrigger asChild>
@@ -42,9 +51,15 @@ const FormModalTrigger = ({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <DialogBody>{form}</DialogBody>
+        <DialogBody>{childWithProps}</DialogBody>
         <DialogFooter>
-          <Button variant="solid" color="black" type="submit" form={formId}>
+          <Button
+            loading={isLoading}
+            variant="solid"
+            color="black"
+            type="submit"
+            form={formId}
+          >
             {confirmButtonText}
           </Button>
           <DialogActionTrigger asChild>
