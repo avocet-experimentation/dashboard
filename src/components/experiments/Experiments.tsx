@@ -31,8 +31,8 @@ const Experiments = () => {
         <Heading size="3xl">Experiments</Heading>
         <FormModalTrigger
           triggerButtonIcon={<CirclePlus />}
-          triggerButtonText={"Add Feature"}
-          title={"Create a New Feature"}
+          triggerButtonText={"Create Experiment"}
+          title={"Create a New Experiment"}
           formId={CREATE_EXPERIMENT_FORM_ID}
           confirmButtonText={"Create"}
         >
@@ -48,7 +48,7 @@ const Experiments = () => {
       {experiments.length ? (
         <ExperimentTable experiments={experiments} />
       ) : (
-        "No experiments. Please create one."
+        "No experiments found. Please create one."
       )}
     </Flex>
   );
