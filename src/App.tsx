@@ -12,11 +12,13 @@ import { Flex } from "@chakra-ui/react";
 import Features from "./components/features/Features";
 import FeatureTable from "./components/features/FeatureTable";
 import EventTable from "./components/EventTable";
+import EventFeatures from "./components/events/EventFeatures"
 import Experiments from "./components/experiments/Experiments";
 import FeaturePage from "./components/features/FeaturePage";
 import TopBar from "./components/TopBar";
 
 export default function App() {
+  /*
   const [events, setEvents] = useState<Span[]>([]);
 
   const eventService = new EventService();
@@ -31,6 +33,7 @@ export default function App() {
 
     fetchData();
   }, []);
+  */
 
   return (
     <Flex direction="row" width="100vw" height="100vh" overflow="hidden">
@@ -50,7 +53,7 @@ export default function App() {
           <Route path="/experiments" component={() => <Experiments />} />
           <Route
             path="/events"
-            component={() => <EventTable data={events} />}
+            component={() => <EventFeatures></EventFeatures>}
           />
         </Switch>
       </Flex>
