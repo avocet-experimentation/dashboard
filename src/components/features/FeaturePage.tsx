@@ -155,6 +155,7 @@ const FeaturePage = () => {
               applies and overrides the default value.
             </Text>
             <EnvironmentTabs
+              featureId={params.id}
               environments={environments}
               valueType={feature.value.type}
               defaultValue={feature.value.default}
