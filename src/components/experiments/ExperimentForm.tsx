@@ -19,9 +19,9 @@ import { X } from "lucide-react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { Experiment } from "@fflags/types";
 
-type Inputs = Experiment;
+type Inputs = Omit<Experiment, "id">;
 
-const ExperimentCreationForm = ({ setShowForm }) => {
+const ExperimentCreationForm = ({ formId, setIsLoading }) => {
   const [allFeatures, setAllFeatures] = useState(
     createListCollection({
       items: [{ name: "test-flag", id: "abc123" }],
