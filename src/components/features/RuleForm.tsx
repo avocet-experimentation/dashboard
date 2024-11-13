@@ -5,6 +5,10 @@ import { useEffect, useState } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { ForcedValue } from "@estuary/types";
 import { Switch } from "../ui/switch";
+import FeatureService from "#/services/FeatureService";
+import { useLocation } from "wouter";
+
+const featureService = new FeatureService();
 
 const RULE_TYPES = {
   ForcedValue: {
@@ -30,9 +34,17 @@ const defaultForcedValueRule: Inputs = {
   },
 };
 
-const RuleForm = ({ formId, setIsLoading, valueType, defaultValue }) => {
+const RuleForm = ({
+  formId,
+  setIsLoading,
+  valueType,
+  defaultValue,
+  envName,
+  featureId,
+}) => {
   const [isError, setIsError] = useState(null);
   const [ruleType, setRuleType] = useState<string | null>(null);
+  const [location, navigate] = useLocation();
   const {
     control,
     setValue,
@@ -43,22 +55,33 @@ const RuleForm = ({ formId, setIsLoading, valueType, defaultValue }) => {
     defaultValues: defaultForcedValueRule,
   });
 
-  const onSubmit: SubmitHandler<Inputs> = async (featureContent) => {
+  const onSubmit: SubmitHandler<Inputs> = async (ruleContent) => {
     setIsLoading(true);
+    const response = await featureService.addRule(
+      featureId,
+      envName,
+      ruleContent
+    );
+    if (response.status === 200) {
+      navigate(`/features/${featureId}`);
+    }
     setIsLoading(false);
   };
 
   useEffect(() => {
     // Update value.default whenever valueType changes
     setValue("value", defaultValue);
-  }, [defaultValue, setValue]);
+    setValue("type", ruleType);
+  }, [defaultValue, ruleType, setValue]);
 
   return (
     <Flex direction="column">
       <RadioCardRoot
         orientation="vertical"
         justify="center"
-        onValueChange={(e) => setRuleType(e.value)}
+        onValueChange={(e) => {
+          setRuleType(e.value);
+        }}
       >
         <RadioCardLabel textStyle="sm" fontWeight="medium">
           Select rule type:
@@ -116,8 +139,7 @@ const RuleForm = ({ formId, setIsLoading, valueType, defaultValue }) => {
                         placeholder={`A ${valueType} value`}
                         defaultValue={defaultValue}
                         {...register("value", {
-                          required:
-                            "A description of your feature is required.",
+                          required: "A forced value is required.",
                         })}
                       />
                     )}
