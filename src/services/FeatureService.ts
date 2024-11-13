@@ -4,7 +4,7 @@
 // fetch all experiments
 // CRUD individual experiments
 */
-import { FeatureFlag } from "@estuary/types";
+import { Experiment, FeatureFlag, ForcedValue } from "@estuary/types";
 
 type FastifyError = {
   error: {
@@ -87,6 +87,32 @@ export default class FeatureService {
       console.log(updateJSON.error);
     } else {
       callback();
+    }
+  }
+
+  async addRule(
+    featureId: string,
+    envName: string,
+    rule: Omit<ForcedValue, "id"> | Omit<Experiment, "id">
+  ) {
+    const reqBody = {
+      environment: envName,
+      rule: rule,
+    };
+    const response = await fetch(
+      this.baseUrl + `/admin/fflags/id/${featureId}/addRule`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          mode: "cors",
+        },
+        body: JSON.stringify(reqBody),
+      }
+    );
+    const responseJSON = await response.json();
+    if (response.status === 200) {
+      return responseJSON.ruleId;
     }
   }
 }
