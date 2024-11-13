@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { Flex, Heading, Text } from "@chakra-ui/react";
 import { CirclePlus } from "lucide-react";
 import ExperimentCreationForm from "./ExperimentForm";
 import FormModalTrigger from "../FormModal";
 import { Experiment } from "@estuary/types";
 import ExperimentTable from "./ExperimentTable";
 
-const CREATE_EXPERIMENT_FORM_ID = "create-experiment-form";
+const CREATE_EXPERIMENT_FORM_ID = "experiment-management-form";
 
 const Experiments = () => {
   const [experiments, setExperiments] = useState<Experiment[]>([]);
