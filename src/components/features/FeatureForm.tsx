@@ -126,6 +126,11 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
                 {...register("name", {
                   required:
                     "Feature name is required and must be between 3-20 characters long.",
+                  pattern: {
+                    value: /^[0-9A-Za-z-]+$/gi,
+                    message:
+                      "Feature names may only contain letters, numbers, and hyphens.",
+                  },
                   minLength: 3,
                   maxLength: 20,
                 })}
