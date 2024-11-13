@@ -7,7 +7,12 @@ import RuleForm from "./RuleForm";
 
 const ADD_RULL_FORM_ID = "add-rule-formn";
 
-const EnvironmentTabs = ({ environments, valueType, defaultValue }) => {
+const EnvironmentTabs = ({
+  environments,
+  valueType,
+  defaultValue,
+  featureId,
+}) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [envNames, setEnvNames] = useState<string[]>(Object.keys(environments));
   const [selectedTab, setSelectedTab] = useState<string | null>(
@@ -76,6 +81,8 @@ const EnvironmentTabs = ({ environments, valueType, defaultValue }) => {
             setIsLoading={setIsLoading}
             valueType={valueType}
             defaultValue={defaultValue}
+            envName={selectedTab.slice(0, -4)}
+            featureId={featureId}
           />
         </FormModalTrigger>
       </Flex>
