@@ -98,8 +98,8 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
       const { error } = await response.json();
       setIsError(error);
     } else if (response.status === 201) {
-      const featureId = await response.text();
-      navigate(`/features/${featureId}`);
+      const { fflagId } = await response.json();
+      navigate(`/features/${fflagId}`);
     }
     setIsLoading(false);
   };
