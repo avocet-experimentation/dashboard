@@ -1,13 +1,14 @@
 /* for now, links to EventTable and FlagTable only
  */
 
-import { Flex, chakra, Icon, Box } from "@chakra-ui/react";
+import { Flex, chakra, Icon, Text } from "@chakra-ui/react";
 import {
   Flag,
   Microscope,
   TestTubes,
   AlignHorizontalDistributeCenter,
 } from "lucide-react";
+import EstuaryLogo from "../assets/svgs/estuary-logo.svg";
 import { Link } from "wouter";
 
 const NavBox = chakra("div", {
@@ -38,12 +39,19 @@ const NavText = chakra("p", {
 
 const LogoBox = () => {
   return (
-    <Box
+    <Flex
       borderBottom="1px solid gray"
       width="100%"
       height="60px"
       marginBottom="25px"
-    ></Box>
+      alignItems="center"
+      justifyContent="center"
+    >
+      <chakra.img src={EstuaryLogo} height="45px" />
+      <Text fontFamily="Pacifico" fontSize="2em" marginLeft="15px">
+        estuary
+      </Text>
+    </Flex>
   );
 };
 
@@ -51,7 +59,7 @@ export default function Navbar() {
   return (
     <Flex
       direction="column"
-      width="20%"
+      width="250px"
       height="100%"
       bg="white"
       alignItems="center"

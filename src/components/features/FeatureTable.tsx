@@ -1,15 +1,9 @@
-import { useEffect, useState } from "react";
 import { Table, Text } from "@chakra-ui/react";
 import { Switch } from "../ui/switch";
 import { FeatureFlag } from "@estuary/types";
 import { Link } from "wouter";
-import FeatureService from "#/services/FeatureService";
 import { Tooltip } from "../ui/tooltip";
 import { lastUpdated, formatDate } from "#/lib/timeFunctions";
-
-interface FlagTableProps {
-  data: FeatureFlag[];
-}
 
 const handleEnvironmentSwitch = async (fflagId: string): Promise<void> => {
   // try {
@@ -25,24 +19,7 @@ const handleEnvironmentSwitch = async (fflagId: string): Promise<void> => {
   // }
 };
 
-const featureService = new FeatureService();
-
-export default function FeatureTable() {
-  const [features, setFeatures] = useState<FeatureFlag[]>([]);
-
-  useEffect(() => {
-    const handleGetAllFeatures = async () => {
-      try {
-        const allFeatures = await featureService.getAllFeatures();
-        setFeatures(allFeatures ? allFeatures : []);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    return () => handleGetAllFeatures();
-  }, []);
-
+const FeatureTable = ({ features }) => {
   return (
     <Table.Root className="table">
       <Table.Header>
@@ -57,43 +34,51 @@ export default function FeatureTable() {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {features.length &&
-          features.map((datum: FeatureFlag) => (
-            <Table.Row key={datum.id}>
-              <Table.Cell color="black" textDecor="none">
-                <Link href={`/features/${datum.id}`}>{datum.name}</Link>
-              </Table.Cell>
-              <Table.Cell>
-                <Switch
-                  checked={datum.environments.dev.enabled}
-                  onCheckedChange={() => handleEnvironmentSwitch(datum.id)}
-                />
-              </Table.Cell>
-              <Table.Cell>
-                <Switch checked={datum.environments.prod.enabled} />
-              </Table.Cell>
-              <Table.Cell>
-                <Switch checked={datum.environments.testing.enabled} />
-              </Table.Cell>
-              <Table.Cell>
-                <Tooltip showArrow content={datum.valueType}>
-                  <Text width="fit-content">{datum.defaultValue}</Text>
-                </Tooltip>
-              </Table.Cell>
-              <Table.Cell>TBD</Table.Cell>
-              <Table.Cell>
-                <Tooltip
-                  showArrow
-                  content={formatDate(Number(datum.updatedAt))}
-                >
-                  <Text width="fit-content">
-                    {lastUpdated(Number(datum.updatedAt))}
-                  </Text>
-                </Tooltip>
-              </Table.Cell>
-            </Table.Row>
-          ))}
+        {features.length
+          ? features.map((feature: FeatureFlag) => (
+              <Table.Row key={feature.id}>
+                <Table.Cell color="black" textDecor="none">
+                  <Link href={`/features/${feature.id}`}>{feature.name}</Link>
+                </Table.Cell>
+                <Table.Cell>
+                  <Switch
+                    checked={feature.environments.dev.enabled}
+                    onCheckedChange={() => handleEnvironmentSwitch(feature.id)}
+                  />
+                </Table.Cell>
+                <Table.Cell>
+                  <Switch checked={feature.environments.prod.enabled} />
+                </Table.Cell>
+                <Table.Cell>
+                  <Switch checked={feature.environments.testing.enabled} />
+                </Table.Cell>
+                <Table.Cell>
+                  <Tooltip showArrow content={feature.value.type}>
+                    <Text
+                      width="fit-content"
+                      fontFamily="'Lucida Console', 'Courier New', monospace"
+                    >
+                      {String(feature.value.default)}
+                    </Text>
+                  </Tooltip>
+                </Table.Cell>
+                <Table.Cell>{}</Table.Cell>
+                <Table.Cell>
+                  <Tooltip
+                    showArrow
+                    content={formatDate(Number(feature.updatedAt))}
+                  >
+                    <Text width="fit-content">
+                      {lastUpdated(Number(feature.updatedAt))}
+                    </Text>
+                  </Tooltip>
+                </Table.Cell>
+              </Table.Row>
+            ))
+          : null}
       </Table.Body>
     </Table.Root>
   );
-}
+};
+
+export default FeatureTable;

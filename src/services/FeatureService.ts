@@ -30,7 +30,7 @@ export default class FeatureService {
     return await allFeatures.json();
   }
 
-  async getFeature(featureId: string): Promise<FeatureFlag> {
+  async getFeature(featureId: string): Promise<FeatureFlag | null> {
     const feature = await fetch(
       this.baseUrl + `/admin/fflags/id/${featureId}`,
       {
@@ -43,6 +43,7 @@ export default class FeatureService {
     const featureJSON = await feature.json();
     if (feature.status === 404) {
       console.log(featureJSON.error);
+      return null;
     }
     return featureJSON;
   }
@@ -65,7 +66,11 @@ export default class FeatureService {
     }
   }
 
-  async patchFeature(featureId: string, updateContent) {
+  async patchFeature(featureId: string, updateContent, callback) {
+    const updateBody = {
+      id: featureId,
+      ...updateContent,
+    };
     const updateRes = await fetch(
       this.baseUrl + `/admin/fflags/id/${featureId}`,
       {
@@ -74,12 +79,14 @@ export default class FeatureService {
           "Content-Type": "application/json",
           mode: "cors",
         },
-        body: JSON.stringify(updateContent),
+        body: JSON.stringify(updateBody),
       }
     );
     const updateJSON = await updateRes.json();
     if (updateJSON.status === 404) {
       console.log(updateJSON.error);
+    } else {
+      callback();
     }
   }
 }
