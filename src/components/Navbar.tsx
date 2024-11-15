@@ -60,7 +60,6 @@ export default function Navbar() {
     <Flex
       direction="column"
       width="250px"
-      height="100%"
       bg="white"
       alignItems="center"
       borderRight="1px solid gray"
