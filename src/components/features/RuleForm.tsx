@@ -7,29 +7,19 @@ import { ForcedValue } from "@estuary/types";
 import { Switch } from "../ui/switch";
 import FeatureService from "#/services/FeatureService";
 import { useLocation } from "wouter";
+import { RULE_TYPES } from "#/lib/featureConstants";
 
 const featureService = new FeatureService();
 
-const RULE_TYPES = {
-  ForcedValue: {
-    name: "Forced Value",
-    description: "Target groups of users and give them all the same value.",
-  },
-  Experiment: {
-    name: "Experiment",
-    description: "Measure the impact of this feature on your key metrics.",
-  },
-};
-
-type Inputs = Omit<ForcedValue, "id">;
+type Inputs = ForcedValue;
 
 const defaultForcedValueRule: Inputs = {
   type: "ForcedValue",
-  value: true,
   description: "",
+  value: true,
   status: "active",
   enrollment: {
-    attributes: [],
+    attributes: ["id"],
     proportion: 1,
   },
 };
@@ -62,7 +52,7 @@ const RuleForm = ({
       envName,
       ruleContent
     );
-    if (response.status === 200) {
+    if (response.code === 200) {
       navigate(`/features/${featureId}`);
     }
     setIsLoading(false);
