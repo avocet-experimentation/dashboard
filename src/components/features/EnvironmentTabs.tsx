@@ -1,9 +1,10 @@
-import { Flex, Tabs, Text } from "@chakra-ui/react";
+import { Flex, Stack, Tabs, Text } from "@chakra-ui/react";
 import { FlagEnvironmentMapping } from "@estuary/types";
 import { useState } from "react";
 import FormModalTrigger from "../FormModal";
 import { CirclePlus } from "lucide-react";
 import RuleForm from "./RuleForm";
+import { RULE_TYPES } from "#/lib/featureConstants";
 
 const ADD_RULL_FORM_ID = "add-rule-formn";
 
@@ -52,11 +53,29 @@ const EnvironmentTabs = ({
               background="whitesmoke"
               padding="15px"
             >
-              {!rules.length ? (
-                "There are no rules for this environment yet"
-              ) : (
-                <></>
-              )}
+              {!rules.length
+                ? "There are no rules for this environment yet."
+                : envContent.overrideRules.map((rule) => (
+                    <Stack gap={4} key={rule.id}>
+                      <Text>
+                        {rule.type === "ForcedValue"
+                          ? "Forced Value"
+                          : rule.type}
+                      </Text>
+                      <Flex width="100%" alignContent="center">
+                        <Text fontWeight="bold" width="fit-content">
+                          SERVE
+                        </Text>
+                        <Text
+                          fontWeight="normal"
+                          fontFamily="'Lucida Console', 'Courier New', monospace"
+                          padding="0 15px"
+                        >
+                          {String(rule.value)}
+                        </Text>
+                      </Flex>
+                    </Stack>
+                  ))}
             </Tabs.Content>
           );
         })}
