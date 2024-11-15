@@ -4,10 +4,11 @@ import {
   Button,
   chakra,
   Flex,
-  IconButton,
   Input,
   Stack,
+  HStack,
 } from "@chakra-ui/react";
+import { RadioGroup } from "../ui/radio";
 import { Table } from "@chakra-ui/react";
 import { Field } from "../ui/field";
 import { CirclePlus, CircleEqual } from "lucide-react";
@@ -27,50 +28,44 @@ import {
 } from "react-hook-form";
 import { Experiment, ExperimentGroup } from "@estuary/types";
 import { Slider } from "../ui/slider";
+import { Switch } from "../ui/switch";
+import { Radio } from "../ui/radio";
 
 // type Inputs = Omit<Experiment, "id" | "groups"> & {
 //   groups: Omit<ExperimentGroup, "id">[];
 // };
 
-type Inputs = Omit<Experiment, "id">;
+type Inputs = Experiment;
 
 const defaultExperiment: Inputs = {
   name: "",
+  hypothesis: "",
   description: "",
   type: "Experiment",
   status: "draft",
   enrollment: {
     attributes: ["id"],
-    proportion: 100, // this will be converted `onSubmit` to a value between 0 and 1
+    proportion: [100], // this will be converted `onSubmit` to a value between 0 and 1
   },
   groups: [
     {
       id: "",
       name: "Control",
       proportion: 0.5,
-      blocks: [
-        {
-          id: "0",
-          name: "",
-          flagValue: true,
-        },
-      ],
+      cycles: 1,
+      sequenceId: undefined,
     },
     {
       id: "",
       name: "Variation",
       proportion: 0.5,
-      blocks: [
-        {
-          id: "1",
-          name: "",
-          flagValue: true,
-        },
-      ],
+      cycles: 1,
+      sequenceId: undefined,
     },
   ],
-  flagId: "",
   dependents: [],
+  definedTreatments: [],
+  definedSequences: [],
 };
 
 const appendedGroup = (index: number): ExperimentGroup => {
@@ -78,13 +73,8 @@ const appendedGroup = (index: number): ExperimentGroup => {
     id: "",
     name: `Variation ${index}`,
     proportion: 0,
-    blocks: [
-      {
-        id: "0",
-        name: "",
-        flagValue: true,
-      },
-    ],
+    cycles: 1,
+    sequenceId: undefined,
   };
 };
 
@@ -125,6 +115,7 @@ const reformatAllTrafficProportion = (expContent: Inputs): void => {
 };
 
 const ExperimentCreationForm = ({ formId, setIsLoading }) => {
+  const [expType, setExpType] = useState<string>("ab");
   const [render, setRender] = useState();
   const {
     control,
@@ -199,10 +190,10 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
             </Field>
           )}
         />
-        {/* <Controller
+        <Controller
           name="hypothesis"
           control={control}
-          render={({ field }) => (
+          render={() => (
             <Field label="Hypothesis">
               <Input
                 placeholder="What do you expect to happen in this experiment ?"
@@ -212,7 +203,7 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
               />
             </Field>
           )}
-        /> */}
+        />
         {/* <Field
           label="Assign value based on attribute"
           helperText="Will be hashed together with the Tracking Key to determine which variation to assign."
@@ -250,7 +241,9 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
           name="enrollment.proportion"
           control={control}
           render={({ field }) => (
-            <Field label={"Traffic included in this Experiment"}>
+            <Field
+              label={`Traffic included in this experiment: ${field.value[0]}`}
+            >
               <Slider
                 width="full"
                 onFocusChange={({ focusedIndex }) => {
@@ -266,6 +259,19 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
             </Field>
           )}
         />
+        <Box>
+          <Field label={"Experiment Type"} />
+          <RadioGroup
+            defaultValue={expType}
+            onValueChange={(e) => setExpType(e.value)}
+          >
+            <HStack gap="6">
+              <Radio value="ab">A/B</Radio>
+              <Radio value="switchback">Switchback</Radio>
+            </HStack>
+          </RadioGroup>
+        </Box>
+
         <Controller
           name="groups"
           control={control}
@@ -285,15 +291,65 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
-                    {fields.map((field, index) => (
-                      <Table.Row key={field.id}>
+                    {expType === "ab" &&
+                      fields.map((field, index) => (
+                        <Table.Row key={field.id}>
+                          <Table.Cell></Table.Cell>
+                          <Table.Cell>
+                            <Input
+                              border="0px"
+                              width="125px"
+                              defaultValue={field.name || `Variation ${index}`}
+                              {...register(`groups.${index}.name`, {
+                                required:
+                                  "Feature name is required and must be between 3-20 characters long.",
+                                pattern: {
+                                  value: /^[0-9A-Za-z-]+$/gi,
+                                  message:
+                                    "Feature names may only contain letters, numbers, and hyphens.",
+                                },
+                                minLength: 3,
+                                maxLength: 20,
+                              })}
+                            />
+                          </Table.Cell>
+                          <Table.Cell>
+                            <Field
+                              invalid={!!errors.groups?.[index]?.proportion}
+                              errorText={
+                                errors.groups?.[index]?.proportion?.message
+                              }
+                            >
+                              <Input
+                                border="0px"
+                                width="75px"
+                                defaultValue={field.proportion || 0}
+                                {...register(`groups.${index}.proportion`, {
+                                  required: "Group proportion is required.",
+                                  valueAsNumber: true,
+                                  min: {
+                                    value: 0,
+                                    message: ">= 0",
+                                  },
+                                  max: {
+                                    value: 1,
+                                    message: "<= 1",
+                                  },
+                                })}
+                              />
+                            </Field>
+                          </Table.Cell>
+                        </Table.Row>
+                      ))}
+                    {expType === "switchback" && (
+                      <Table.Row>
                         <Table.Cell></Table.Cell>
                         <Table.Cell>
                           <Input
                             border="0px"
                             width="125px"
-                            defaultValue={field.name || `Variation ${index}`}
-                            {...register(`groups.${index}.name`, {
+                            defaultValue={fields[0].name}
+                            {...register(`groups.0.name`, {
                               required:
                                 "Feature name is required and must be between 3-20 characters long.",
                               pattern: {
@@ -308,16 +364,14 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
                         </Table.Cell>
                         <Table.Cell>
                           <Field
-                            invalid={!!errors.groups?.[index]?.proportion}
-                            errorText={
-                              errors.groups?.[index]?.proportion?.message
-                            }
+                            invalid={!!errors.groups?.[0]?.proportion}
+                            errorText={errors.groups?.[0]?.proportion?.message}
                           >
                             <Input
                               border="0px"
                               width="75px"
-                              defaultValue={field.proportion || 0}
-                              {...register(`groups.${index}.proportion`, {
+                              defaultValue={1}
+                              {...register(`groups.0.proportion`, {
                                 required: "Group proportion is required.",
                                 valueAsNumber: true,
                                 min: {
@@ -333,7 +387,7 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
                           </Field>
                         </Table.Cell>
                       </Table.Row>
-                    ))}
+                    )}
                   </Table.Body>
                 </Table.Root>
               </Box>
