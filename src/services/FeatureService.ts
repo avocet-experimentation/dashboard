@@ -48,9 +48,7 @@ export default class FeatureService {
     return featureJSON;
   }
 
-  async createFeature(
-    featureContent: Omit<FeatureFlag, "id">
-  ): Promise<Response> {
+  async createFeature(featureContent: FeatureFlag): Promise<Response> {
     try {
       const res = await fetch("http://localhost:3524/admin/fflags", {
         method: "POST",
@@ -66,11 +64,74 @@ export default class FeatureService {
     }
   }
 
+  async updateFeature(featureId, updateContent): Promise<Response> {
+    const updateObj = {
+      id: featureId,
+      ...updateContent,
+    };
+    const updateRes = await fetch(
+      this.baseUrl + `/admin/fflags/id/${featureId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          mode: "cors",
+        },
+        body: JSON.stringify(updateObj),
+      }
+    );
+  }
+
+  async toggleEnvironment(
+    featureId: string,
+    environment,
+    checked: boolean,
+    callback = undefined
+  ) {
+    environment.enabled = checked;
+    const envUpdate = {
+      id: featureId,
+      environments: { [`${environment.name}`]: environment },
+    };
+    const updateRes = await fetch(
+      this.baseUrl + `/admin/fflags/id/${featureId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          mode: "cors",
+        },
+        body: JSON.stringify(envUpdate),
+      }
+    );
+    const updateJSON = await updateRes.json();
+    if (updateJSON.code === 404) {
+      console.log(updateJSON.error);
+    } else {
+      callback?.();
+    }
+  }
+
+  async deleteFeature(featureId) {
+    const deleteRes = await fetch(
+      this.baseUrl + `/admin/fflags/id/${featureId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          mode: "cors",
+        },
+      }
+    );
+    const deleteJSON = await deleteRes.json();
+  }
+
   async patchFeature(featureId: string, updateContent, callback) {
     const updateBody = {
       id: featureId,
       ...updateContent,
     };
+    console.log(updateContent);
     const updateRes = await fetch(
       this.baseUrl + `/admin/fflags/id/${featureId}`,
       {
@@ -96,6 +157,7 @@ export default class FeatureService {
     rule: Omit<ForcedValue, "id"> | Omit<Experiment, "id">
   ) {
     const reqBody = {
+      id: featureId,
       environment: envName,
       rule: rule,
     };
@@ -110,9 +172,6 @@ export default class FeatureService {
         body: JSON.stringify(reqBody),
       }
     );
-    const responseJSON = await response.json();
-    if (response.status === 200) {
-      return responseJSON.ruleId;
-    }
+    return await response.json();
   }
 }
