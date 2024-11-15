@@ -1,21 +1,36 @@
 import FeatureService from "#/services/FeatureService";
-import { Box, Flex, Heading, Text } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { FeatureFlag, FlagEnvironment } from "@estuary/types";
+import {
+  Box,
+  Editable,
+  Flex,
+  Heading,
+  Highlight,
+  HStack,
+  Icon,
+  IconButton,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
+import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from "../ui/menu";
 import { Switch } from "../ui/switch";
-import { useRoute } from "wouter";
+import { useEffect, useState } from "react";
+import { FeatureFlag, Environment } from "@estuary/types";
+import { Check, EllipsisVertical, FilePenLine, Trash2, X } from "lucide-react";
+import { useLocation, useRoute } from "wouter";
 import FeatureNotFound from "./FeatureNotFound";
 import EnvironmentTabs from "./EnvironmentTabs";
 
 const featureService = new FeatureService();
 
+const VALUE_FONT = "'Lucida Console', 'Courier New', monospace";
+
 const FeaturePage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [editDesc, setEditDesc] = useState<boolean>(false);
   const [feature, setFeature] = useState<FeatureFlag | null>(null);
-  const [environments, setEnvironments] = useState<FlagEnvironment | null>(
-    null
-  );
+  const [environments, setEnvironments] = useState<Environment | null>(null);
   const [match, params] = useRoute("/features/:id");
+  const [location, navigate] = useLocation();
 
   useEffect(() => {
     const handleGetFeature = async () => {
@@ -35,52 +50,106 @@ const FeaturePage = () => {
     return () => handleGetFeature();
   }, []);
 
+  const handleDeleteFeature = () => {
+    featureService.deleteFeature(feature.id);
+    navigate("/features");
+  };
+
   if (isLoading) return <></>;
 
   if (feature) {
     return (
-      <Flex direction="column" padding="25px">
-        <Flex
-          direction="row"
-          width="100%"
-          justifyContent="space-between"
-          alignItems="center"
-        >
+      <Stack gap={4} padding="25px" overflowY="scroll">
+        <Flex justifyContent="space-between">
           <Heading size="3xl">{feature.name}</Heading>
+          <MenuRoot>
+            <MenuTrigger asChild>
+              <IconButton size="md">
+                <EllipsisVertical color="black" />
+              </IconButton>
+            </MenuTrigger>
+            <MenuContent>
+              <MenuItem
+                value="delete"
+                valueText="Delete"
+                cursor="pointer"
+                color="fg.error"
+                _hover={{ bg: "bg.error", color: "fg.error" }}
+                onClick={handleDeleteFeature}
+              >
+                <Trash2 />
+                <Box flex="1">Delete</Box>
+              </MenuItem>
+            </MenuContent>
+          </MenuRoot>
         </Flex>
-        <Box margin="15px 0 0 0">
-          <Heading size="xl">Overview</Heading>
-          <Flex
-            direction="column"
-            padding="15px"
-            bg="white"
-            borderRadius="5px"
-            margin="15px 0 0 0"
-          >
-            <Heading size="lg">Description</Heading>
-            <Text width="100%" margin="5px 0 0 0">
-              {feature.description}
-            </Text>
-          </Flex>
+        <Box>
+          <Heading size="xl" marginBottom="15px">
+            Overview
+          </Heading>
+          <Stack padding="15px" bg="white" borderRadius="5px">
+            <HStack gap={2.5}>
+              <Heading size="lg">Description</Heading>
+              <Icon
+                size="sm"
+                cursor="pointer"
+                onClick={() => setEditDesc(true)}
+              >
+                <FilePenLine color="black" />
+              </Icon>
+            </HStack>
+            <Editable.Root
+              defaultValue={feature.description}
+              edit={editDesc}
+              activationMode="focus"
+              onBlur={() => setEditDesc(false)}
+            >
+              <Editable.Preview
+                minH="48px"
+                alignItems="flex-start"
+                width="full"
+              />
+              <Editable.Textarea />
+              <Editable.Control>
+                <Editable.CancelTrigger asChild>
+                  <IconButton variant="outline" size="xs">
+                    <X />
+                  </IconButton>
+                </Editable.CancelTrigger>
+                <Editable.SubmitTrigger
+                  asChild
+                  onClick={(value) => {
+                    console.log(value);
+                    featureService.patchFeature(feature.id, {
+                      description: value,
+                    });
+                  }}
+                >
+                  <IconButton variant="outline" size="xs">
+                    <Check />
+                  </IconButton>
+                </Editable.SubmitTrigger>
+              </Editable.Control>
+            </Editable.Root>
+          </Stack>
         </Box>
-        <Box margin="15px 0 0 0">
-          <Heading size="xl">Enabled Environments</Heading>
-          <Flex
-            direction="column"
-            padding="15px"
-            bg="white"
-            borderRadius="5px"
-            margin="15px 0 0 0"
-          >
-            <Text>
-              In a disabled environment, the feature will always evaluate
-              to&#20;
-              <Text color="red" display="inline">
-                null
+        <Box>
+          <Heading size="xl" marginBottom="15px">
+            Enabled Environments
+          </Heading>
+          <Stack padding="15px" bg="white" borderRadius="5px">
+            <Flex>
+              <Text>
+                <Highlight
+                  query={["null"]}
+                  styles={{ color: "red", fontFamily: VALUE_FONT }}
+                >
+                  In a disabled environment, the feature will always evaluate to
+                  null. The default value and override rules will be ignored.
+                </Highlight>
               </Text>
-              . The default value and override rules will be ignored.
-            </Text>
-            <Flex direction="row" width="100%" margin="15px 0 0 0">
+            </Flex>
+            <Flex direction="row">
               {Object.keys(environments).map((env) => {
                 const envObject = environments[env];
                 return (
@@ -89,14 +158,21 @@ const FeaturePage = () => {
                     margin="0 15px 0 0"
                     key={`${env}-switch`}
                   >
-                    <Text marginRight="5px">{`${env}:`}</Text>
+                    <Text marginRight="5px">{env}:</Text>
                     <Switch
                       checked={envObject.enabled}
                       onCheckedChange={({ checked }) =>
                         featureService.patchFeature(
                           feature.id,
                           {
-                            [`environments.${env}.enabled`]: checked,
+                            // [`environments.${env}.enabled`]: checked,
+                            environments: {
+                              [`${env}`]: {
+                                enabled: checked,
+                                name: envObject.name,
+                                overrideRules: envObject.overrideRules,
+                              },
+                            },
                           },
                           () => {
                             setEnvironments((prevState) => ({
@@ -114,34 +190,23 @@ const FeaturePage = () => {
                 );
               })}
             </Flex>
-          </Flex>
+          </Stack>
         </Box>
 
-        <Box margin="15px 0 0 0">
-          <Heading size="xl">Values and Rules</Heading>
-          <Flex
-            direction="column"
-            padding="15px"
-            bg="white"
-            borderRadius="5px"
-            margin="15px 0 0 0"
-          >
+        <Box>
+          <Heading size="xl" marginBottom="15px">
+            Values and Rules
+          </Heading>
+          <Stack padding="15px" bg="white" borderRadius="5px">
             <Heading size="lg">Default Value</Heading>
-            <Flex
-              width="100%"
-              border="1px solid gray"
-              borderRadius="5px"
-              padding="15px"
-              alignContent="center"
-              margin="5px 0 0 0"
-            >
+            <Flex border="1px solid gray" borderRadius="5px" padding="15px">
               <Text fontWeight="bold" width="fit-content" padding="0 5px">
                 {feature.value.type.toUpperCase()}
               </Text>
               <Text
                 fontWeight="normal"
-                fontFamily="'Lucida Console', 'Courier New', monospace"
-                padding="0 5px"
+                fontFamily={VALUE_FONT}
+                padding="0 10px"
               >
                 {String(feature.value.default)}
               </Text>
@@ -150,7 +215,7 @@ const FeaturePage = () => {
             <Heading size="lg" margin="15px 0 0 0">
               Rules
             </Heading>
-            <Text margin="5px 0 0 0">
+            <Text>
               Add powerful logic on top of your feature. The first matching rule
               applies and overrides the default value.
             </Text>
@@ -160,18 +225,9 @@ const FeaturePage = () => {
               valueType={feature.value.type}
               defaultValue={feature.value.default}
             />
-          </Flex>
+          </Stack>
         </Box>
-        {/* <Flex direction="column">
-          <Heading size="xl">Rules</Heading>
-          <Flex
-            direction="column"
-            padding="15px"
-            bg="white"
-            borderRadius="5px"
-          ></Flex>
-        </Flex> */}
-      </Flex>
+      </Stack>
     );
   } else {
     return <FeatureNotFound />;
