@@ -17,7 +17,7 @@ import { Field } from "../ui/field";
 import { Switch } from "../ui/switch";
 import { useEffect, useState } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { FeatureFlag, FlagValueType } from "@estuary/types";
+import { FeatureFlag, FlagCurrentValue } from "@estuary/types";
 import FeatureService from "#/services/FeatureService";
 import { useLocation } from "wouter";
 
@@ -77,7 +77,7 @@ const getDefaultValue = (valueType: string) => {
 };
 
 const FeatureCreationForm = ({ formId, setIsLoading }) => {
-  const [valueType, setValueType] = useState<FlagValueType>(
+  const [valueType, setValueType] = useState<FlagCurrentValue>(
     defaultFeatureFlag.value.type
   );
   const [isError, setIsError] = useState(null);
