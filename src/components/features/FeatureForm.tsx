@@ -17,11 +17,9 @@ import { Field } from "../ui/field";
 import { Switch } from "../ui/switch";
 import { useEffect, useState } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { FeatureFlag, FlagCurrentValue } from "@estuary/types";
+import { FeatureFlagDraft, FlagCurrentValue } from "@estuary/types";
 import FeatureService from "#/services/FeatureService";
 import { useLocation } from "wouter";
-
-type Inputs = Omit<FeatureFlag, "id">;
 
 const environments = createListCollection({
   items: ["dev", "prod", "testing", "staging"],
@@ -35,11 +33,11 @@ const valueTypes = createListCollection({
   ],
 });
 
-const defaultFeatureFlag: Inputs = {
+const defaultFeatureFlag: FeatureFlagDraft = {
   name: "",
   value: {
     type: "boolean",
-    default: true,
+    initial: true,
   },
   description: "",
   environments: {
@@ -64,8 +62,6 @@ const defaultFeatureFlag: Inputs = {
       overrideRules: [],
     },
   },
-  createdAt: Date.now(),
-  updatedAt: Date.now(),
 };
 
 const featureService = new FeatureService();
@@ -88,10 +84,10 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>({
+  } = useForm<FeatureFlagDraft>({
     defaultValues: defaultFeatureFlag,
   });
-  const onSubmit: SubmitHandler<Inputs> = async (featureContent) => {
+  const onSubmit: SubmitHandler<FeatureFlagDraft> = async (featureContent) => {
     setIsLoading(true);
     const response = await featureService.createFeature(featureContent);
     if (response.status === 409) {
@@ -106,7 +102,7 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
 
   useEffect(() => {
     // Update value.default whenever valueType changes
-    setValue("value.default", getDefaultValue(valueType));
+    setValue("value.initial", getDefaultValue(valueType));
   }, [valueType, setValue]);
 
   return (
@@ -211,7 +207,7 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
           />
         </Field>
         <Controller
-          name="value.default"
+          name="value.initial"
           control={control}
           render={({ field }) => {
             if (valueType === "boolean")
@@ -232,7 +228,7 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
                   <Input
                     type="text"
                     placeholder="A string value"
-                    {...register("value.default", {
+                    {...register("value.initial", {
                       required: "A default value is required.",
                     })}
                   />
@@ -245,7 +241,7 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
                   <Input
                     type="number"
                     placeholder="A number value"
-                    {...register("value.default", {
+                    {...register("value.initial", {
                       valueAsNumber: true,
                       required: "A default value is required.",
                     })}
