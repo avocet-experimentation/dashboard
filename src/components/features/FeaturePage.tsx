@@ -119,7 +119,6 @@ const FeaturePage = () => {
                 <Editable.SubmitTrigger
                   asChild
                   onClick={(value) => {
-                    console.log(value);
                     featureService.patchFeature(feature.id, {
                       description: value,
                     });
@@ -208,7 +207,7 @@ const FeaturePage = () => {
                 fontFamily={VALUE_FONT}
                 padding="0 10px"
               >
-                {String(feature.value.default)}
+                {String(feature.value.initial)}
               </Text>
             </Flex>
 
@@ -223,7 +222,7 @@ const FeaturePage = () => {
               featureId={params.id}
               environments={environments}
               valueType={feature.value.type}
-              defaultValue={feature.value.default}
+              defaultValue={feature.value.initial}
             />
           </Stack>
         </Box>
