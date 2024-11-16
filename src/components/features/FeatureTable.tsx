@@ -98,7 +98,7 @@ const FeatureTable: FC<FeatureTableProps> = ({ features }) => {
                     width="fit-content"
                     fontFamily="'Lucida Console', 'Courier New', monospace"
                   >
-                    {String(feature.value.default)}
+                    {String(feature.value.initial)}
                   </Text>
                 </Tooltip>
               </Table.Cell>
