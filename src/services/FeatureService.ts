@@ -4,7 +4,13 @@
 // fetch all experiments
 // CRUD individual experiments
 */
-import { Experiment, FeatureFlag, ForcedValue } from "@estuary/types";
+import FetchWrapper from "#/lib/FetchWrapper";
+import {
+  ExperimentDraft,
+  FeatureFlag,
+  FeatureFlagDraft,
+  ForcedValue,
+} from "@estuary/types";
 
 type FastifyError = {
   error: {
@@ -13,164 +19,100 @@ type FastifyError = {
   };
 };
 
+const BASE_URL = import.meta.env.VITE_FLAG_SERVICE_URL;
+
+const DEFAULT_HEADERS = {
+  "Content-Type": "application/json",
+  mode: "cors",
+};
+
+const DEFAULT_REQUEST_OPTIONS = {};
+
 export default class FeatureService {
   baseUrl: string;
+  fetch: FetchWrapper;
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_FLAG_SERVICE_URL;
+    this.fetch = new FetchWrapper(
+      BASE_URL,
+      DEFAULT_HEADERS,
+      DEFAULT_REQUEST_OPTIONS
+    );
   }
 
   async getAllFeatures(): Promise<FeatureFlag[]> {
-    const allFeatures = await fetch(this.baseUrl + "/admin/fflags", {
-      headers: {
-        "Content-Type": "application/json",
-        mode: "cors",
-      },
-    });
-    return await allFeatures.json();
+    const response = await this.fetch.get("/fflags");
+    return await response.json();
   }
 
-  async getFeature(featureId: string): Promise<FeatureFlag | null> {
-    const feature = await fetch(
-      this.baseUrl + `/admin/fflags/id/${featureId}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          mode: "cors",
-        },
-      }
-    );
-    const featureJSON = await feature.json();
-    if (feature.status === 404) {
-      console.log(featureJSON.error);
-      return null;
-    }
-    return featureJSON;
+  async getFeature(featureId: string): Promise<FeatureFlag> {
+    const response = await this.fetch.get(`fflags/id/${featureId}`);
+    return await response.json();
   }
 
-  async createFeature(featureContent: FeatureFlag): Promise<Response> {
-    try {
-      const res = await fetch("http://localhost:3524/admin/fflags", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          mode: "cors",
-        },
-        body: JSON.stringify(featureContent),
-      });
-      return res;
-    } catch (error) {
-      console.dir(error);
-    }
+  async createFeature(featureContent: FeatureFlagDraft): Promise<Response> {
+    const response = await this.fetch.post("/fflags", featureContent);
+    return await response.json();
   }
 
-  async updateFeature(featureId, updateContent): Promise<Response> {
+  async updateFeature(
+    featureId: string,
+    updateContent: Partial<FeatureFlagDraft>
+  ): Promise<Response> {
     const updateObj = {
       id: featureId,
       ...updateContent,
     };
-    const updateRes = await fetch(
-      this.baseUrl + `/admin/fflags/id/${featureId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          mode: "cors",
-        },
-        body: JSON.stringify(updateObj),
-      }
+    const response = await this.fetch.patch(
+      `/fflags/id/${featureId}`,
+      updateObj
     );
+    return await response.json();
   }
 
-  async toggleEnvironment(
-    featureId: string,
-    environment,
-    checked: boolean,
-    callback = undefined
-  ) {
+  async toggleEnvironment(featureId: string, environment, checked: boolean) {
     environment.enabled = checked;
     const envUpdate = {
       id: featureId,
       environments: { [`${environment.name}`]: environment },
     };
-    const updateRes = await fetch(
-      this.baseUrl + `/admin/fflags/id/${featureId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          mode: "cors",
-        },
-        body: JSON.stringify(envUpdate),
-      }
+    const response = await this.fetch.patch(
+      `/fflags/id/${featureId}`,
+      envUpdate
     );
-    const updateJSON = await updateRes.json();
-    if (updateJSON.code === 404) {
-      console.log(updateJSON.error);
-    } else {
-      callback?.();
-    }
+    return await response.json();
   }
 
   async deleteFeature(featureId) {
-    const deleteRes = await fetch(
-      this.baseUrl + `/admin/fflags/id/${featureId}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          mode: "cors",
-        },
-      }
-    );
-    const deleteJSON = await deleteRes.json();
+    const response = await this.fetch.delete(`/fflags/id/${featureId}`);
+    return await response.json();
   }
 
-  async patchFeature(featureId: string, updateContent, callback) {
+  async patchFeature(featureId: string, updateContent) {
     const updateBody = {
       id: featureId,
       ...updateContent,
     };
-    console.log(updateContent);
-    const updateRes = await fetch(
-      this.baseUrl + `/admin/fflags/id/${featureId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          mode: "cors",
-        },
-        body: JSON.stringify(updateBody),
-      }
+    const response = await this.fetch.patch(
+      `/fflags/id/${featureId}`,
+      updateBody
     );
-    const updateJSON = await updateRes.json();
-    if (updateJSON.status === 404) {
-      console.log(updateJSON.error);
-    } else {
-      callback();
-    }
+    return await response.json();
   }
 
   async addRule(
     featureId: string,
     envName: string,
-    rule: Omit<ForcedValue, "id"> | Omit<Experiment, "id">
+    rule: ForcedValue | ExperimentDraft
   ) {
-    const reqBody = {
+    const ruleBody = {
       id: featureId,
       environment: envName,
       rule: rule,
     };
-    const response = await fetch(
-      this.baseUrl + `/admin/fflags/id/${featureId}/addRule`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          mode: "cors",
-        },
-        body: JSON.stringify(reqBody),
-      }
+    const response = await this.fetch.patch(
+      `/fflags/id/${featureId}/addRule`,
+      ruleBody
     );
     return await response.json();
   }
