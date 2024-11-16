@@ -1,5 +1,9 @@
-import { Treatment, FlagState, TreatmentSequence, ExperimentGroup } from "@estuary/types";
-
+import {
+  Treatment,
+  FlagState,
+  TreatmentSequence,
+  ExperimentGroup,
+} from "@estuary/types";
 
 export class TreatmentImpl implements Treatment {
   id: string;
@@ -7,9 +11,7 @@ export class TreatmentImpl implements Treatment {
   duration: number;
   flagStates: FlagState[];
 
-  constructor({
-    name, duration, flagStates,
-  }: Omit<Treatment, 'id'>) {
+  constructor({ name, duration, flagStates }: Omit<Treatment, "id">) {
     this.id = self.crypto.randomUUID();
 
     this.name = name;
@@ -22,7 +24,7 @@ export class TreatmentTemplate extends TreatmentImpl {
   constructor(name: string) {
     const defaults = {
       duration: 0,
-      flagStates: []
+      flagStates: [],
     };
     super({ name, ...defaults });
   }
@@ -32,7 +34,7 @@ export class TreatmentSequenceImpl implements TreatmentSequence {
   id: string;
   treatmentIds: string[];
 
-  constructor({ treatmentIds }: Omit<TreatmentSequence, 'id'>) {
+  constructor({ treatmentIds }: Omit<TreatmentSequence, "id">) {
     this.id = self.crypto.randomUUID();
     this.treatmentIds = treatmentIds;
   }
@@ -52,8 +54,11 @@ export class ExperimentGroupImpl implements ExperimentGroup {
   cycles: number;
 
   constructor({
-    name, proportion, sequenceId, cycles,
-  }: Omit<ExperimentGroup, 'id'>) {
+    name,
+    proportion,
+    sequenceId,
+    cycles,
+  }: Omit<ExperimentGroup, "id">) {
     this.id = self.crypto.randomUUID();
     this.name = name;
     this.proportion = proportion;
@@ -64,9 +69,8 @@ export class ExperimentGroupImpl implements ExperimentGroup {
 
 export class ExperimentGroupTemplate extends ExperimentGroupImpl {
   constructor(name: string, sequenceId?: string) {
-
     const defaults = {
-      proportion: 0,
+      proportion: 0.5,
       cycles: 1,
     };
 
