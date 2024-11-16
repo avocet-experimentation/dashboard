@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   chakra,
+  Fieldset,
   Flex,
   Input,
   Stack,
@@ -28,16 +29,32 @@ import {
 } from "react-hook-form";
 import { Experiment, ExperimentGroup } from "@estuary/types";
 import { Slider } from "../ui/slider";
-import { Switch } from "../ui/switch";
 import { Radio } from "../ui/radio";
+import { ABExperimentTemplate, SwitchbackTemplate } from "#/classes/Experiment";
+import ExperimentService from "#/services/ExperimentService";
 
 // type Inputs = Omit<Experiment, "id" | "groups"> & {
 //   groups: Omit<ExperimentGroup, "id">[];
 // };
 
-type Inputs = Experiment;
+const templateToObject = (template) => {
+  return Object.getOwnPropertyNames(template).reduce((acc, prop) => {
+    acc[prop] = template[prop];
+    return acc;
+  }, {});
+};
 
-const defaultExperiment: Inputs = {
+const abTemplate = new ABExperimentTemplate("my-first-exp", "dev");
+
+const defaultAB = templateToObject(abTemplate);
+
+const switchbackTemplate = new SwitchbackTemplate("my-first-switchback", "dev");
+
+const defaultSwitchback = templateToObject(switchbackTemplate);
+
+const expService = new ExperimentService();
+
+const defaultExperiment: Experiment = {
   name: "",
   hypothesis: "",
   description: "",
@@ -71,7 +88,7 @@ const defaultExperiment: Inputs = {
 const appendedGroup = (index: number): ExperimentGroup => {
   return {
     id: "",
-    name: `Variation ${index}`,
+    name: `Group ${index + 1}`,
     proportion: 0,
     cycles: 1,
     sequenceId: undefined,
@@ -85,7 +102,6 @@ const setEqualProportions = (
   const numOfVariations: number = fields.length;
   const split: number = Math.trunc((1 / numOfVariations) * 10000) / 10000;
   let remainder = 1 - split * numOfVariations;
-  console.log(split, remainder);
   fields.forEach((_, index) => {
     let refinedSplit = split;
     if (remainder > 0) {
@@ -115,26 +131,50 @@ const reformatAllTrafficProportion = (expContent: Inputs): void => {
 };
 
 const ExperimentCreationForm = ({ formId, setIsLoading }) => {
-  const [expType, setExpType] = useState<string>("ab");
-  const [render, setRender] = useState();
+  const [expType, setExpType] = useState<"ab" | "switchback">("ab");
+  const [formValues, setFormValues] = useState({
+    ab: defaultAB,
+    switchback: defaultSwitchback,
+  });
   const {
     control,
     register,
     handleSubmit,
+    reset,
+    watch,
+    getValues,
     formState: { errors },
-  } = useForm<Inputs>({
-    defaultValues: defaultExperiment,
+  } = useForm<Experiment>({
+    defaultValues: formValues[expType],
   });
+
+  const groupValues = watch("groups");
+
+  // Save current form state before switching
+  const handleSwitchForm = (newExpType: "ab" | "switchback") => {
+    const currentValues = getValues();
+    setFormValues((prevState) => ({
+      ...prevState,
+      [expType]: currentValues, // Save current form values
+    }));
+    setExpType(newExpType); // Update form type
+  };
+
+  // Handle form switching
+  useEffect(() => {
+    reset(formValues[expType]); // Use updated formValues for reset
+  }, [expType, reset, getValues]);
 
   const { fields, append, remove, update } = useFieldArray({
     control,
     name: "groups",
   });
 
-  const onSubmit = (expContent: Inputs) => {
+  const onSubmit = (expContent: Experiment) => {
     createGroupIds(expContent);
     reformatAllTrafficProportion(expContent);
     console.log("data", expContent);
+    expService.createExperiment(expContent);
   };
 
   useEffect(() => {});
@@ -245,6 +285,7 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
               label={`Traffic included in this experiment: ${field.value[0]}`}
             >
               <Slider
+                cursor="grab"
                 width="full"
                 onFocusChange={({ focusedIndex }) => {
                   if (focusedIndex !== -1) return;
@@ -259,19 +300,24 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
             </Field>
           )}
         />
-        <Box>
-          <Field label={"Experiment Type"} />
+        <Fieldset.Root>
+          <Fieldset.Legend>Experiment Type</Fieldset.Legend>
           <RadioGroup
             defaultValue={expType}
-            onValueChange={(e) => setExpType(e.value)}
+            onValueChange={({ value }) =>
+              handleSwitchForm(value as "ab" | "switchback")
+            }
           >
             <HStack gap="6">
-              <Radio value="ab">A/B</Radio>
-              <Radio value="switchback">Switchback</Radio>
+              <Radio value="ab" cursor="pointer">
+                A/B
+              </Radio>
+              <Radio value="switchback" cursor="pointer">
+                Switchback
+              </Radio>
             </HStack>
           </RadioGroup>
-        </Box>
-
+        </Fieldset.Root>
         <Controller
           name="groups"
           control={control}
@@ -291,87 +337,43 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
-                    {expType === "ab" &&
-                      fields.map((field, index) => (
-                        <Table.Row key={field.id}>
-                          <Table.Cell></Table.Cell>
-                          <Table.Cell>
+                    {fields.map((field, index) => (
+                      <Table.Row key={field.id}>
+                        <Table.Cell></Table.Cell>
+                        <Table.Cell>
+                          <Field
+                            invalid={!!errors.groups?.[index]?.name}
+                            errorText={errors.groups?.[index]?.name?.message}
+                          >
                             <Input
                               border="0px"
                               width="125px"
                               defaultValue={field.name || `Variation ${index}`}
                               {...register(`groups.${index}.name`, {
-                                required:
-                                  "Feature name is required and must be between 3-20 characters long.",
-                                pattern: {
-                                  value: /^[0-9A-Za-z-]+$/gi,
-                                  message:
-                                    "Feature names may only contain letters, numbers, and hyphens.",
+                                required: "Name is required.",
+                                validate: {
+                                  unique: (name) =>
+                                    groupValues.filter((n) => n.name === name)
+                                      .length === 1 ||
+                                    "Group names must be unique.",
                                 },
-                                minLength: 3,
-                                maxLength: 20,
                               })}
                             />
-                          </Table.Cell>
-                          <Table.Cell>
-                            <Field
-                              invalid={!!errors.groups?.[index]?.proportion}
-                              errorText={
-                                errors.groups?.[index]?.proportion?.message
-                              }
-                            >
-                              <Input
-                                border="0px"
-                                width="75px"
-                                defaultValue={field.proportion || 0}
-                                {...register(`groups.${index}.proportion`, {
-                                  required: "Group proportion is required.",
-                                  valueAsNumber: true,
-                                  min: {
-                                    value: 0,
-                                    message: ">= 0",
-                                  },
-                                  max: {
-                                    value: 1,
-                                    message: "<= 1",
-                                  },
-                                })}
-                              />
-                            </Field>
-                          </Table.Cell>
-                        </Table.Row>
-                      ))}
-                    {expType === "switchback" && (
-                      <Table.Row>
-                        <Table.Cell></Table.Cell>
-                        <Table.Cell>
-                          <Input
-                            border="0px"
-                            width="125px"
-                            defaultValue={fields[0].name}
-                            {...register(`groups.0.name`, {
-                              required:
-                                "Feature name is required and must be between 3-20 characters long.",
-                              pattern: {
-                                value: /^[0-9A-Za-z-]+$/gi,
-                                message:
-                                  "Feature names may only contain letters, numbers, and hyphens.",
-                              },
-                              minLength: 3,
-                              maxLength: 20,
-                            })}
-                          />
+                          </Field>
                         </Table.Cell>
                         <Table.Cell>
                           <Field
-                            invalid={!!errors.groups?.[0]?.proportion}
-                            errorText={errors.groups?.[0]?.proportion?.message}
+                            invalid={!!errors.groups?.[index]?.proportion}
+                            errorText={
+                              errors.groups?.[index]?.proportion?.message
+                            }
                           >
                             <Input
                               border="0px"
                               width="75px"
-                              defaultValue={1}
-                              {...register(`groups.0.proportion`, {
+                              defaultValue={field.proportion || 0}
+                              disabled={expType === "switchback"}
+                              {...register(`groups.${index}.proportion`, {
                                 required: "Group proportion is required.",
                                 valueAsNumber: true,
                                 min: {
@@ -387,37 +389,39 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
                           </Field>
                         </Table.Cell>
                       </Table.Row>
-                    )}
+                    ))}
                   </Table.Body>
                 </Table.Root>
               </Box>
-              <Flex
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                width="100%"
-              >
-                <Button
-                  border="0px"
-                  variant="plain"
-                  background="transparent"
-                  _hover={{ backgroundColor: "transparent", color: "blue" }}
-                  onClick={() => append(appendedGroup(fields.length))}
+              {expType === "ab" && (
+                <Flex
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  width="100%"
                 >
-                  <CirclePlus />
-                  Add variation
-                </Button>
-                <Button
-                  border="0px"
-                  variant="plain"
-                  background="transparent"
-                  _hover={{ backgroundColor: "transparent", color: "blue" }}
-                  onClick={() => setEqualProportions(fields, update)}
-                >
-                  <CircleEqual />
-                  Set equal proportions
-                </Button>
-              </Flex>
+                  <Button
+                    border="0px"
+                    variant="plain"
+                    background="transparent"
+                    _hover={{ backgroundColor: "transparent", color: "blue" }}
+                    onClick={() => append(appendedGroup(fields.length))}
+                  >
+                    <CirclePlus />
+                    Add variation
+                  </Button>
+                  <Button
+                    border="0px"
+                    variant="plain"
+                    background="transparent"
+                    _hover={{ backgroundColor: "transparent", color: "blue" }}
+                    onClick={() => setEqualProportions(fields, update)}
+                  >
+                    <CircleEqual />
+                    Set equal proportions
+                  </Button>
+                </Flex>
+              )}
             </Field>
           )}
         />

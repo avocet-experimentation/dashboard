@@ -31,7 +31,6 @@ const FormModalTrigger = ({
   children,
 }: FormModal) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isOpen, setIsOpen] = useState<boolean>(true);
 
   // Clone the child element and add the additional props to it
   const childWithProps = cloneElement(children, {
@@ -47,7 +46,7 @@ const FormModalTrigger = ({
           {triggerButtonText}
         </IconButton>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent maxHeight="95vh">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
