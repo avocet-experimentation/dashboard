@@ -132,7 +132,7 @@ export default class FetchWrapper {
       headers: { ...this.defaultHeaders, ...headers },
     };
 
-    if (body) Object.assign(options, { body });
+    if (body) Object.assign(options, { body: encodeToJson(body) });
 
     return options;
   }

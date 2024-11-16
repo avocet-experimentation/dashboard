@@ -19,7 +19,7 @@ type FastifyError = {
   };
 };
 
-const BASE_URL = import.meta.env.VITE_FLAG_SERVICE_URL;
+const BASE_URL = import.meta.env.VITE_FLAG_SERVICE_URL + "/fflags";
 
 const DEFAULT_HEADERS = {
   "Content-Type": "application/json",
@@ -29,7 +29,6 @@ const DEFAULT_HEADERS = {
 const DEFAULT_REQUEST_OPTIONS = {};
 
 export default class FeatureService {
-  baseUrl: string;
   fetch: FetchWrapper;
 
   constructor() {
@@ -41,18 +40,18 @@ export default class FeatureService {
   }
 
   async getAllFeatures(): Promise<FeatureFlag[]> {
-    const response = await this.fetch.get("/fflags");
-    return await response.json();
+    const response = await this.fetch.get("");
+    return response;
   }
 
   async getFeature(featureId: string): Promise<FeatureFlag> {
-    const response = await this.fetch.get(`fflags/id/${featureId}`);
-    return await response.json();
+    const response = await this.fetch.get(`/id/${featureId}`);
+    return response;
   }
 
   async createFeature(featureContent: FeatureFlagDraft): Promise<Response> {
-    const response = await this.fetch.post("/fflags", featureContent);
-    return await response.json();
+    const response = await this.fetch.post("", featureContent);
+    return response;
   }
 
   async updateFeature(
@@ -63,11 +62,8 @@ export default class FeatureService {
       id: featureId,
       ...updateContent,
     };
-    const response = await this.fetch.patch(
-      `/fflags/id/${featureId}`,
-      updateObj
-    );
-    return await response.json();
+    const response = await this.fetch.patch(`/id/${featureId}`, updateObj);
+    return response;
   }
 
   async toggleEnvironment(featureId: string, environment, checked: boolean) {
@@ -76,16 +72,13 @@ export default class FeatureService {
       id: featureId,
       environments: { [`${environment.name}`]: environment },
     };
-    const response = await this.fetch.patch(
-      `/fflags/id/${featureId}`,
-      envUpdate
-    );
-    return await response.json();
+    const response = await this.fetch.patch(`/id/${featureId}`, envUpdate);
+    return response;
   }
 
   async deleteFeature(featureId) {
-    const response = await this.fetch.delete(`/fflags/id/${featureId}`);
-    return await response.json();
+    const response = await this.fetch.delete(`/id/${featureId}`);
+    return response;
   }
 
   async patchFeature(featureId: string, updateContent) {
@@ -97,7 +90,7 @@ export default class FeatureService {
       `/fflags/id/${featureId}`,
       updateBody
     );
-    return await response.json();
+    return response;
   }
 
   async addRule(
@@ -111,9 +104,9 @@ export default class FeatureService {
       rule: rule,
     };
     const response = await this.fetch.patch(
-      `/fflags/id/${featureId}/addRule`,
+      `/id/${featureId}/addRule`,
       ruleBody
     );
-    return await response.json();
+    return response;
   }
 }
