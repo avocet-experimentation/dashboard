@@ -1,5 +1,19 @@
-import { Enrollment, EnvironmentName, ExperimentDraft, ExperimentGroup, Metric, RuleStatus, Treatment, TreatmentSequence } from "@estuary/types";
-import { ExperimentGroupImpl, ExperimentGroupTemplate, TreatmentSequenceImpl, TreatmentTemplate } from "./ExperimentSubclasses";
+import {
+  Enrollment,
+  EnvironmentName,
+  ExperimentDraft,
+  ExperimentGroup,
+  Metric,
+  RuleStatus,
+  Treatment,
+  TreatmentSequence,
+} from "@estuary/types";
+import {
+  ExperimentGroupImpl,
+  ExperimentGroupTemplate,
+  TreatmentSequenceImpl,
+  TreatmentTemplate,
+} from "./ExperimentSubclasses";
 
 /**
  * Creates a full ExperimentDraft
@@ -8,7 +22,7 @@ export class ExperimentDraftImpl implements ExperimentDraft {
   name: string;
   environment: EnvironmentName;
   status: RuleStatus;
-  type: 'Experiment';
+  type: "Experiment";
   groups: ExperimentGroup[];
   enrollment: Enrollment;
   dependents: Metric[];
@@ -24,7 +38,7 @@ export class ExperimentDraftImpl implements ExperimentDraft {
     dependents,
     definedTreatments,
     definedSequences,
-  }: Omit<ExperimentDraft, 'type'>) {
+  }: Omit<ExperimentDraft, "type">) {
     this.name = name;
     this.environment = environment;
     this.status = status;
@@ -34,24 +48,25 @@ export class ExperimentDraftImpl implements ExperimentDraft {
     this.definedTreatments = definedTreatments;
     this.definedSequences = definedSequences;
 
-    this.type = 'Experiment';
+    this.type = "Experiment";
   }
 }
 
-type ExperimentDraftDefaults = Pick<ExperimentDraft,
-    'groups' |
-    'enrollment' | 
-    'dependents' |
-    'definedTreatments' |
-    'definedSequences'
-  >;
+type ExperimentDraftDefaults = Pick<
+  ExperimentDraft,
+  | "groups"
+  | "enrollment"
+  | "dependents"
+  | "definedTreatments"
+  | "definedSequences"
+>;
 
 /**
  * Uses defaults where possible to make a bare-bones ExperimentDraft
  */
 export class ExperimentDraftTemplate extends ExperimentDraftImpl {
   constructor(name: string, environment: EnvironmentName) {
-    const status = 'draft';
+    const status = "draft";
 
     const defaults: ExperimentDraftDefaults = {
       groups: [],
@@ -59,11 +74,11 @@ export class ExperimentDraftTemplate extends ExperimentDraftImpl {
         attributes: [],
         proportion: 0,
       },
-      dependents:  [],
-      definedTreatments:  [],
-      definedSequences:  [],
+      dependents: [],
+      definedTreatments: [],
+      definedSequences: [],
     };
-    super({name, environment, status, ...defaults});
+    super({ name, environment, status, ...defaults });
   }
 }
 
@@ -73,11 +88,11 @@ export class ExperimentDraftTemplate extends ExperimentDraftImpl {
  */
 export class SwitchbackTemplate extends ExperimentDraftImpl {
   constructor(name: string, environment: EnvironmentName) {
-    const status = 'draft';
+    const status = "draft";
 
     const treatments = [
-      new TreatmentTemplate('Control'),
-      new TreatmentTemplate('Experimental'),
+      new TreatmentTemplate("Control"),
+      new TreatmentTemplate("Experimental"),
     ];
 
     const sequence = new TreatmentSequenceImpl({
@@ -85,7 +100,7 @@ export class SwitchbackTemplate extends ExperimentDraftImpl {
     });
 
     const group = new ExperimentGroupImpl({
-      name: 'Experimental',
+      name: "Experimental",
       proportion: 1,
       sequenceId: sequence.id,
       cycles: 2,
@@ -101,17 +116,17 @@ export class SwitchbackTemplate extends ExperimentDraftImpl {
 
     super({ name, environment, status, ...defaults });
   }
-};
+}
 /**
  * Creates an experiment with two groups and one treatment assigned to each
  */
 export class ABExperimentTemplate extends ExperimentDraftImpl {
   constructor(name: string, environment: EnvironmentName) {
-    const status = 'draft';
+    const status = "draft";
 
     const treatments = [
-      new TreatmentTemplate('Control'),
-      new TreatmentTemplate('Experimental'),
+      new TreatmentTemplate("Control"),
+      new TreatmentTemplate("Experimental"),
     ];
 
     const sequences = [
@@ -120,8 +135,8 @@ export class ABExperimentTemplate extends ExperimentDraftImpl {
     ];
 
     const groups = [
-      new ExperimentGroupTemplate('Group 1', sequences[0].id),
-      new ExperimentGroupTemplate('Group 2', sequences[1].id),
+      new ExperimentGroupTemplate("Group 1", sequences[0].id),
+      new ExperimentGroupTemplate("Group 2", sequences[1].id),
     ];
 
     const defaults = {
