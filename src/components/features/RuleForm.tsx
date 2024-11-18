@@ -52,8 +52,8 @@ const RuleForm = ({
       envName,
       ruleContent
     );
-    if (response.code === 200) {
-      navigate(`/features/${featureId}`);
+    if (response.status === 200) {
+      window.location.reload();
     }
     setIsLoading(false);
   };
@@ -80,6 +80,7 @@ const RuleForm = ({
           const rule = RULE_TYPES[ruleKey];
           return (
             <RadioCardItem
+              cursor="pointer"
               label={rule.name}
               description={rule.description}
               indicator={false}
@@ -119,11 +120,7 @@ const RuleForm = ({
                 name="value"
                 control={control}
                 render={({ field }) => (
-                  <Field
-                    label="Value to Force"
-                    invalid={!!errors.description}
-                    errorText={errors.description?.message}
-                  >
+                  <Field label="Value to Force">
                     {valueType === "string" && (
                       <Input
                         placeholder={`A ${valueType} value`}

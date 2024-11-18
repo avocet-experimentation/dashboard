@@ -100,6 +100,7 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
     } else if (response.status === 201) {
       const { fflagId } = await response.json();
       navigate(`/features/${fflagId}`);
+    } else if (response.status) {
     }
     setIsLoading(false);
   };
