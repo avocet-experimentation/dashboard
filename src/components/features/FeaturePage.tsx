@@ -35,11 +35,11 @@ const FeaturePage = () => {
   useEffect(() => {
     const handleGetFeature = async () => {
       try {
-        const feature = await featureService.getFeature(params.id);
-        console.log(feature);
-        if (feature) {
-          setFeature(feature ?? null);
-          setEnvironments(feature.environments ?? null);
+        const response = await featureService.getFeature(params.id);
+        const resFeature = await response.json();
+        if (resFeature) {
+          setFeature(resFeature ?? null);
+          setEnvironments(resFeature.environments ?? null);
         }
       } catch (error) {
         console.log(error);
@@ -160,30 +160,25 @@ const FeaturePage = () => {
                     <Text marginRight="5px">{env}:</Text>
                     <Switch
                       checked={envObject.enabled}
-                      onCheckedChange={({ checked }) =>
-                        featureService.patchFeature(
-                          feature.id,
-                          {
-                            // [`environments.${env}.enabled`]: checked,
-                            environments: {
-                              [`${env}`]: {
-                                enabled: checked,
-                                name: envObject.name,
-                                overrideRules: envObject.overrideRules,
-                              },
+                      onCheckedChange={({ checked }) => {
+                        featureService.patchFeature(feature.id, {
+                          // [`environments.${env}.enabled`]: checked,
+                          environments: {
+                            [`${env}`]: {
+                              enabled: checked,
+                              name: envObject.name,
+                              overrideRules: envObject.overrideRules,
                             },
                           },
-                          () => {
-                            setEnvironments((prevState) => ({
-                              ...prevState,
-                              [`${env}`]: {
-                                ...prevState[`${env}`],
-                                enabled: checked,
-                              },
-                            }));
-                          }
-                        )
-                      }
+                        });
+                        setEnvironments((prevState) => ({
+                          ...prevState,
+                          [`${env}`]: {
+                            ...prevState[`${env}`],
+                            enabled: checked,
+                          },
+                        }));
+                      }}
                     />
                   </Flex>
                 );

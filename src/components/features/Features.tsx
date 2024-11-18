@@ -18,7 +18,7 @@ const Features = () => {
     const handleGetAllFeatures = async () => {
       try {
         const allFeatures = await featureService.getAllFeatures();
-        setFeatures(allFeatures ? allFeatures : []);
+        setFeatures(allFeatures ? await allFeatures.json() : []);
       } catch (error) {
         console.log(error);
       }
