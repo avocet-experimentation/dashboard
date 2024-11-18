@@ -115,7 +115,9 @@ export default class FetchWrapper {
     const requestOptions = this.#buildRequestOptions(method, body, headers);
     try {
       const response = await fetch(this.baseURL + path, requestOptions);
-      return this.handleResponse(response);
+      // commented out because we need to use the response status as a condition for rendering
+      // return this.handleResponse(response);
+      return response;
     } catch (error) {
       console.error(error);
       return false;

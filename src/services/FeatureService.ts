@@ -86,10 +86,7 @@ export default class FeatureService {
       id: featureId,
       ...updateContent,
     };
-    const response = await this.fetch.patch(
-      `/fflags/id/${featureId}`,
-      updateBody
-    );
+    const response = await this.fetch.patch(`/id/${featureId}`, updateBody);
     return response;
   }
 
