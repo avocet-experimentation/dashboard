@@ -17,7 +17,11 @@ import { Field } from "../ui/field";
 import { Switch } from "../ui/switch";
 import { useEffect, useState } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { FeatureFlagDraft, FlagCurrentValue } from "@estuary/types";
+import {
+  EnvironmentName,
+  FeatureFlagDraft,
+  FlagCurrentValue,
+} from "@estuary/types";
 import FeatureService from "#/services/FeatureService";
 import { useLocation } from "wouter";
 
@@ -152,9 +156,11 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
             </Field>
           )}
         />
-        <Field label="Enabled Environments">
-          <Flex direction="row" width="100%" justifyContent="space-evenly">
-            {environments.items.map((env) => (
+        <Field label="Enabled Environments" as="p"></Field>
+        <Flex direction="row" width="100%" justifyContent="space-evenly">
+          {environments.items.map((env: EnvironmentName) => {
+            console.log(env);
+            return (
               <Controller
                 key={env}
                 name={`environments.${env}.enabled`}
@@ -163,20 +169,20 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
                   <Flex>
                     <Text marginRight="5px">{`${env}:`}</Text>
                     <Switch
-                      key={`${env}-switch`}
                       id={env}
                       name={field.name}
                       checked={!!field.value}
                       onCheckedChange={({ checked }) => field.onChange(checked)}
-                      inputProps={{ onBlur: field.onBlur }}
+                      onBlur={field.onBlur}
                       width="fit-content"
                     />
                   </Flex>
                 )}
               />
-            ))}
-          </Flex>
-        </Field>
+            );
+          })}
+        </Flex>
+
         <Field label="Value Type" width="320px">
           <Controller
             control={control}
@@ -221,7 +227,6 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
                   {!!field.value ? "on" : "off"}
                 </Switch>
               );
-
             if (valueType === "string")
               return (
                 <Field label="Default Value">
@@ -234,7 +239,6 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
                   />
                 </Field>
               );
-
             if (valueType === "number")
               return (
                 <Field label="Default Value">
@@ -248,6 +252,7 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
                   />
                 </Field>
               );
+            return <></>;
           }}
         />
       </Stack>
