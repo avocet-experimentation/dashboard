@@ -95,15 +95,11 @@ export default class FeatureService {
     envName: string,
     rule: ForcedValue | ExperimentDraft
   ) {
-    const ruleBody = {
+    const response = await this.fetch.patch(`/id/${featureId}/addRule`, {
       id: featureId,
       environment: envName,
       rule: rule,
-    };
-    const response = await this.fetch.patch(
-      `/id/${featureId}/addRule`,
-      ruleBody
-    );
+    });
     return response;
   }
 }
