@@ -102,7 +102,15 @@ const FeaturePage = () => {
               defaultValue={feature.description}
               edit={editDesc}
               activationMode="focus"
-              onBlur={() => setEditDesc(false)}
+              onBlur={() => {
+                // setEditDesc(false);
+              }}
+              onSubmit={({ target }) => {
+                console.log("submit");
+                featureService.patchFeature(feature.id, {
+                  description: target.value,
+                });
+              }}
             >
               <Editable.Preview
                 minH="48px"
@@ -116,14 +124,7 @@ const FeaturePage = () => {
                     <X />
                   </IconButton>
                 </Editable.CancelTrigger>
-                <Editable.SubmitTrigger
-                  asChild
-                  onClick={(value) => {
-                    featureService.patchFeature(feature.id, {
-                      description: value,
-                    });
-                  }}
-                >
+                <Editable.SubmitTrigger asChild>
                   <IconButton variant="outline" size="xs">
                     <Check />
                   </IconButton>
