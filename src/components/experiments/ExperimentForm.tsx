@@ -27,10 +27,14 @@ import {
   Controller,
   useFieldArray,
 } from "react-hook-form";
-import { Experiment, ExperimentGroup } from "@estuary/types";
+import {
+  Experiment,
+  ExperimentGroup,
+  ABExperimentTemplate,
+  SwitchbackTemplate,
+ } from "@estuary/types";
 import { Slider } from "../ui/slider";
 import { Radio } from "../ui/radio";
-import { ABExperimentTemplate, SwitchbackTemplate } from "#/classes/Experiment";
 import ExperimentService from "#/services/ExperimentService";
 
 // type Inputs = Omit<Experiment, "id" | "groups"> & {
