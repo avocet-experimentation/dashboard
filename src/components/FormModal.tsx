@@ -39,14 +39,14 @@ const FormModalTrigger = ({
   });
 
   return (
-    <DialogRoot placement="center" motionPreset="slide-in-bottom">
+    <DialogRoot placement="center" motionPreset="slide-in-bottom" size="lg">
       <DialogTrigger asChild>
         <IconButton variant="outline" size="md" padding="15px">
           {triggerButtonIcon}
           {triggerButtonText}
         </IconButton>
       </DialogTrigger>
-      <DialogContent maxHeight="95vh">
+      <DialogContent maxHeight="95vh" overflowY="scroll">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
