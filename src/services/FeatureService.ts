@@ -12,13 +12,6 @@ import {
   ForcedValue,
 } from "@estuary/types";
 
-type FastifyError = {
-  error: {
-    code: number;
-    message: string;
-  };
-};
-
 const BASE_URL = import.meta.env.VITE_FLAG_SERVICE_URL + "/fflags";
 
 const DEFAULT_HEADERS = {

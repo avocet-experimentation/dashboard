@@ -9,6 +9,7 @@ import EventFeatures from "./components/events/EventFeatures";
 import Experiments from "./components/experiments/Experiments";
 import FeaturePage from "./components/features/FeaturePage";
 import TopBar from "./components/TopBar";
+import ExperimentPage from "./components/experiments/ExperimentPage";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/features" component={() => <Features />} />
           <Route path="/features/:id" component={() => <FeaturePage />} />
           <Route path="/experiments" component={() => <Experiments />} />
+          <Route path="/experiments/:id" component={() => <ExperimentPage />} />
           <Route
             path="/events"
             component={() => <EventFeatures></EventFeatures>}
