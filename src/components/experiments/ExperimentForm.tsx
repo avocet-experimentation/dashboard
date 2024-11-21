@@ -8,6 +8,8 @@ import {
   Input,
   Stack,
   HStack,
+  SelectLabel,
+  createListCollection,
 } from "@chakra-ui/react";
 import { RadioGroup } from "../ui/radio";
 import { Table } from "@chakra-ui/react";
@@ -27,11 +29,15 @@ import {
   Controller,
   useFieldArray,
 } from "react-hook-form";
+import FeatureService from "#/services/FeatureService";
+
 import { Experiment, ExperimentGroup } from "@estuary/types";
 import { Slider } from "../ui/slider";
 import { Radio } from "../ui/radio";
-import { ABExperimentTemplate, SwitchbackTemplate } from "#/classes/Experiment";
+import { ABExperimentTemplate, SwitchbackTemplate } from "@estuary/types";
 import ExperimentService from "#/services/ExperimentService";
+import ABSubForm from "./ABSubForm";
+import SwitchbackSubForm from "./SwitchbackSubForm";
 
 // type Inputs = Omit<Experiment, "id" | "groups"> & {
 //   groups: Omit<ExperimentGroup, "id">[];
@@ -53,36 +59,13 @@ const switchbackTemplate = new SwitchbackTemplate("my-first-switchback", "dev");
 const defaultSwitchback = templateToObject(switchbackTemplate);
 
 const expService = new ExperimentService();
+const featureService = new FeatureService();
 
-const defaultExperiment: Experiment = {
-  name: "",
-  hypothesis: "",
-  description: "",
-  type: "Experiment",
-  status: "draft",
-  enrollment: {
-    attributes: ["id"],
-    proportion: [100], // this will be converted `onSubmit` to a value between 0 and 1
-  },
-  groups: [
-    {
-      id: "",
-      name: "Control",
-      proportion: 0.5,
-      cycles: 1,
-      sequenceId: undefined,
-    },
-    {
-      id: "",
-      name: "Variation",
-      proportion: 0.5,
-      cycles: 1,
-      sequenceId: undefined,
-    },
-  ],
-  dependents: [],
-  definedTreatments: [],
-  definedSequences: [],
+const createTreatmentCollection = (definedTreatments) => {
+  const items = Object.entries(definedTreatments).map(([id, treatment]) => {
+    return { label: treatment.name, value: id };
+  });
+  return createListCollection({ items });
 };
 
 const appendedGroup = (index: number): ExperimentGroup => {
@@ -91,7 +74,7 @@ const appendedGroup = (index: number): ExperimentGroup => {
     name: `Group ${index + 1}`,
     proportion: 0,
     cycles: 1,
-    sequenceId: undefined,
+    sequence: [],
   };
 };
 
@@ -115,14 +98,14 @@ const setEqualProportions = (
   });
 };
 
-const createGroupIds = (expContent: Inputs) => {
-  const expName = expContent.name;
-  const expGroups = expContent.groups;
-  expGroups.forEach((group) => {
-    const groupName = group.name;
-    group.id = `${expName}-${groupName}`;
-  });
-};
+// const createGroupIds = (expContent: Inputs) => {
+//   const expName = expContent.name;
+//   const expGroups = expContent.groups;
+//   expGroups.forEach((group) => {
+//     const groupName = group.name;
+//     group.id = `${expName}-${groupName}`;
+//   });
+// };
 
 const reformatAllTrafficProportion = (expContent: Inputs): void => {
   const originalProportion = expContent.enrollment.proportion;
@@ -131,6 +114,7 @@ const reformatAllTrafficProportion = (expContent: Inputs): void => {
 };
 
 const ExperimentCreationForm = ({ formId, setIsLoading }) => {
+  const [features, setFeatures] = useState<FeatureFlag[]>([]);
   const [expType, setExpType] = useState<"ab" | "switchback">("ab");
   const [formValues, setFormValues] = useState({
     ab: defaultAB,
@@ -148,8 +132,6 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
     defaultValues: formValues[expType],
   });
 
-  const groupValues = watch("groups");
-
   // Save current form state before switching
   const handleSwitchForm = (newExpType: "ab" | "switchback") => {
     const currentValues = getValues();
@@ -165,25 +147,42 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
     reset(formValues[expType]); // Use updated formValues for reset
   }, [expType, reset, getValues]);
 
-  const { fields, append, remove, update } = useFieldArray({
+  useEffect(() => {
+    const handleGetAllFeatures = async () => {
+      try {
+        const allFeatures = await featureService.getAllFeatures();
+        setFeatures(allFeatures ? await allFeatures.json() : []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    return () => handleGetAllFeatures();
+  }, []);
+
+  const {
+    fields: groupFields,
+    append: addGroup,
+    remove: removeGroup,
+    update: updateGroup,
+  } = useFieldArray({
     control,
     name: "groups",
   });
 
+  const definedTreatments = watch("definedTreatments");
+
+  const groupValues = watch("groups");
+
   const onSubmit = (expContent: Experiment) => {
-    createGroupIds(expContent);
+    // createGroupIds(expContent);
     reformatAllTrafficProportion(expContent);
     console.log("data", expContent);
     expService.createExperiment(expContent);
   };
 
-  useEffect(() => {});
-
   return (
-    <chakra.form
-      id="experiment-management-form"
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <chakra.form id={formId} onSubmit={handleSubmit(onSubmit)}>
       <Stack gap="4">
         <Controller
           name="name"
@@ -318,113 +317,25 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
             </HStack>
           </RadioGroup>
         </Fieldset.Root>
-        <Controller
-          name="groups"
-          control={control}
-          render={({ field }) => (
-            <Field
-              label={"Groups"}
-              invalid={!!errors.value?.length}
-              errorText={errors.value?.[0]?.message}
-            >
-              <Box maxHeight="250px" overflowY="auto" width="100%">
-                <Table.Root stickyHeader>
-                  <Table.Header>
-                    <Table.Row>
-                      <Table.ColumnHeader>VARIATION</Table.ColumnHeader>
-                      <Table.ColumnHeader>NAME</Table.ColumnHeader>
-                      <Table.ColumnHeader>SPLIT</Table.ColumnHeader>
-                    </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
-                    {fields.map((field, index) => (
-                      <Table.Row key={field.id}>
-                        <Table.Cell></Table.Cell>
-                        <Table.Cell>
-                          <Field
-                            invalid={!!errors.groups?.[index]?.name}
-                            errorText={errors.groups?.[index]?.name?.message}
-                          >
-                            <Input
-                              border="0px"
-                              width="125px"
-                              defaultValue={field.name || `Variation ${index}`}
-                              {...register(`groups.${index}.name`, {
-                                required: "Name is required.",
-                                validate: {
-                                  unique: (name) =>
-                                    groupValues.filter((n) => n.name === name)
-                                      .length === 1 ||
-                                    "Group names must be unique.",
-                                },
-                              })}
-                            />
-                          </Field>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Field
-                            invalid={!!errors.groups?.[index]?.proportion}
-                            errorText={
-                              errors.groups?.[index]?.proportion?.message
-                            }
-                          >
-                            <Input
-                              border="0px"
-                              width="75px"
-                              defaultValue={field.proportion || 0}
-                              disabled={expType === "switchback"}
-                              {...register(`groups.${index}.proportion`, {
-                                required: "Group proportion is required.",
-                                valueAsNumber: true,
-                                min: {
-                                  value: 0,
-                                  message: ">= 0",
-                                },
-                                max: {
-                                  value: 1,
-                                  message: "<= 1",
-                                },
-                              })}
-                            />
-                          </Field>
-                        </Table.Cell>
-                      </Table.Row>
-                    ))}
-                  </Table.Body>
-                </Table.Root>
-              </Box>
-              {expType === "ab" && (
-                <Flex
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  width="100%"
-                >
-                  <Button
-                    border="0px"
-                    variant="plain"
-                    background="transparent"
-                    _hover={{ backgroundColor: "transparent", color: "blue" }}
-                    onClick={() => append(appendedGroup(fields.length))}
-                  >
-                    <CirclePlus />
-                    Add variation
-                  </Button>
-                  <Button
-                    border="0px"
-                    variant="plain"
-                    background="transparent"
-                    _hover={{ backgroundColor: "transparent", color: "blue" }}
-                    onClick={() => setEqualProportions(fields, update)}
-                  >
-                    <CircleEqual />
-                    Set equal proportions
-                  </Button>
-                </Flex>
-              )}
-            </Field>
-          )}
-        />
+        {expType === "ab" ? (
+          <ABSubForm
+            control={control}
+            createTreatmentCollection={createTreatmentCollection}
+            definedTreatments={definedTreatments}
+            errors={errors}
+            groupValues={groupValues}
+            register={register}
+          />
+        ) : (
+          <SwitchbackSubForm
+            control={control}
+            createTreatmentCollection={createTreatmentCollection}
+            definedTreatments={definedTreatments}
+            errors={errors}
+            groupValues={groupValues}
+            register={register}
+          />
+        )}
       </Stack>
     </chakra.form>
   );

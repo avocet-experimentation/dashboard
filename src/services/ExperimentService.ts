@@ -11,20 +11,30 @@ const DEFAULT_HEADERS = {
 const DEFAULT_REQUEST_OPTIONS = {};
 
 export default class ExperimentService {
-  #fetch: FetchWrapper;
+  fetch: FetchWrapper;
 
   constructor() {
-    this.#fetch = new FetchWrapper(
+    this.fetch = new FetchWrapper(
       BASE_URL,
       DEFAULT_HEADERS,
       DEFAULT_REQUEST_OPTIONS
     );
   }
 
+  async getAllExperiments(): Promise<ExperimentDraft[]> {
+    const response = await this.fetch.get("");
+    return response;
+  }
+
+  async getExperiment(experimentId: string): Promise<ExperimentDraft> {
+    const response = await this.fetch.get(`/id/${experimentId}`);
+    return response;
+  }
+
   async createExperiment(
     experimentContent: ExperimentDraft
   ): Promise<Response> {
-    const response = await this.#fetch.post("", experimentContent);
+    const response = await this.fetch.post("", experimentContent);
     return response;
   }
 }

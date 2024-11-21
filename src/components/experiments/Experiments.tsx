@@ -5,8 +5,11 @@ import ExperimentCreationForm from "./ExperimentForm";
 import FormModalTrigger from "../FormModal";
 import { Experiment } from "@estuary/types";
 import ExperimentTable from "./ExperimentTable";
+import ExperimentService from "#/services/ExperimentService";
 
 const CREATE_EXPERIMENT_FORM_ID = "experiment-management-form";
+
+const experimentService = new ExperimentService();
 
 const Experiments = () => {
   const [experiments, setExperiments] = useState<Experiment[]>([]);
@@ -14,10 +17,15 @@ const Experiments = () => {
   useEffect(() => {
     const handleGetAllExperiments = async () => {
       try {
-      } catch (error) {}
-
-      return () => handleGetAllExperiments();
+        const allExperiments = await experimentService.getAllExperiments();
+        setExperiments(allExperiments ? await allExperiments.json() : []);
+        console.log(experiments);
+      } catch (error) {
+        console.log(error);
+      }
     };
+
+    return () => handleGetAllExperiments();
   }, []);
 
   return (
