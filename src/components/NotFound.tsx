@@ -1,7 +1,7 @@
 import { Flex, chakra, Text } from "@chakra-ui/react";
-import SearchX from "../../assets/svgs/search-x.svg";
+import SearchX from "../assets/svgs/search-x.svg";
 
-const FeatureNotFound = () => {
+const NotFound = ({ componentName }) => {
   return (
     <Flex
       direction="column"
@@ -11,10 +11,10 @@ const FeatureNotFound = () => {
     >
       <chakra.img src={SearchX} width="150px" draggable={false} />
       <Text fontSize="3xl">
-        The feature you are looking for does not exist.
+        The {componentName} you are looking for does not exist.
       </Text>
     </Flex>
   );
 };
 
-export default FeatureNotFound;
+export default NotFound;

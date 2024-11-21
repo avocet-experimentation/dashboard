@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { FeatureFlag, Environment } from "@estuary/types";
 import { Check, EllipsisVertical, FilePenLine, Trash2, X } from "lucide-react";
 import { useLocation, useRoute } from "wouter";
-import FeatureNotFound from "./FeatureNotFound";
+import NotFound from "../NotFound";
 import EnvironmentTabs from "./EnvironmentTabs";
 
 const featureService = new FeatureService();
@@ -38,8 +38,8 @@ const FeaturePage = () => {
         const response = await featureService.getFeature(params.id);
         const resFeature = await response.json();
         if (resFeature) {
-          setFeature(resFeature ?? null);
-          setEnvironments(resFeature.environments ?? null);
+          setFeature(resFeature);
+          setEnvironments(resFeature.environments);
         }
       } catch (error) {
         console.log(error);
@@ -225,7 +225,7 @@ const FeaturePage = () => {
       </Stack>
     );
   } else {
-    return <FeatureNotFound />;
+    return <NotFound componentName={"feature"} />;
   }
 };
 
