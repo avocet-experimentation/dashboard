@@ -15,20 +15,23 @@ import {
 } from "../ui/select";
 import { Field } from "../ui/field";
 import { Switch } from "../ui/switch";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
-  EnvironmentName,
   FeatureFlagDraft,
-  FlagCurrentValue,
+  featureFlagDraftSchema,
+  flagDefaultValueMap,
+  flagValueTypeDefSchema,
+  SchemaParseError,
 } from "@estuary/types";
 import FeatureService from "#/services/FeatureService";
 import { useLocation } from "wouter";
 
-const environments = createListCollection({
+// todo: replace this placeholder with fetched environment names
+const environments = createListCollection<string>({
   items: ["dev", "prod", "testing", "staging"],
 });
-
 const valueTypes = createListCollection({
   items: [
     { label: "Boolean (on/off)", value: "boolean" },
@@ -37,63 +40,53 @@ const valueTypes = createListCollection({
   ],
 });
 
-const defaultFeatureFlag: FeatureFlagDraft = {
-  name: "",
-  value: {
-    type: "boolean",
-    initial: true,
-  },
-  description: "",
-  environments: {
-    prod: {
-      name: "prod",
-      enabled: false,
-      overrideRules: [],
-    },
-    dev: {
-      name: "dev",
-      enabled: true,
-      overrideRules: [],
-    },
-    testing: {
-      name: "testing",
-      enabled: true,
-      overrideRules: [],
-    },
-    staging: {
-      name: "staging",
-      enabled: false,
-      overrideRules: [],
-    },
-  },
-};
+const defaultFeatureFlag: FeatureFlagDraft = FeatureFlagDraft.templateBoolean({
+  name: ''
+});
 
 const featureService = new FeatureService();
 
-const getDefaultValue = (valueType: string) => {
-  if (valueType === "string") return String("true");
-  if (valueType === "number") return Number(1);
-  return Boolean(true); // matches default valueType
-};
+interface FeatureFlagCreationFormProps {
+  formId: string;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-const FeatureCreationForm = ({ formId, setIsLoading }) => {
-  const [valueType, setValueType] = useState<FlagCurrentValue>(
-    defaultFeatureFlag.value.type
-  );
+export default function FeatureCreationForm(
+  { formId, setIsLoading }: FeatureFlagCreationFormProps
+) {
   const [isError, setIsError] = useState(null);
   const [location, navigate] = useLocation();
+
   const {
     control,
     setValue,
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<FeatureFlagDraft>({
     defaultValues: defaultFeatureFlag,
+    // resolver: zodResolver(featureFlagDraftSchema),
   });
+
   const onSubmit: SubmitHandler<FeatureFlagDraft> = async (featureContent) => {
+    console.log('submit handler invoked');
+    
+    // placeholder
+    Object.keys(featureContent.environmentNames).forEach((key) => {
+      if (featureContent.environmentNames[key] !== true) {
+        delete featureContent.environmentNames[key];
+      }
+  })
+    // these lines unnecessary if the resolver argument to `useForm` works
+    const safeParseResult = featureFlagDraftSchema.safeParse(featureContent);
+    console.log({featureContent})
+    if (!safeParseResult.success) {
+      // the error pretty-print the Zod parse error message
+      throw new SchemaParseError(safeParseResult); 
+    }
     setIsLoading(true);
-    const response = await featureService.createFeature(featureContent);
+    const response = await featureService.createFeature(safeParseResult.data);
     if (response.status === 409) {
       const { error } = await response.json();
       setIsError(error);
@@ -104,11 +97,6 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
     }
     setIsLoading(false);
   };
-
-  useEffect(() => {
-    // Update value.default whenever valueType changes
-    setValue("value.initial", getDefaultValue(valueType));
-  }, [valueType, setValue]);
 
   return (
     <chakra.form id={formId} onSubmit={handleSubmit(onSubmit)}>
@@ -159,12 +147,11 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
         />
         <Field label="Enabled Environments" as="p"></Field>
         <Flex direction="row" width="100%" justifyContent="space-evenly">
-          {environments.items.map((env: EnvironmentName) => {
-            console.log(env);
+          {environments.items.map((env: string) => {
             return (
               <Controller
                 key={env}
-                name={`environments.${env}.enabled`}
+                name={`environmentNames.${env}`}
                 control={control}
                 render={({ field }) => (
                   <Flex>
@@ -192,12 +179,15 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
               <SelectRoot
                 name={field.name}
                 value={[field.value]}
+                collection={valueTypes}
                 onValueChange={({ value }) => {
+                  const selectedValueType = flagValueTypeDefSchema.parse(value[0]);
                   field.onChange(value[0]);
-                  setValueType(value[0]);
+                  const newDefault = flagDefaultValueMap[selectedValueType];
+                  console.log({selectedValueType, newDefault})
+                  setValue('value.initial', newDefault);
                 }}
                 onInteractOutside={() => field.onBlur()}
-                collection={valueTypes}
               >
                 <SelectTrigger>
                   <SelectValueText />
@@ -213,10 +203,12 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
             )}
           />
         </Field>
+  
         <Controller
           name="value.initial"
           control={control}
           render={({ field }) => {
+            const valueType = getValues('value.type');
             if (valueType === "boolean")
               return (
                 <Switch
@@ -260,4 +252,3 @@ const FeatureCreationForm = ({ formId, setIsLoading }) => {
     </chakra.form>
   );
 };
-export default FeatureCreationForm;
