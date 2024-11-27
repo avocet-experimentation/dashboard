@@ -14,7 +14,7 @@ import {
 import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from "../ui/menu";
 import { Switch } from "../ui/switch";
 import { useEffect, useState } from "react";
-import { FeatureFlag, Environment } from "@estuary/types";
+import { FeatureFlag, FeatureFlagDraft } from "@estuary/types";
 import { Check, EllipsisVertical, FilePenLine, Trash2, X } from "lucide-react";
 import { useLocation, useRoute } from "wouter";
 import NotFound from "../NotFound";
@@ -24,22 +24,30 @@ const featureService = new FeatureService();
 
 const VALUE_FONT = "'Lucida Console', 'Courier New', monospace";
 
-const FeaturePage = () => {
+export default function FeaturePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [editDesc, setEditDesc] = useState<boolean>(false);
   const [feature, setFeature] = useState<FeatureFlag | null>(null);
-  const [environments, setEnvironments] = useState<Environment | null>(null);
+  const [environments, setEnvironments] = useState<FeatureFlag['environmentNames']>();
   const [match, params] = useRoute("/features/:id");
   const [location, navigate] = useLocation();
+
+  // todo: consider passing a prop in instead of using route params
+  if (params === null) {
+    throw new Error(`Missing 'id' param for component FeaturePage!`)
+  }
 
   useEffect(() => {
     const handleGetFeature = async () => {
       try {
         const response = await featureService.getFeature(params.id);
-        const resFeature = await response.json();
-        if (resFeature) {
-          setFeature(resFeature);
-          setEnvironments(resFeature.environments);
+        if (!response.ok) {
+          // todo: replace this placeholder
+          throw new Error(`Couldn't fetch flag data for id ${params.id}!`);
+        } else {
+          setFeature(response.body);
+          setEnvironments(response.body.environmentNames);
+
         }
       } catch (error) {
         console.log(error);
@@ -47,12 +55,15 @@ const FeaturePage = () => {
       setIsLoading(false);
     };
 
-    return () => handleGetFeature();
+    handleGetFeature();
+    // return () => handleGetFeature();
   }, []);
 
   const handleDeleteFeature = () => {
-    featureService.deleteFeature(feature.id);
-    navigate("/features");
+    if (feature) {
+      featureService.deleteFeature(feature.id);
+      navigate("/features");
+    }
   };
 
   if (isLoading) return <></>;
@@ -99,16 +110,16 @@ const FeaturePage = () => {
               </Icon>
             </HStack>
             <Editable.Root
-              defaultValue={feature.description}
+              defaultValue={feature.description ?? undefined}
               edit={editDesc}
               activationMode="focus"
               onBlur={() => {
                 // setEditDesc(false);
               }}
-              onSubmit={({ target }) => {
+              onSubmit={(event) => {
                 console.log("submit");
                 featureService.patchFeature(feature.id, {
-                  description: target.value,
+                  description: event.target.value,
                 });
               }}
             >
@@ -150,8 +161,7 @@ const FeaturePage = () => {
               </Text>
             </Flex>
             <Flex direction="row">
-              {Object.keys(environments).map((env) => {
-                const envObject = environments[env];
+              {environments && Object.keys(environments).map((env) => {
                 return (
                   <Flex
                     position="relative"
@@ -160,25 +170,22 @@ const FeaturePage = () => {
                   >
                     <Text marginRight="5px">{env}:</Text>
                     <Switch
-                      checked={envObject.enabled}
-                      onCheckedChange={({ checked }) => {
-                        featureService.patchFeature(feature.id, {
-                          // [`environments.${env}.enabled`]: checked,
-                          environments: {
-                            [`${env}`]: {
-                              enabled: checked,
-                              name: envObject.name,
-                              overrideRules: envObject.overrideRules,
-                            },
-                          },
-                        });
-                        setEnvironments((prevState) => ({
-                          ...prevState,
-                          [`${env}`]: {
-                            ...prevState[`${env}`],
-                            enabled: checked,
-                          },
-                        }));
+                      checked={env in environments}
+                      onCheckedChange={async ({ checked }) => {
+                        const toggleResult = await featureService.toggleEnvironment(feature.id, env);
+                        if (toggleResult.ok) {
+                          setEnvironments((prevState) => {
+                            const prevEnv = prevState ?? {};
+                            const prevFlag: FeatureFlagDraft = { ...feature, environmentNames: prevEnv };
+                            if (checked === true) {
+                              FeatureFlagDraft.enableEnvironment(prevFlag, env);
+                            } else {
+                              FeatureFlagDraft.disableEnvironment(prevFlag, env);
+
+                            }
+                            return prevFlag.environmentNames;
+                          });
+                        }
                       }}
                     />
                   </Flex>
@@ -228,5 +235,3 @@ const FeaturePage = () => {
     return <NotFound componentName={"feature"} />;
   }
 };
-
-export default FeaturePage;
