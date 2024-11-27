@@ -4,11 +4,12 @@
 // fetch all experiments
 // CRUD individual experiments
 */
-import FetchWrapper from "#/lib/FetchWrapper";
+import FetchWrapper, { ParsedResponse } from "#/lib/FetchWrapper";
 import {
   ExperimentDraft,
   FeatureFlag,
   FeatureFlagDraft,
+  featureFlagSchema,
   ForcedValue,
 } from "@estuary/types";
 
@@ -32,17 +33,26 @@ export default class FeatureService {
     );
   }
 
-  async getAllFeatures(): Promise<FeatureFlag[]> {
+  async getAllFeatures(): Promise<ParsedResponse<FeatureFlag[]> | Response> {
     const response = await this.fetch.get("");
-    return response;
+    if (!response.ok) {
+      return response as Response;
+    }
+
+    return { ...response, body: featureFlagSchema.array().parse(response.body) };
   }
 
-  async getFeature(featureId: string): Promise<FeatureFlag> {
+  async getFeature(featureId: string): Promise<ParsedResponse<FeatureFlag> | Response> {
     const response = await this.fetch.get(`/id/${featureId}`);
-    return response;
+    if (!response.ok) {
+      return response as Response;
+    }
+
+    const parsed = featureFlagSchema.parse(response.body);
+    return { ...response, body: parsed};
   }
 
-  async createFeature(featureContent: FeatureFlagDraft): Promise<Response> {
+  async createFeature(featureContent: FeatureFlagDraft) {
     const response = await this.fetch.post("", featureContent);
     return response;
   }
@@ -50,7 +60,7 @@ export default class FeatureService {
   async updateFeature(
     featureId: string,
     updateContent: Partial<FeatureFlagDraft>
-  ): Promise<Response> {
+  ) {
     const updateObj = {
       id: featureId,
       ...updateContent,
@@ -59,22 +69,29 @@ export default class FeatureService {
     return response;
   }
 
-  async toggleEnvironment(featureId: string, environment, checked: boolean) {
-    environment.enabled = checked;
+  async toggleEnvironment(featureId: string, environmentName: string) {
+    const fetchResponse = await this.getFeature(featureId);
+    if (!fetchResponse.ok) {
+      throw new Error(`Couldn't fetch the feature flag with id ${featureId}!`);
+    }
+
+    const featureFlag = featureFlagSchema.parse(fetchResponse.body);
+    FeatureFlagDraft.toggleEnvironment(featureFlag, environmentName);
+
     const envUpdate = {
       id: featureId,
-      environments: { [`${environment.name}`]: environment },
+      environmentNames: featureFlag.environmentNames,
     };
     const response = await this.fetch.patch(`/id/${featureId}`, envUpdate);
     return response;
   }
 
-  async deleteFeature(featureId) {
+  async deleteFeature(featureId: string) {
     const response = await this.fetch.delete(`/id/${featureId}`);
     return response;
   }
 
-  async patchFeature(featureId: string, updateContent) {
+  async patchFeature(featureId: string, updateContent: Partial<FeatureFlagDraft>) {
     const updateBody = {
       id: featureId,
       ...updateContent,
