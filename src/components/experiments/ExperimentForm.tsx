@@ -1,20 +1,14 @@
 import { useEffect, useState } from "react";
 import {
-  Box,
-  Button,
   chakra,
   Fieldset,
-  Flex,
   Input,
   Stack,
   HStack,
-  SelectLabel,
   createListCollection,
 } from "@chakra-ui/react";
 import { RadioGroup } from "../ui/radio";
-import { Table } from "@chakra-ui/react";
 import { Field } from "../ui/field";
-import { CirclePlus, CircleEqual } from "lucide-react";
 
 import {
   SelectContent,
@@ -23,25 +17,15 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "../ui/select";
-import {
-  useForm,
-  SubmitHandler,
-  Controller,
-  useFieldArray,
-} from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import FeatureService from "#/services/FeatureService";
 
-import { Experiment, ExperimentGroup } from "@estuary/types";
+import { Experiment } from "@estuary/types";
 import { Slider } from "../ui/slider";
 import { Radio } from "../ui/radio";
 import { ABExperimentTemplate, SwitchbackTemplate } from "@estuary/types";
 import ExperimentService from "#/services/ExperimentService";
-import ABSubForm from "./ABSubForm";
-import SwitchbackSubForm from "./SwitchbackSubForm";
-
-// type Inputs = Omit<Experiment, "id" | "groups"> & {
-//   groups: Omit<ExperimentGroup, "id">[];
-// };
+import ExpTypeForm from "./ExpTypeForm";
 
 const templateToObject = (template) => {
   return Object.getOwnPropertyNames(template).reduce((acc, prop) => {
@@ -50,11 +34,17 @@ const templateToObject = (template) => {
   }, {});
 };
 
-const abTemplate = new ABExperimentTemplate("my-first-exp", "dev");
+const abTemplate = new ABExperimentTemplate({
+  name: "my-first-exp",
+  environmentName: "dev",
+});
 
 const defaultAB = templateToObject(abTemplate);
 
-const switchbackTemplate = new SwitchbackTemplate("my-first-switchback", "dev");
+const switchbackTemplate = new SwitchbackTemplate({
+  name: "my-first-switchback",
+  environmentName: "dev",
+});
 
 const defaultSwitchback = templateToObject(switchbackTemplate);
 
@@ -68,44 +58,17 @@ const createTreatmentCollection = (definedTreatments) => {
   return createListCollection({ items });
 };
 
-const appendedGroup = (index: number): ExperimentGroup => {
-  return {
-    id: "",
-    name: `Group ${index + 1}`,
-    proportion: 0,
-    cycles: 1,
-    sequence: [],
-  };
-};
-
-const setEqualProportions = (
-  fields: ExperimentGroup[],
-  fieldArrayUpdate
-): void => {
-  const numOfVariations: number = fields.length;
-  const split: number = Math.trunc((1 / numOfVariations) * 10000) / 10000;
-  let remainder = 1 - split * numOfVariations;
-  fields.forEach((_, index) => {
-    let refinedSplit = split;
-    if (remainder > 0) {
-      refinedSplit += 0.0001;
-      remainder -= 0.0001;
-    }
-    fieldArrayUpdate(index, {
-      ...fields[index],
-      proportion: refinedSplit,
-    });
+const createFeatureCollection = (features) => {
+  const items = features.map((feature) => {
+    return {
+      label: feature.name,
+      value: feature.id,
+      type: feature.value.type,
+      initial: feature.value.initial,
+    };
   });
+  return createListCollection({ items });
 };
-
-// const createGroupIds = (expContent: Inputs) => {
-//   const expName = expContent.name;
-//   const expGroups = expContent.groups;
-//   expGroups.forEach((group) => {
-//     const groupName = group.name;
-//     group.id = `${expName}-${groupName}`;
-//   });
-// };
 
 const reformatAllTrafficProportion = (expContent: Inputs): void => {
   const originalProportion = expContent.enrollment.proportion;
@@ -114,7 +77,6 @@ const reformatAllTrafficProportion = (expContent: Inputs): void => {
 };
 
 const ExperimentCreationForm = ({ formId, setIsLoading }) => {
-  const [features, setFeatures] = useState<FeatureFlag[]>([]);
   const [expType, setExpType] = useState<"ab" | "switchback">("ab");
   const [formValues, setFormValues] = useState({
     ab: defaultAB,
@@ -127,10 +89,17 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
     reset,
     watch,
     getValues,
+    setValue,
     formState: { errors },
   } = useForm<Experiment>({
     defaultValues: formValues[expType],
   });
+  const [treatmentsCollection, setTreatmentsCollection] = useState(
+    createListCollection({ items: [] })
+  );
+  const [featuresCollection, setFeaturesCollection] = useState(
+    createListCollection({ items: [] })
+  );
 
   // Save current form state before switching
   const handleSwitchForm = (newExpType: "ab" | "switchback") => {
@@ -151,7 +120,9 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
     const handleGetAllFeatures = async () => {
       try {
         const allFeatures = await featureService.getAllFeatures();
-        setFeatures(allFeatures ? await allFeatures.json() : []);
+        setFeaturesCollection(
+          allFeatures ? createFeatureCollection(await allFeatures.json()) : null
+        );
       } catch (error) {
         console.log(error);
       }
@@ -160,25 +131,19 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
     return () => handleGetAllFeatures();
   }, []);
 
-  const {
-    fields: groupFields,
-    append: addGroup,
-    remove: removeGroup,
-    update: updateGroup,
-  } = useFieldArray({
-    control,
-    name: "groups",
-  });
-
   const definedTreatments = watch("definedTreatments");
 
   const groupValues = watch("groups");
 
   const onSubmit = (expContent: Experiment) => {
     // createGroupIds(expContent);
+
     reformatAllTrafficProportion(expContent);
+    if (expType === "switchback") {
+      expContent.groups[0].sequence = Object.keys(expContent.definedTreatments);
+    }
     console.log("data", expContent);
-    expService.createExperiment(expContent);
+    // expService.createExperiment(expContent);
   };
 
   return (
@@ -317,25 +282,17 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
             </HStack>
           </RadioGroup>
         </Fieldset.Root>
-        {expType === "ab" ? (
-          <ABSubForm
-            control={control}
-            createTreatmentCollection={createTreatmentCollection}
-            definedTreatments={definedTreatments}
-            errors={errors}
-            groupValues={groupValues}
-            register={register}
-          />
-        ) : (
-          <SwitchbackSubForm
-            control={control}
-            createTreatmentCollection={createTreatmentCollection}
-            definedTreatments={definedTreatments}
-            errors={errors}
-            groupValues={groupValues}
-            register={register}
-          />
-        )}
+        <ExpTypeForm
+          control={control}
+          createTreatmentCollection={createTreatmentCollection}
+          definedTreatments={definedTreatments}
+          errors={errors}
+          expType={expType}
+          featuresCollection={featuresCollection}
+          groupValues={groupValues}
+          setValue={setValue}
+          register={register}
+        />
       </Stack>
     </chakra.form>
   );
