@@ -4,7 +4,7 @@
 // fetch all experiments
 // CRUD individual experiments
 */
-import FetchWrapper, { ParsedResponse } from "#/lib/FetchWrapper";
+import FetchWrapper, { ParsedResponse, ResponseTypes } from "#/lib/FetchWrapper";
 import {
   ExperimentDraft,
   FeatureFlag,
@@ -33,23 +33,41 @@ export default class FeatureService {
     );
   }
 
-  async getAllFeatures(): Promise<ParsedResponse<FeatureFlag[]> | Response> {
+  async getAllFeatures(): Promise<ResponseTypes> {
     const response = await this.fetch.get("");
     if (!response.ok) {
-      return response as Response;
+      return response;
     }
 
-    return { ...response, body: featureFlagSchema.array().parse(response.body) };
+    const parsed: FeatureFlag[] = featureFlagSchema.array().parse(response.body);
+
+    const parsedResponse: ParsedResponse = {
+      ...response,
+      ok: true,
+      body: parsed,
+    };
+
+    return parsedResponse;
   }
 
-  async getFeature(featureId: string): Promise<ParsedResponse<FeatureFlag> | Response> {
+  async getFeature(featureId: string): Promise<ResponseTypes> {
     const response = await this.fetch.get(`/id/${featureId}`);
     if (!response.ok) {
       return response as Response;
+    } else {
+      const parsedResponse: ParsedResponse = {
+        ...response,
+        ok: true,
+        body: featureFlagSchema.parse(response.body),
+      };
+  
+      return parsedResponse;
+
     }
 
-    const parsed = featureFlagSchema.parse(response.body);
-    return { ...response, body: parsed};
+    // const parsed: FeatureFlag = featureFlagSchema.parse(response.body);
+    // return { ...response, body: parsed};
+
   }
 
   async createFeature(featureContent: FeatureFlagDraft) {

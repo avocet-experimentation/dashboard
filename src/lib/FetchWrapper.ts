@@ -8,11 +8,18 @@ type SafeOmit<T, Keys extends keyof T> = {
  */
 type RequestOptions = SafeOmit<RequestInit, "headers" | "body" | "signal">;
 
-export type ParsedResponse<T> = Omit<Response, 'body'> & { body: T };
+type FailedResponse = Response & { ok: false };
+
+export type ParsedResponse = Omit<Response, 'body'> & {
+  ok: true;
+  body: unknown;
+};
+
+export type ResponseTypes = FailedResponse | ParsedResponse;
 
 type BodyEncoder = (body: unknown) => BodyInit | null;
 
-type ResponseHandler = <T>(response: Response) => Promise<Response | ParsedResponse<T>>;
+type ResponseHandler = (response: Response) => Promise<Response | ParsedResponse>;
 
 const defaultJsonHeaders = {
   "content-type": "application/json",
@@ -23,14 +30,15 @@ function encodeToJson(body?: unknown) {
   return JSON.stringify(body);
 }
 
-async function handleJsonResponse<T>(
+async function handleJsonResponse(
   response: Response
-): Promise<Response | ParsedResponse<T>> {
+): Promise<ResponseTypes> {
   if (!response.ok) {
-    return response;
+    return { ...response, ok: false };
+  } else {
+    const parsed = await response.json();
+    return { ...response, ok: true, body: parsed };
   }
-  const parsed: T = await response.json();
-  return { ...response, body: parsed };
 }
 
 /**
