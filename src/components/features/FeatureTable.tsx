@@ -35,12 +35,13 @@ const FeatureTable: FC<FeatureTableProps> = ({ features }) => {
       });
 
       setEnvironmentToggles(environments);
-      console.log(environments);
       setIsLoading(false);
     };
 
     return () => setEnvironmentStatuses();
   }, []);
+
+  console.log(features);
 
   if (features.length && !isLoading)
     return (
