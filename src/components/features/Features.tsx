@@ -12,19 +12,21 @@ const CREATE_FEATURE_FORM_ID = "create-feature-form";
 const featureService = new FeatureService();
 
 const Features = () => {
-  const [features, setFeatures] = useState<FeatureFlag[]>([]);
+  const [featureFlags, setFeatureFlags] = useState<FeatureFlag[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const handleGetAllFeatures = async () => {
       try {
-        const allFeatures = await featureService.getAllFeatures();
-        setFeatures(allFeatures ? await allFeatures.json() : []);
+        const featureResponse = await featureService.getAllFeatures();
+        const allFeatures = featureResponse.ok ? featureResponse.body : [];
+        setFeatureFlags(allFeatures);
       } catch (error) {
         console.log(error);
       }
     };
 
-    return () => handleGetAllFeatures();
+    handleGetAllFeatures();
   }, []);
 
   return (
@@ -45,15 +47,19 @@ const Features = () => {
         >
           <FeatureCreationForm
             formId={CREATE_FEATURE_FORM_ID}
-            setIsLoading={undefined}
+            setIsLoading={setIsLoading}
           />
         </FormModalTrigger>
       </Flex>
       <Text margin="15px 0">
         Features enable you to change your app's behavior from within this UI.
       </Text>
-      {features.length ? (
-        <FeatureTable features={features} />
+      {featureFlags.length ? (
+        <FeatureTable
+          featureFlags={featureFlags} 
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+        />
       ) : (
         "No features found. Please create one."
       )}
