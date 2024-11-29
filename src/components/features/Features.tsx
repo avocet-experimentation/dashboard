@@ -1,17 +1,17 @@
-import { Flex, Heading, Text } from "@chakra-ui/react";
-import { CirclePlus } from "lucide-react";
-import FeatureCreationForm from "./FeatureForm";
-import FormModalTrigger from "../FormModal";
-import FeatureService from "#/services/FeatureService";
-import { FeatureFlag } from "@estuary/types";
-import { useEffect, useState } from "react";
-import FeatureTable from "./FeatureTable";
+import { Flex, Heading, Text } from '@chakra-ui/react';
+import { CirclePlus } from 'lucide-react';
+import FeatureService from '#/services/FeatureService';
+import { FeatureFlag } from '@estuary/types';
+import { useEffect, useState } from 'react';
+import FormModalTrigger from '../FormModal';
+import FeatureCreationForm from './FeatureForm';
+import FeatureTable from './FeatureTable';
 
-const CREATE_FEATURE_FORM_ID = "create-feature-form";
+const CREATE_FEATURE_FORM_ID = 'create-feature-form';
 
 const featureService = new FeatureService();
 
-const Features = () => {
+function Features() {
   const [featureFlags, setFeatureFlags] = useState<FeatureFlag[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -40,10 +40,10 @@ const Features = () => {
         <Heading size="3xl">Features</Heading>
         <FormModalTrigger
           triggerButtonIcon={<CirclePlus />}
-          triggerButtonText={"Add Feature"}
-          title={"Create a New Feature"}
+          triggerButtonText="Add Feature"
+          title="Create a New Feature"
           formId={CREATE_FEATURE_FORM_ID}
-          confirmButtonText={"Create"}
+          confirmButtonText="Create"
         >
           <FeatureCreationForm
             formId={CREATE_FEATURE_FORM_ID}
@@ -56,15 +56,15 @@ const Features = () => {
       </Text>
       {featureFlags.length ? (
         <FeatureTable
-          featureFlags={featureFlags} 
+          featureFlags={featureFlags}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
         />
       ) : (
-        "No features found. Please create one."
+        'No features found. Please create one.'
       )}
     </Flex>
   );
-};
+}
 
 export default Features;

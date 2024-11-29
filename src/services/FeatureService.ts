@@ -14,6 +14,9 @@ import {
   FeatureFlagDraft,
   featureFlagSchema,
   ForcedValue,
+  isObjectWithProps,
+  OverrideRuleUnion,
+  SchemaParseError,
 } from "@estuary/types";
 
 const BASE_URL = import.meta.env.VITE_FLAG_SERVICE_URL + "/fflags";
@@ -42,6 +45,11 @@ export default class FeatureService {
       return response;
     }
 
+    console.table(response.body);
+    const safeParseResult = featureFlagSchema.array().safeParse(response.body);
+    if (!safeParseResult.success) {
+      throw new SchemaParseError(safeParseResult);
+    }
     const parsed: FeatureFlag[] = featureFlagSchema.array().parse(response.body);
 
     const parsedResponse: ParsedResponse<FeatureFlag[]> = {
@@ -58,6 +66,11 @@ export default class FeatureService {
     if (!response.ok) {
       return response;
     } else {
+      console.log({fetchedFlag: response.body})
+      const safeParseResult = featureFlagSchema.safeParse(response.body);
+      if (!safeParseResult.success) {
+        throw new SchemaParseError(safeParseResult);
+      }
       const parsedResponse: ParsedResponse<FeatureFlag> = {
         ...response,
         ok: true,
@@ -73,9 +86,16 @@ export default class FeatureService {
 
   }
 
-  async createFeature(featureContent: FeatureFlagDraft) {
+  async createFeature(featureContent: FeatureFlagDraft): Promise<ResponseTypes<{ fflagId: string }>> {
     const response = await this.fetch.post("", featureContent);
-    return response;
+    if (!response.ok) return response;
+
+    if ( !isObjectWithProps(response.body)
+      || !('fflagId' in response.body) 
+      || typeof response.body.fflagId !== 'string') {
+      throw new TypeError('Expected a flag id to be returned!')
+    }
+    return response as ParsedResponse<{ fflagId: string }>;
   }
 
   async updateFeature(
@@ -124,7 +144,7 @@ export default class FeatureService {
   async addRule(
     featureId: string,
     envName: string,
-    rule: ForcedValue | ExperimentDraft
+    rule: OverrideRuleUnion
   ) {
     const response = await this.fetch.patch(`/id/${featureId}/addRule`, {
       id: featureId,
