@@ -112,7 +112,7 @@ export default function FeaturePage() {
               </Icon>
             </HStack>
             <Editable.Root
-              defaultValue={feature.description ?? undefined}
+              value={feature.description ?? ''}
               edit={editDesc}
               activationMode="focus"
               onBlur={() => {
@@ -224,10 +224,11 @@ export default function FeaturePage() {
               applies and overrides the default value.
             </Text>
             <EnvironmentTabs
-              featureId={params.id}
-              environments={environments}
-              valueType={feature.value.type}
-              defaultValue={feature.value.initial}
+              {...feature}
+              // featureId={params.id}
+              // environmentNames={environments}
+              // valueType={feature.value.type}
+              // defaultValue={feature.value.initial}
             />
           </Stack>
         </Box>
