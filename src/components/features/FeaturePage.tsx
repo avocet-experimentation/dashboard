@@ -66,10 +66,12 @@ export default function FeaturePage() {
     }
   };
 
-  if (isLoading) return <></>;
+  // if (isLoading) return <></>;
 
-  if (feature) {
-    return (
+  // if (feature) {
+    return (<>
+      {!isLoading &&
+        feature ? 
       <Stack gap={4} padding="25px" overflowY="scroll">
         <Flex justifyContent="space-between">
           <Heading size="3xl">{feature.name}</Heading>
@@ -230,8 +232,9 @@ export default function FeaturePage() {
           </Stack>
         </Box>
       </Stack>
-    );
-  } else {
-    return <NotFound componentName={"feature"} />;
-  }
+      : <NotFound componentName={"feature"} />}
+      </>);
+  // } else {
+  //   return <NotFound componentName={"feature"} />;
+  // }
 };

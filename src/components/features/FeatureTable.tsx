@@ -7,49 +7,57 @@ import { Tooltip } from "../ui/tooltip";
 import { lastUpdated, formatDate } from "#/lib/timeFunctions";
 
 // types
-import { FeatureTableProps } from "#/lib/featureTypes";
-import { EnvironmentName, FeatureFlag } from "@estuary/types";
+import { FeatureFlag } from "@estuary/types";
 
 // util
 import { Link } from "wouter";
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import FeatureService from "#/services/FeatureService";
+import merge from 'deepmerge';
 
 const featureService = new FeatureService();
 
-const FeatureTable: FC<FeatureTableProps> = ({ features }) => {
-  const [environmentToggles, setEnvironmentToggles] = useState({});
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+type AllEnvironmentToggles = Record<string, FeatureFlag['environmentNames']>
+export interface FeatureTableProps {
+  featureFlags: FeatureFlag[];
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export default function FeatureTable({ featureFlags, isLoading, setIsLoading }: FeatureTableProps) {
+  const [environmentToggles, setEnvironmentToggles] = useState<AllEnvironmentToggles>({});
+  const [allEnvironmentNames, setAllEnvironmentNames] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const setEnvironmentStatuses = () => {
-      const environments = {};
-      features.forEach((feature) => {
-        const featureName = feature.name;
-        environments[`${featureName}`] = {};
-        Object.keys(feature.environments).forEach((envName) => {
-          console.log;
-          const toggle = feature["environments"][`${envName}`]["enabled"];
-          environments[`${feature.name}`][envName] = toggle;
-        });
+    const setEnvironmentStatuses = async () => {
+      // todo: replace with map/list of names of all fetched environments
+      const environments: AllEnvironmentToggles = {};
+      
+      featureFlags.forEach((flag) => {
+        environments[flag.name] = flag.environmentNames;
+
+        setAllEnvironmentNames((prevState) => new Set([
+          ...prevState,
+          ...Object.keys(flag.environmentNames),
+        ]));
       });
 
       setEnvironmentToggles(environments);
       setIsLoading(false);
     };
 
-    return () => setEnvironmentStatuses();
+    setEnvironmentStatuses();
   }, []);
 
-  console.log(features);
+  // console.table(featureFlags);
 
-  if (features.length && !isLoading)
-    return (
+  return (<>
+    { featureFlags.length && !isLoading &&
       <Table.Root className="table">
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader>Feature Name</Table.ColumnHeader>
-            {Object.keys(features[0].environments).map((envName, i) => (
+            {[...allEnvironmentNames].map((envName, i) => (
               <Table.ColumnHeader key={`${envName}-header-${i}`}>
                 {envName.charAt(0).toUpperCase() + envName.slice(1)}
               </Table.ColumnHeader>
@@ -60,66 +68,111 @@ const FeatureTable: FC<FeatureTableProps> = ({ features }) => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {features.map((feature: FeatureFlag) => (
-            <Table.Row key={feature.id}>
-              <Table.Cell color="black" textDecor="none">
-                <Link href={`/features/${feature.id}`}>{feature.name}</Link>
-              </Table.Cell>
-              {Object.keys(environmentToggles[`${feature.name}`]).map(
-                (envName: EnvironmentName) => {
-                  const environment = feature.environments[`${envName}`];
-                  return (
-                    <Table.Cell>
-                      <Switch
-                        checked={
-                          environmentToggles[`${feature.name}`][`${envName}`]
-                        }
-                        onCheckedChange={({ checked }) => {
-                          featureService.toggleEnvironment(
-                            feature.id,
-                            environment,
-                            checked
-                          );
-                          setEnvironmentToggles((prevState) => ({
-                            ...prevState,
-                            [`${feature.name}`]: {
-                              ...prevState[`${feature.name}`],
-                              [`${envName}`]: checked,
-                            },
-                          }));
-                        }}
-                      />
-                    </Table.Cell>
-                  );
-                }
-              )}
-              <Table.Cell>
-                <Tooltip showArrow openDelay={50} content={feature.value.type}>
-                  <Text
-                    width="fit-content"
-                    fontFamily="'Lucida Console', 'Courier New', monospace"
-                  >
-                    {String(feature.value.initial)}
-                  </Text>
-                </Tooltip>
-              </Table.Cell>
-              <Table.Cell>{}</Table.Cell>
-              <Table.Cell>
-                <Tooltip
-                  showArrow
-                  openDelay={50}
-                  content={formatDate(Number(feature.updatedAt))}
-                >
-                  <Text width="fit-content">
-                    {lastUpdated(Number(feature.updatedAt))}
-                  </Text>
-                </Tooltip>
-              </Table.Cell>
-            </Table.Row>
-          ))}
+          {featureFlags.map((flag: FeatureFlag) => {
+            return (
+              <FeatureFlagTableRow
+                key={flag.id}
+                environmentToggles={environmentToggles}
+                allEnvironmentNames={[...allEnvironmentNames]}
+                flag={flag}
+                setEnvironmentToggles={setEnvironmentToggles}
+              />
+            );
+          })}
         </Table.Body>
       </Table.Root>
-    );
+    }
+  </>);
 };
 
-export default FeatureTable;
+
+      
+
+interface FeatureFlagTableRowProps  {
+  environmentToggles: AllEnvironmentToggles;
+  allEnvironmentNames: string[];
+  flag: FeatureFlag;
+  setEnvironmentToggles: React.Dispatch<React.SetStateAction<AllEnvironmentToggles>>;
+}
+  
+function FeatureFlagTableRow({
+  environmentToggles,
+  allEnvironmentNames,
+  flag,
+  setEnvironmentToggles,
+}: FeatureFlagTableRowProps) {
+  // todo: remove this placeholder guard clause
+  if (!(flag.name in environmentToggles)) {
+    throw new Error(`No flag with the specified name ${flag.name} was present in 'environmentToggles'! `);
+  }
+
+  // impute missing environment names with `false`
+  const [envStatuses, setEnvStatuses] = useState<Record<string, boolean>>(
+    allEnvironmentNames.reduce((acc, envName) => (
+      Object.assign(acc, { [envName]: envName in flag.environmentNames })
+    ), {})
+  );
+
+  const toggleEnvironmentDisplay = (envName: string) => {
+    setEnvStatuses((prevState) => (
+      { ...prevState, [envName]: !prevState[envName] }
+    ));
+  }
+
+  const handleCheckedChange = (envName: string, checked: boolean) => {
+    featureService.toggleEnvironment(flag.id, envName);
+
+    setEnvironmentToggles((prevState) => {
+      if (checked) {
+        const update = {
+          [flag.name]: { [envName]: true as const }
+        };
+        return merge(prevState, update);
+      } else {
+        delete prevState[flag.name][envName];
+        return prevState;
+      }
+    });
+
+    toggleEnvironmentDisplay(envName);
+  }
+
+  return (
+    <Table.Row key={flag.id}>
+      <Table.Cell color="black" textDecor="none">
+        <Link href={`/features/${flag.id}`}>{flag.name}</Link>
+      </Table.Cell>
+      {allEnvironmentNames.map((envName: string) => 
+        <Table.Cell key={envName}>
+          <Switch
+            checked={envStatuses[envName]}
+            onCheckedChange={(e) => handleCheckedChange(envName, e.checked)}
+          />
+        </Table.Cell>
+      )}
+      <Table.Cell>
+        <Tooltip showArrow openDelay={50} content={flag.value.type}>
+          <Text
+            width="fit-content"
+            fontFamily="'Lucida Console', 'Courier New', monospace"
+          >
+            {String(flag.value.initial)}
+          </Text>
+        </Tooltip>
+      </Table.Cell>
+      <Table.Cell>{}</Table.Cell>
+      <Table.Cell>
+        <Tooltip
+          showArrow
+          openDelay={50}
+          content={formatDate(Number(flag.updatedAt))}
+        >
+          <Text width="fit-content">
+            {lastUpdated(Number(flag.updatedAt))}
+          </Text>
+        </Tooltip>
+      </Table.Cell>
+    </Table.Row>
+  );
+}
+    
