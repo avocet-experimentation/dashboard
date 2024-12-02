@@ -5,28 +5,35 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
-    'airbnb-base',
-    'airbnb-typescript',
+    'airbnb',
+    'airbnb/hooks',
+    'airbnb-typescript'
   ],
-  ignorePatterns: ['dist', '.eslintrc.cjs'],
-  ignores: ['vite.config.ts'],
+  ignorePatterns: ['dist', '.eslintrc.cjs', 'vite.config.ts'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
     project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
+    tsconfigRootDir: __dirname
   },
   plugins: ['react-refresh'],
-  rules: {
-    'react-refresh/only-export-components': [
-      'warn',
-      { allowConstantExport: true },
-    ],
-  },
+  overrides: [
+    {
+      rules: {
+        'react-refresh/only-export-components': [
+          'warn',
+          { allowConstantExport: true }
+        ],
+        'react/react-in-jsx-scope': 'off',
+        'react/no-unescaped-entities': 'off',
+        'no-unused-vars': 'off' // handled by TS
+      }
+    }
+  ],
   settings: {
     'import/resolver': {
-      typescript: {},
-    },
-  },
+      typescript: {}
+    }
+  }
 };
