@@ -7,20 +7,20 @@ import {
   Input,
   Stack,
   Table,
-} from "@chakra-ui/react";
-import { Field } from "../ui/field";
-import { Controller, useFieldArray } from "react-hook-form";
+} from '@chakra-ui/react';
+import { Field } from '../ui/field';
+import { Controller, useFieldArray } from 'react-hook-form';
 import {
   SelectContent,
   SelectItem,
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-} from "../ui/select";
-import { CircleEqual, CirclePlus } from "lucide-react";
-import { ExperimentGroup, TreatmentTemplate, idMap } from "@estuary/types";
-import { Switch } from "../ui/switch";
-import { useEffect, useState } from "react";
+} from '../ui/select';
+import { CircleEqual, CirclePlus } from 'lucide-react';
+import { ExperimentGroup, Treatment, idMap } from '@estuary/types';
+import { Switch } from '../ui/switch';
+import { useEffect, useState } from 'react';
 
 const createFeatureCollection = (features) => {
   const items = features.map((feature) => {
@@ -31,13 +31,13 @@ const createFeatureCollection = (features) => {
 
 const checkInCollection = (data, criteriaArray, property) => {
   return data.filter((item) =>
-    criteriaArray.some((criteria) => criteria["value"] === item[property])
+    criteriaArray.some((criteria) => criteria['value'] === item[property]),
   );
 };
 
 const appendedGroup = (index: number): ExperimentGroup => {
   return {
-    id: "",
+    id: '',
     name: `Group ${index + 1}`,
     proportion: 0,
     cycles: 1,
@@ -47,7 +47,7 @@ const appendedGroup = (index: number): ExperimentGroup => {
 
 const setEqualProportions = (
   fields: ExperimentGroup[],
-  fieldArrayUpdate
+  fieldArrayUpdate,
 ): void => {
   const numOfVariations: number = fields.length;
   const split: number = Math.trunc((1 / numOfVariations) * 10000) / 10000;
@@ -83,7 +83,7 @@ const ExpTypeForm = ({
     update: updateGroup,
   } = useFieldArray({
     control,
-    name: "groups",
+    name: 'groups',
   });
   const [appendFunctions, setAppendFunctions] = useState({});
   const [treatmentFeatures, setTreatmentFeatures] = useState({});
@@ -117,7 +117,7 @@ const ExpTypeForm = ({
               return (
                 <Stack
                   key={id + String(treatmentIdx)}
-                  padding={"15px 15px"}
+                  padding={'15px 15px'}
                   border="solid 1px grey"
                   borderRadius="5px"
                 >
@@ -132,7 +132,7 @@ const ExpTypeForm = ({
                         flex="1"
                         defaultValue={treatment.name}
                         {...register(`definedTreatments.${id}.name`, {
-                          required: "Treatment name is required.",
+                          required: 'Treatment name is required.',
                         })}
                       />
                     </Field>
@@ -148,11 +148,11 @@ const ExpTypeForm = ({
                         flex="1"
                         defaultValue={treatment.duration}
                         {...register(`definedTreatments.${id}.duration`, {
-                          required: "Treatment duration is required.",
+                          required: 'Treatment duration is required.',
                           valueAsNumber: true,
                           min: {
                             value: 0,
-                            message: ">= 0",
+                            message: '>= 0',
                           },
                         })}
                       />
@@ -182,11 +182,11 @@ const ExpTypeForm = ({
                                         onValueChange={({ value }) => {
                                           field.onChange(value[0]);
                                           Object.keys(
-                                            definedTreatments
+                                            definedTreatments,
                                           ).forEach((id) => {
                                             setValue(
                                               `definedTreatments.${id}.flagStates.${featureIdx}.id`,
-                                              value[0]
+                                              value[0],
                                             );
                                           });
                                         }}
@@ -195,12 +195,12 @@ const ExpTypeForm = ({
                                           <SelectValueText
                                             placeholder={
                                               !field.value
-                                                ? "Select feature..."
+                                                ? 'Select feature...'
                                                 : featuresCollection.items.find(
                                                     (feature) =>
                                                       feature.value ===
-                                                      field.value
-                                                  )["label"]
+                                                      field.value,
+                                                  )['label']
                                             }
                                           />
                                         </SelectTrigger>
@@ -213,7 +213,7 @@ const ExpTypeForm = ({
                                               >
                                                 {feature.label}
                                               </SelectItem>
-                                            )
+                                            ),
                                           )}
                                         </SelectContent>
                                       </SelectRoot>
@@ -228,16 +228,16 @@ const ExpTypeForm = ({
                                 control={control}
                                 render={({ field }) => {
                                   const selectedFeatureId =
-                                    definedTreatments[id]["flagStates"][
+                                    definedTreatments[id]['flagStates'][
                                       featureIdx
-                                    ]["id"];
+                                    ]['id'];
                                   if (selectedFeatureId) {
                                     const selectedFeature =
                                       featuresCollection.items.find(
                                         (featObj) =>
-                                          featObj.value === selectedFeatureId
+                                          featObj.value === selectedFeatureId,
                                       );
-                                    if (selectedFeature.type === "boolean")
+                                    if (selectedFeature.type === 'boolean')
                                       return (
                                         <Switch
                                           id={selectedFeatureId}
@@ -248,10 +248,10 @@ const ExpTypeForm = ({
                                           }}
                                           inputProps={{ onBlur: field.onBlur }}
                                         >
-                                          {!!field.value ? "on" : "off"}
+                                          {!!field.value ? 'on' : 'off'}
                                         </Switch>
                                       );
-                                    if (selectedFeature.type === "string")
+                                    if (selectedFeature.type === 'string')
                                       return (
                                         <Input
                                           type="text"
@@ -260,12 +260,12 @@ const ExpTypeForm = ({
                                             `definedTreatments.${id}.flagStates.${featureIdx}.value`,
                                             {
                                               required:
-                                                "A string value is required.",
-                                            }
+                                                'A string value is required.',
+                                            },
                                           )}
                                         />
                                       );
-                                    if (selectedFeature.type === "number")
+                                    if (selectedFeature.type === 'number')
                                       return (
                                         <Input
                                           type="number"
@@ -275,8 +275,8 @@ const ExpTypeForm = ({
                                             {
                                               valueAsNumber: true,
                                               required:
-                                                "A number value is required.",
-                                            }
+                                                'A number value is required.',
+                                            },
                                           )}
                                         />
                                       );
@@ -292,14 +292,14 @@ const ExpTypeForm = ({
                   </Table.Root>
                 </Stack>
               );
-            }
+            },
           )}
         </Box>
         <Button
           border="0px"
           variant="plain"
           background="transparent"
-          _hover={{ backgroundColor: "transparent", color: "blue" }}
+          _hover={{ backgroundColor: 'transparent', color: 'blue' }}
           onClick={() => {
             Object.values(appendFunctions).forEach((append) => append({}));
           }}
@@ -334,9 +334,9 @@ const ExpTypeForm = ({
                         <Table.Cell>
                           <Field>
                             <SelectRoot
-                              disabled={expType === "switchback"}
+                              disabled={expType === 'switchback'}
                               collection={createTreatmentCollection(
-                                definedTreatments
+                                definedTreatments,
                               )}
                               onValueChange={({ value }) => {
                                 const {
@@ -356,15 +356,15 @@ const ExpTypeForm = ({
                               <SelectTrigger>
                                 <SelectValueText
                                   placeholder={
-                                    expType === "ab"
-                                      ? "Select treatment..."
-                                      : "ALL"
+                                    expType === 'ab'
+                                      ? 'Select treatment...'
+                                      : 'ALL'
                                   }
                                 />
                               </SelectTrigger>
                               <SelectContent zIndex="popover">
                                 {createTreatmentCollection(
-                                  definedTreatments
+                                  definedTreatments,
                                 ).items.map((treatment) => (
                                   <SelectItem
                                     item={treatment}
@@ -387,12 +387,12 @@ const ExpTypeForm = ({
                               width="125px"
                               defaultValue={field.name || `Variation ${index}`}
                               {...register(`groups.${index}.name`, {
-                                required: "Name is required.",
+                                required: 'Name is required.',
                                 validate: {
                                   unique: (name) =>
                                     groupValues.filter((n) => n.name === name)
                                       .length === 1 ||
-                                    "Group names must be unique.",
+                                    'Group names must be unique.',
                                 },
                               })}
                             />
@@ -409,17 +409,17 @@ const ExpTypeForm = ({
                               border="0px"
                               width="75px"
                               defaultValue={field.proportion || 0}
-                              disabled={expType === "switchback"}
+                              disabled={expType === 'switchback'}
                               {...register(`groups.${index}.proportion`, {
-                                required: "Group proportion is required.",
+                                required: 'Group proportion is required.',
                                 valueAsNumber: true,
                                 min: {
                                   value: 0,
-                                  message: ">= 0",
+                                  message: '>= 0',
                                 },
                                 max: {
                                   value: 1,
-                                  message: "<= 1",
+                                  message: '<= 1',
                                 },
                               })}
                             />
@@ -434,13 +434,13 @@ const ExpTypeForm = ({
                               border="0px"
                               width="75px"
                               defaultValue={1}
-                              disabled={expType === "ab"}
+                              disabled={expType === 'ab'}
                               {...register(`groups.${index}.cycles`, {
-                                required: "Group number of cycles is required.",
+                                required: 'Group number of cycles is required.',
                                 valueAsNumber: true,
                                 min: {
                                   value: 1,
-                                  message: ">= 1",
+                                  message: '>= 1',
                                 },
                               })}
                             />
@@ -463,11 +463,11 @@ const ExpTypeForm = ({
                 border="0px"
                 variant="plain"
                 background="transparent"
-                _hover={{ backgroundColor: "transparent", color: "blue" }}
+                _hover={{ backgroundColor: 'transparent', color: 'blue' }}
                 onClick={() => {
-                  const newTreatment = new TreatmentTemplate({ name: "" });
+                  const newTreatment = new Treatment.template({ name: '' });
                   const treatmentObj = idMap([newTreatment]);
-                  setValue("definedTreatments", {
+                  setValue('definedTreatments', {
                     ...definedTreatments,
                     treatmentObj,
                   });
@@ -475,16 +475,16 @@ const ExpTypeForm = ({
                 }}
               >
                 <CirclePlus />
-                {expType === "ab"
-                  ? "Add new group/treatment"
-                  : "Add new treatment"}
+                {expType === 'ab'
+                  ? 'Add new group/treatment'
+                  : 'Add new treatment'}
               </Button>
-              {expType === "ab" && (
+              {expType === 'ab' && (
                 <Button
                   border="0px"
                   variant="plain"
                   background="transparent"
-                  _hover={{ backgroundColor: "transparent", color: "blue" }}
+                  _hover={{ backgroundColor: 'transparent', color: 'blue' }}
                   onClick={() => setEqualProportions(groupFields, updateGroup)}
                 >
                   <CircleEqual />
