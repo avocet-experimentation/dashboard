@@ -70,10 +70,20 @@ const createFeatureCollection = (features) => {
   return createListCollection({ items });
 };
 
-const reformatAllTrafficProportion = (expContent: Inputs): void => {
+// mutating function
+const reformatAllTrafficProportion = (expContent: ExperimentDraft): void => {
   const originalProportion = expContent.enrollment.proportion;
   const reformatted = parseFloat((originalProportion / 100).toFixed(2));
   expContent.enrollment.proportion = reformatted;
+};
+
+// mutating function
+const collectFeatureIds = (expContent: ExperimentDraft): void => {
+  const firstTreatment = Object.keys(expContent.definedTreatments)[0];
+  const collectedIds = expContent.definedTreatments[
+    firstTreatment
+  ].flagStates.map((feature) => feature.id);
+  expContent.flagIds = collectedIds;
 };
 
 const ExperimentCreationForm = ({ formId, setIsLoading }) => {
@@ -121,7 +131,7 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
       try {
         const allFeatures = await featureService.getAllFeatures();
         setFeaturesCollection(
-          allFeature.ok
+          allFeatures.ok
             ? createFeatureCollection(await allFeatures.body)
             : null,
         );
@@ -141,11 +151,12 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
     // createGroupIds(expContent);
 
     reformatAllTrafficProportion(expContent);
+    collectFeatureIds(expContent);
     if (expType === 'switchback') {
       expContent.groups[0].sequence = Object.keys(expContent.definedTreatments);
     }
     console.log('data', expContent);
-    // expService.createExperiment(expContent);
+    expService.createExperiment(expContent);
   };
 
   return (
