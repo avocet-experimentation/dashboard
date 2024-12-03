@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   chakra,
   Fieldset,
@@ -6,9 +6,9 @@ import {
   Stack,
   HStack,
   createListCollection,
-} from "@chakra-ui/react";
-import { RadioGroup } from "../ui/radio";
-import { Field } from "../ui/field";
+} from '@chakra-ui/react';
+import { RadioGroup } from '../ui/radio';
+import { Field } from '../ui/field';
 
 import {
   SelectContent,
@@ -16,16 +16,16 @@ import {
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-} from "../ui/select";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import FeatureService from "#/services/FeatureService";
+} from '../ui/select';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import FeatureService from '#/services/FeatureService';
 
-import { Experiment } from "@estuary/types";
-import { Slider } from "../ui/slider";
-import { Radio } from "../ui/radio";
-import { ABExperimentTemplate, SwitchbackTemplate } from "@estuary/types";
-import ExperimentService from "#/services/ExperimentService";
-import ExpTypeForm from "./ExpTypeForm";
+import { Experiment } from '@estuary/types';
+import { Slider } from '../ui/slider';
+import { Radio } from '../ui/radio';
+import { ExperimentDraft } from '@estuary/types';
+import ExperimentService from '#/services/ExperimentService';
+import ExpTypeForm from './ExpTypeForm';
 
 const templateToObject = (template) => {
   return Object.getOwnPropertyNames(template).reduce((acc, prop) => {
@@ -34,16 +34,16 @@ const templateToObject = (template) => {
   }, {});
 };
 
-const abTemplate = new ABExperimentTemplate({
-  name: "my-first-exp",
-  environmentName: "dev",
+const abTemplate = ExperimentDraft.templateAB({
+  name: 'my-first-exp',
+  environmentName: 'dev',
 });
 
 const defaultAB = templateToObject(abTemplate);
 
-const switchbackTemplate = new SwitchbackTemplate({
-  name: "my-first-switchback",
-  environmentName: "dev",
+const switchbackTemplate = ExperimentDraft.templateSwitchback({
+  name: 'my-first-switchback',
+  environmentName: 'dev',
 });
 
 const defaultSwitchback = templateToObject(switchbackTemplate);
@@ -77,7 +77,7 @@ const reformatAllTrafficProportion = (expContent: Inputs): void => {
 };
 
 const ExperimentCreationForm = ({ formId, setIsLoading }) => {
-  const [expType, setExpType] = useState<"ab" | "switchback">("ab");
+  const [expType, setExpType] = useState<'ab' | 'switchback'>('ab');
   const [formValues, setFormValues] = useState({
     ab: defaultAB,
     switchback: defaultSwitchback,
@@ -95,14 +95,14 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
     defaultValues: formValues[expType],
   });
   const [treatmentsCollection, setTreatmentsCollection] = useState(
-    createListCollection({ items: [] })
+    createListCollection({ items: [] }),
   );
   const [featuresCollection, setFeaturesCollection] = useState(
-    createListCollection({ items: [] })
+    createListCollection({ items: [] }),
   );
 
   // Save current form state before switching
-  const handleSwitchForm = (newExpType: "ab" | "switchback") => {
+  const handleSwitchForm = (newExpType: 'ab' | 'switchback') => {
     const currentValues = getValues();
     setFormValues((prevState) => ({
       ...prevState,
@@ -121,7 +121,9 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
       try {
         const allFeatures = await featureService.getAllFeatures();
         setFeaturesCollection(
-          allFeatures ? createFeatureCollection(await allFeatures.json()) : null
+          allFeature.ok
+            ? createFeatureCollection(await allFeatures.body)
+            : null,
         );
       } catch (error) {
         console.log(error);
@@ -131,18 +133,18 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
     return () => handleGetAllFeatures();
   }, []);
 
-  const definedTreatments = watch("definedTreatments");
+  const definedTreatments = watch('definedTreatments');
 
-  const groupValues = watch("groups");
+  const groupValues = watch('groups');
 
   const onSubmit = (expContent: Experiment) => {
     // createGroupIds(expContent);
 
     reformatAllTrafficProportion(expContent);
-    if (expType === "switchback") {
+    if (expType === 'switchback') {
       expContent.groups[0].sequence = Object.keys(expContent.definedTreatments);
     }
-    console.log("data", expContent);
+    console.log('data', expContent);
     // expService.createExperiment(expContent);
   };
 
@@ -157,7 +159,7 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
               label="Experiment Name"
               helperText={
                 !errors.name
-                  ? "Acts as a unique identifier used to track impressions and analyze results."
+                  ? 'Acts as a unique identifier used to track impressions and analyze results.'
                   : null
               }
               invalid={!!errors.name}
@@ -165,13 +167,13 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
             >
               <Input
                 placeholder="my-first-experiment"
-                {...register("name", {
+                {...register('name', {
                   required:
-                    "Experiment name is required and must be between 3-20 characters long.",
+                    'Experiment name is required and must be between 3-20 characters long.',
                   pattern: {
                     value: /^[0-9A-Za-z-]+$/gi,
                     message:
-                      "Experiment names may only contain letters, numbers, and hyphens.",
+                      'Experiment names may only contain letters, numbers, and hyphens.',
                   },
                   minLength: 3,
                   maxLength: 20,
@@ -187,8 +189,8 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
             <Field label="Description">
               <Input
                 placeholder="A human-readable description of your experiment."
-                {...register("description", {
-                  required: "A description of your experiment is required.",
+                {...register('description', {
+                  required: 'A description of your experiment is required.',
                 })}
               />
             </Field>
@@ -201,8 +203,8 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
             <Field label="Hypothesis">
               <Input
                 placeholder="What do you expect to happen in this experiment ?"
-                {...register("hypothesis", {
-                  required: "A hypothesis of your experiment is required.",
+                {...register('hypothesis', {
+                  required: 'A hypothesis of your experiment is required.',
                 })}
               />
             </Field>
@@ -269,7 +271,7 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
           <RadioGroup
             defaultValue={expType}
             onValueChange={({ value }) =>
-              handleSwitchForm(value as "ab" | "switchback")
+              handleSwitchForm(value as 'ab' | 'switchback')
             }
           >
             <HStack gap="6">
