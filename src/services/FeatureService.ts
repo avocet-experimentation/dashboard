@@ -1,46 +1,41 @@
-/* Todo:
-// CRUD individual flags
-// fetch event data
-// fetch all experiments
-// CRUD individual experiments
-*/
 import FetchWrapper, {
   ParsedResponse,
   ResponseTypes,
-} from "#/lib/FetchWrapper";
+} from '#/lib/FetchWrapper';
 import {
-  ExperimentDraft,
   FeatureFlag,
   FeatureFlagDraft,
   featureFlagSchema,
-  ForcedValue,
   isObjectWithProps,
   OverrideRuleUnion,
   SchemaParseError,
-} from "@estuary/types";
-
-const BASE_URL = import.meta.env.VITE_FLAG_SERVICE_URL + "/fflags";
-
-const DEFAULT_HEADERS = {
-  "Content-Type": "application/json",
-  mode: "cors",
-};
-
-const DEFAULT_REQUEST_OPTIONS = {};
+} from '@estuary/types';
 
 export default class FeatureService {
   fetch: FetchWrapper;
 
   constructor() {
+    const BASE_URL = import.meta.env.VITE_FLAG_SERVICE_URL + '/fflags';
+
+    const DEFAULT_HEADERS = {
+      'Content-Type': 'application/json',
+      mode: 'cors',
+    };
+
+    const DEFAULT_REQUEST_OPTIONS = {};
+
     this.fetch = new FetchWrapper(
       BASE_URL,
       DEFAULT_HEADERS,
-      DEFAULT_REQUEST_OPTIONS
+      DEFAULT_REQUEST_OPTIONS,
     );
   }
 
   async getAllFeatures(): Promise<ResponseTypes<FeatureFlag[]>> {
-    const response = await this.fetch.get("");
+    console.log('fetching features');
+    const startTime = Date.now();
+    const response = await this.fetch.get('');
+    console.log(`fetched all features in ~${Date.now() - startTime} ms`);
     if (!response.ok) {
       return response;
     }
@@ -50,14 +45,14 @@ export default class FeatureService {
     if (!safeParseResult.success) {
       throw new SchemaParseError(safeParseResult);
     }
-    const parsed: FeatureFlag[] = featureFlagSchema.array().parse(response.body);
 
+    // const parsed = response.body as FeatureFlag[];
     const parsedResponse: ParsedResponse<FeatureFlag[]> = {
       ...response,
       ok: true,
-      body: parsed,
+      body: safeParseResult.data,
     };
-
+    console.log(`returning all features in ~${Date.now() - startTime} ms`);
     return parsedResponse;
   }
 
@@ -66,7 +61,7 @@ export default class FeatureService {
     if (!response.ok) {
       return response;
     } else {
-      console.log({fetchedFlag: response.body})
+      console.log({ fetchedFlag: response.body });
       const safeParseResult = featureFlagSchema.safeParse(response.body);
       if (!safeParseResult.success) {
         throw new SchemaParseError(safeParseResult);
@@ -74,33 +69,35 @@ export default class FeatureService {
       const parsedResponse: ParsedResponse<FeatureFlag> = {
         ...response,
         ok: true,
-        body: featureFlagSchema.parse(response.body),
+        body: safeParseResult.data,
       };
-  
-      return parsedResponse;
 
+      return parsedResponse;
     }
 
     // const parsed: FeatureFlag = featureFlagSchema.parse(response.body);
     // return { ...response, body: parsed};
-
   }
 
-  async createFeature(featureContent: FeatureFlagDraft): Promise<ResponseTypes<{ fflagId: string }>> {
-    const response = await this.fetch.post("", featureContent);
+  async createFeature(
+    featureContent: FeatureFlagDraft,
+  ): Promise<ResponseTypes<{ fflagId: string }>> {
+    const response = await this.fetch.post('', featureContent);
     if (!response.ok) return response;
 
-    if ( !isObjectWithProps(response.body)
-      || !('fflagId' in response.body) 
-      || typeof response.body.fflagId !== 'string') {
-      throw new TypeError('Expected a flag id to be returned!')
+    if (
+      !isObjectWithProps(response.body) ||
+      !('fflagId' in response.body) ||
+      typeof response.body.fflagId !== 'string'
+    ) {
+      throw new TypeError('Expected a flag id to be returned!');
     }
     return response as ParsedResponse<{ fflagId: string }>;
   }
 
   async updateFeature(
     featureId: string,
-    updateContent: Partial<FeatureFlagDraft>
+    updateContent: Partial<FeatureFlagDraft>,
   ) {
     const updateObj = {
       id: featureId,
@@ -132,7 +129,10 @@ export default class FeatureService {
     return response;
   }
 
-  async patchFeature(featureId: string, updateContent: Partial<FeatureFlagDraft>) {
+  async patchFeature(
+    featureId: string,
+    updateContent: Partial<FeatureFlagDraft>,
+  ) {
     const updateBody = {
       id: featureId,
       ...updateContent,
@@ -141,11 +141,7 @@ export default class FeatureService {
     return response;
   }
 
-  async addRule(
-    featureId: string,
-    envName: string,
-    rule: OverrideRuleUnion
-  ) {
+  async addRule(featureId: string, envName: string, rule: OverrideRuleUnion) {
     const response = await this.fetch.patch(`/id/${featureId}/addRule`, {
       id: featureId,
       environment: envName,
