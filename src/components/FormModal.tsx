@@ -8,19 +8,19 @@ import {
   DialogRoot,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
-import { IconButton } from "@chakra-ui/react";
-import { ReactNode, useState, cloneElement } from "react";
+} from './ui/dialog';
+import { Button } from './ui/button';
+import { IconButton } from '@chakra-ui/react';
+import { ReactNode, useState, cloneElement } from 'react';
 
-type FormModal = {
+interface FormModal {
   triggerButtonIcon: ReactNode;
   triggerButtonText: string;
   title: string;
   children: ReactNode;
   formId: string;
   confirmButtonText: string;
-};
+}
 
 const FormModalTrigger = ({
   triggerButtonIcon,
@@ -55,7 +55,6 @@ const FormModalTrigger = ({
           <Button
             loading={isLoading}
             variant="solid"
-            color="black"
             type="submit"
             form={formId}
           >
