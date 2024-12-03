@@ -1,23 +1,30 @@
-import ExperimentService from "#/services/ExperimentService";
-import { useLocation, useRoute } from "wouter";
-import NotFound from "../NotFound";
+import ExperimentService from '#/services/ExperimentService';
+import FeatureService from '#/services/FeatureService';
+import { useLocation, useRoute } from 'wouter';
+import NotFound from '../NotFound';
 
-import { useEffect, useState } from "react";
-import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from "recharts";
+import { useEffect, useState } from 'react';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+  LabelProps as RechartsLabelProps,
+} from 'recharts';
 import {
   Box,
   Button,
   Editable,
   Flex,
   Heading,
-  Highlight,
   HStack,
   Icon,
   IconButton,
   Stack,
-  Text,
-} from "@chakra-ui/react";
-import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from "../ui/menu";
+} from '@chakra-ui/react';
+import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../ui/menu';
 import {
   Check,
   EllipsisVertical,
@@ -26,13 +33,29 @@ import {
   Power,
   Trash2,
   X,
-} from "lucide-react";
-import FormModalTrigger from "../FormModal";
-import LinkFeatureForm from "./LinkFeatureForm";
+} from 'lucide-react';
+import FormModalTrigger from '../FormModal';
+import LinkFeatureForm from './LinkFeatureForm';
+import {
+  AccordionItem,
+  AccordionItemContent,
+  AccordionItemTrigger,
+  AccordionRoot,
+} from '../ui/accordion';
+
+interface CustomLabelProps extends RechartsLabelProps {
+  innerRadius: number; // The inner radius of the pie slice
+  outerRadius: number; // The outer radius of the pie slice
+  cx: number; // The x-coordinate of the center of the chart
+  cy: number; // The y-coordinate of the center of the chart
+  midAngle: number; // The angle (in degrees) at the middle of the pie slice
+  percent: number; // The percentage of the pie slice relative to the total
+}
 
 const experimentService = new ExperimentService();
+const featureService = new FeatureService();
 
-const LINK_FEATURE_FORM = "link-feature-form";
+const LINK_FEATURE_FORM = 'link-feature-form';
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({
@@ -42,8 +65,7 @@ const renderCustomizedLabel = ({
   innerRadius,
   outerRadius,
   percent,
-  index,
-}) => {
+}: CustomLabelProps) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
@@ -53,7 +75,7 @@ const renderCustomizedLabel = ({
       x={x}
       y={y}
       fill="white"
-      textAnchor={x > cx ? "start" : "end"}
+      textAnchor={x > cx ? 'start' : 'end'}
       dominantBaseline="central"
     >
       {`${(percent * 100).toFixed(0)}%`}
@@ -69,19 +91,20 @@ const formatGroups = (groups) => {
 };
 
 const data = [
-  { name: "Group A", value: 400 },
-  { name: "Group B", value: 300 },
-  { name: "Group C", value: 300 },
-  { name: "Group D", value: 200 },
+  { name: 'Group A', value: 400 },
+  { name: 'Group B', value: 300 },
+  { name: 'Group C', value: 300 },
+  { name: 'Group D', value: 200 },
 ];
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 const ExperimentPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [editDesc, setEditDesc] = useState<boolean>(false);
   const [editHypo, setEditHypo] = useState<boolean>(false);
   const [experiment, setExperiment] = useState<FeatureFlag | null>(null);
-  const [match, params] = useRoute("/experiments/:id");
+  const [linkedFeatures, setLinkedFeatures] = useState([]);
+  const [match, params] = useRoute('/experiments/:id');
   const [location, navigate] = useLocation();
 
   useEffect(() => {
@@ -89,10 +112,8 @@ const ExperimentPage = () => {
       if (params) {
         try {
           const response = await experimentService.getExperiment(params.id);
-          const resExperiment = await response.json();
-          console.log(resExperiment);
-          if (resExperiment) {
-            setExperiment(resExperiment);
+          if (response.ok) {
+            setExperiment(response.body);
           }
         } catch (error) {
           console.log(error);
@@ -100,8 +121,35 @@ const ExperimentPage = () => {
       }
       setIsLoading(false);
     };
+
     return () => handleGetExperiment();
   }, []);
+
+  useEffect(() => {
+    const handleGetLinkedFeatures = async () => {
+      if (experiment.flagIds) {
+        try {
+          // todo:
+          // get all flags and store them in a digestable format for this page
+          const features = [];
+          for (const flagId in experiment.flagIds) {
+            const flag = await featureService.getFeature(flagId);
+            if (flag.ok) {
+              features.push({
+                id: flag.body.id,
+                name: flag.body.name,
+                environmentNames: flag.body.environmentNames,
+                valueType: flag.body.value.type,
+              });
+            }
+          }
+          setLinkedFeatures(features);
+        } catch (error) {}
+      }
+    };
+
+    return () => handleGetLinkedFeatures();
+  }, [experiment]);
 
   const handleDeleteFeature = () => {
     // experimentService.deleteExperiment(experiment.id);
@@ -132,7 +180,7 @@ const ExperimentPage = () => {
                   valueText="Delete"
                   cursor="pointer"
                   color="fg.error"
-                  _hover={{ bg: "bg.error", color: "fg.error" }}
+                  _hover={{ bg: 'bg.error', color: 'fg.error' }}
                   onClick={handleDeleteFeature}
                 >
                   <Trash2 />
@@ -238,33 +286,43 @@ const ExperimentPage = () => {
                 <PieChart width={400} height={400}>
                   <Pie
                     data={experiment.groups}
+                    dataKey="proportion"
+                    nameKey="name"
                     cx="50%"
                     cy="50%"
-                    labelLine={true}
+                    labelLine={false}
                     label={renderCustomizedLabel}
                     outerRadius={80}
                     fill="#8884d8"
-                    dataKey="proportion"
                   >
                     {data.map((entry, index) => (
                       <Cell
+                        cursor="help"
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
                       />
                     ))}
                   </Pie>
+                  <Legend
+                    layout="vertical"
+                    align="right"
+                    verticalAlign="middle"
+                  />
+                  <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
             </Stack>
             <Stack padding="15px" bg="white" borderRadius="5px">
               <Flex justifyContent="space-between">
-                <Heading size="lg">Linked Features</Heading>
+                <Heading size="lg">
+                  Linked Features ({experiment.flagIds.length})
+                </Heading>
                 <FormModalTrigger
                   triggerButtonIcon={<Link />}
-                  triggerButtonText={"Link Feature Flag"}
+                  triggerButtonText={'Link Feature Flag'}
                   title={`Link Feature to ${experiment.name}`}
                   formId={LINK_FEATURE_FORM}
-                  confirmButtonText={"Link"}
+                  confirmButtonText={'Link'}
                 >
                   <LinkFeatureForm
                     formId={LINK_FEATURE_FORM}
@@ -272,13 +330,21 @@ const ExperimentPage = () => {
                   />
                 </FormModalTrigger>
               </Flex>
+              <AccordionRoot variant="enclosed" collapsible>
+                {linkedFeatures.map((feature) => (
+                  <AccordionItem>
+                    <AccordionItemTrigger>{feature.name}</AccordionItemTrigger>
+                    <AccordionItemContent></AccordionItemContent>
+                  </AccordionItem>
+                ))}
+              </AccordionRoot>
             </Stack>
           </Stack>
         </Box>
       </Stack>
     );
   } else {
-    return <NotFound componentName={"experiment"} />;
+    return <NotFound componentName={'experiment'} />;
   }
 };
 
