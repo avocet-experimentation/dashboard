@@ -1,7 +1,5 @@
-import FetchWrapper, {
-  ParsedResponse,
-  ResponseTypes,
-} from '#/lib/FetchWrapper';
+import { ResponseTypes, ParsedResponse } from '#/lib/fetchTypes';
+import FetchWrapper from '#/lib/FetchWrapper';
 import {
   FeatureFlag,
   FeatureFlagDraft,
