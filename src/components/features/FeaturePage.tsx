@@ -66,6 +66,23 @@ export default function FeaturePage() {
     }
   };
 
+  const cancelHandler = (feature: FeatureFlag) => {
+    const textarea = document.querySelector('textarea');
+    if (textarea) {
+      if (textarea.value !== undefined) textarea.value = feature.description;
+      textarea.blur();
+    }
+    console.log("cancel clicked, reset to:", feature.description);
+    setEditDesc(false);
+  }
+  
+  const submitHandler = (feature: FeatureFlag) => {
+    const newValue = document.querySelector('textarea')?.value || feature.description;
+    console.log("value:", { newValue })
+    featureService.patchFeature(feature.id, { description: newValue });
+    setEditDesc(false);
+  }
+
   return (
     <>
       {!isLoading && feature ? (
@@ -130,12 +147,20 @@ export default function FeaturePage() {
                 <Editable.Textarea />
                 <Editable.Control>
                   <Editable.CancelTrigger asChild>
-                    <IconButton variant="outline" size="xs">
+                    <IconButton variant="outline" size="xs"
+                      onClick={() => {
+                        cancelHandler(feature);
+                      }}
+                    >
                       <X />
                     </IconButton>
                   </Editable.CancelTrigger>
                   <Editable.SubmitTrigger asChild>
-                    <IconButton variant="outline" size="xs">
+                    <IconButton variant="outline" size="xs"
+                      onClick={() => {
+                        submitHandler(feature);
+                      }}
+                    >
                       <Check />
                     </IconButton>
                   </Editable.SubmitTrigger>

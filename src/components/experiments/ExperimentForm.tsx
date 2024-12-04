@@ -20,14 +20,21 @@ import {
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import FeatureService from '#/services/FeatureService';
 
-import { Experiment } from '@estuary/types';
+import { Experiment, FeatureFlag, FeatureFlagDraft, Treatment } from '@estuary/types';
 import { Slider } from '../ui/slider';
 import { Radio } from '../ui/radio';
 import { ExperimentDraft } from '@estuary/types';
 import ExperimentService from '#/services/ExperimentService';
 import ExpTypeForm from './ExpTypeForm';
 
-const templateToObject = (template) => {
+interface FeatureCollection {
+  label: string
+  value: string
+  type: "string" | "number" | "boolean"
+  initial: string | number | boolean
+}
+
+const templateToObject = (template: ExperimentDraft) => {
   return Object.getOwnPropertyNames(template).reduce((acc, prop) => {
     acc[prop] = template[prop];
     return acc;
@@ -51,15 +58,15 @@ const defaultSwitchback = templateToObject(switchbackTemplate);
 const expService = new ExperimentService();
 const featureService = new FeatureService();
 
-const createTreatmentCollection = (definedTreatments) => {
+const createTreatmentCollection = (definedTreatments: Treatment) => {
   const items = Object.entries(definedTreatments).map(([id, treatment]) => {
     return { label: treatment.name, value: id };
   });
   return createListCollection({ items });
 };
 
-const createFeatureCollection = (features) => {
-  const items = features.map((feature) => {
+const createFeatureCollection = (features: FeatureFlag[]) => {
+  const items: FeatureCollection = features.map((feature) => {
     return {
       label: feature.name,
       value: feature.id,
@@ -70,10 +77,20 @@ const createFeatureCollection = (features) => {
   return createListCollection({ items });
 };
 
-const reformatAllTrafficProportion = (expContent: Inputs): void => {
+// mutating function
+const reformatAllTrafficProportion = (expContent: ExperimentDraft): void => {
   const originalProportion = expContent.enrollment.proportion;
   const reformatted = parseFloat((originalProportion / 100).toFixed(2));
   expContent.enrollment.proportion = reformatted;
+};
+
+// mutating function
+const collectFeatureIds = (expContent: ExperimentDraft): void => {
+  const firstTreatment = Object.keys(expContent.definedTreatments)[0];
+  const collectedIds = expContent.definedTreatments[
+    firstTreatment
+  ].flagStates.map((feature) => feature.id);
+  expContent.flagIds = collectedIds;
 };
 
 const ExperimentCreationForm = ({ formId, setIsLoading }) => {
@@ -121,7 +138,7 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
       try {
         const allFeatures = await featureService.getAllFeatures();
         setFeaturesCollection(
-          allFeature.ok
+          allFeatures.ok
             ? createFeatureCollection(await allFeatures.body)
             : null,
         );
@@ -130,7 +147,7 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
       }
     };
 
-    return () => handleGetAllFeatures();
+    handleGetAllFeatures();
   }, []);
 
   const definedTreatments = watch('definedTreatments');
@@ -141,11 +158,12 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
     // createGroupIds(expContent);
 
     reformatAllTrafficProportion(expContent);
+    collectFeatureIds(expContent);
     if (expType === 'switchback') {
       expContent.groups[0].sequence = Object.keys(expContent.definedTreatments);
     }
     console.log('data', expContent);
-    // expService.createExperiment(expContent);
+    expService.createExperiment(expContent);
   };
 
   return (

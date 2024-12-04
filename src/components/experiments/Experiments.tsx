@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { Flex, Heading, Text } from "@chakra-ui/react";
-import { CirclePlus } from "lucide-react";
-import ExperimentCreationForm from "./ExperimentForm";
-import FormModalTrigger from "../FormModal";
-import { Experiment } from "@estuary/types";
-import ExperimentTable from "./ExperimentTable";
-import ExperimentService from "#/services/ExperimentService";
+import { useEffect, useState } from 'react';
+import { Flex, Heading, Text } from '@chakra-ui/react';
+import { CirclePlus } from 'lucide-react';
+import ExperimentCreationForm from './ExperimentForm';
+import FormModalTrigger from '../FormModal';
+import { Experiment } from '@estuary/types';
+import ExperimentTable from './ExperimentTable';
+import ExperimentService from '#/services/ExperimentService';
 
-const CREATE_EXPERIMENT_FORM_ID = "experiment-management-form";
+const CREATE_EXPERIMENT_FORM_ID = 'experiment-management-form';
 
 const experimentService = new ExperimentService();
 
@@ -18,14 +18,14 @@ const Experiments = () => {
     const handleGetAllExperiments = async () => {
       try {
         const allExperiments = await experimentService.getAllExperiments();
-        setExperiments(allExperiments ? await allExperiments.json() : []);
+        setExperiments(allExperiments.ok ? await allExperiments.body : []);
         console.log(experiments);
       } catch (error) {
         console.log(error);
       }
     };
 
-    return () => handleGetAllExperiments();
+    handleGetAllExperiments();
   }, []);
 
   return (
@@ -39,10 +39,10 @@ const Experiments = () => {
         <Heading size="3xl">Experiments</Heading>
         <FormModalTrigger
           triggerButtonIcon={<CirclePlus />}
-          triggerButtonText={"Create Experiment"}
-          title={"Create a New Experiment"}
+          triggerButtonText={'Create Experiment'}
+          title={'Create a New Experiment'}
           formId={CREATE_EXPERIMENT_FORM_ID}
-          confirmButtonText={"Create"}
+          confirmButtonText={'Create'}
         >
           <ExperimentCreationForm
             formId={CREATE_EXPERIMENT_FORM_ID}
@@ -56,7 +56,7 @@ const Experiments = () => {
       {experiments.length ? (
         <ExperimentTable experiments={experiments} />
       ) : (
-        "No experiments found. Please create one."
+        'No experiments found. Please create one.'
       )}
     </Flex>
   );

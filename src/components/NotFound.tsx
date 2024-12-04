@@ -1,7 +1,11 @@
-import { Flex, chakra, Text } from "@chakra-ui/react";
-import SearchX from "../assets/svgs/search-x.svg";
+import { Flex, chakra, Text } from '@chakra-ui/react';
+import SearchX from '../assets/svgs/search-x.svg';
 
-const NotFound = ({ componentName }) => {
+interface NotFoundProps {
+  componentName: string;
+}
+
+const NotFound = ({ componentName }: NotFoundProps) => {
   return (
     <Flex
       direction="column"

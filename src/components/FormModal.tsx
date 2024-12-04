@@ -1,3 +1,7 @@
+import { IconButton } from '@chakra-ui/react';
+import {
+  ReactNode, useState, cloneElement, ReactElement,
+} from 'react';
 import {
   DialogActionTrigger,
   DialogBody,
@@ -10,21 +14,19 @@ import {
   DialogTrigger,
 } from './ui/dialog';
 import { Button } from './ui/button';
-import { IconButton } from '@chakra-ui/react';
-import { ReactNode, useState, cloneElement, ReactElement } from 'react';
 
-type FormModalProps = {
+interface FormModalProps {
   triggerButtonIcon: ReactNode;
   triggerButtonText: string;
   title: string;
-  children: ReactElement<any, any>;
+  children: ReactElement;
   formId: string;
   confirmButtonText: string;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
+}
 
-const FormModalTrigger = ({
+function FormModalTrigger({
   triggerButtonIcon,
   triggerButtonText,
   title,
@@ -33,13 +35,13 @@ const FormModalTrigger = ({
   children,
   open,
   setOpen,
-}: FormModalProps) => {
+}: FormModalProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Clone the child element and add the additional props to it
   const childWithProps = cloneElement(children, {
-    setIsLoading: setIsLoading,
-    formId: formId,
+    setIsLoading,
+    formId,
     setOpen,
   });
 
@@ -67,7 +69,6 @@ const FormModalTrigger = ({
           <Button
             loading={isLoading}
             variant="solid"
-            color="black"
             type="submit"
             form={formId}
           >
@@ -81,6 +82,6 @@ const FormModalTrigger = ({
       </DialogContent>
     </DialogRoot>
   );
-};
+}
 
 export default FormModalTrigger;
