@@ -91,4 +91,26 @@ export default class ExperimentService {
     }
     return response as ParsedResponse<{ experimentId: string }>;
   }
+
+  async startExperiment(
+    experimentId: string,
+  ): Promise<ResponseTypes<ExperimentDraft>> {
+    const response = await this.fetch.get(`/id/${experimentId}/start`);
+    if (!response.ok) {
+      return response;
+    } else {
+      console.log({ startedExperiment: response.body });
+      const safeParseResult = experimentSchema.safeParse(response.body);
+      if (!safeParseResult.success) {
+        throw new SchemaParseError(safeParseResult);
+      }
+      const parsedResponse: ParsedResponse<ExperimentDraft> = {
+        ...response,
+        ok: true,
+        body: safeParseResult.data,
+      };
+
+      return parsedResponse;
+    }
+  }
 }
