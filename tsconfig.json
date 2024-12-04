@@ -20,10 +20,11 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    /* Unused variable linting handled by typescript-eslint */
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
-  "include": ["src"],
+  "include": ["src", "prettier.config.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
