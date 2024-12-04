@@ -18,19 +18,23 @@ module.exports = {
     tsconfigRootDir: __dirname
   },
   plugins: ['react-refresh'],
-  overrides: [
-    {
-      rules: {
-        'react-refresh/only-export-components': [
-          'warn',
-          { allowConstantExport: true }
-        ],
-        'react/react-in-jsx-scope': 'off',
-        'react/no-unescaped-entities': 'off',
-        'no-unused-vars': 'off' // handled by TS
+  rules: {
+    'react-refresh/only-export-components': [
+      'warn',
+      { allowConstantExport: true }
+    ],
+    'react/react-in-jsx-scope': 'off',
+    'react/no-unescaped-entities': 'off',
+    'no-unused-vars': 'off', // handled by typescript-eslint
+    'implicit-arrow-linebreak': 'off',
+    'import/prefer-default-export': 'off',
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: ['setupTests.ts', '**/*{.,_}{test,spec}.{ts,tsx}']
       }
-    }
-  ],
+    ]
+  },
   settings: {
     'import/resolver': {
       typescript: {}
