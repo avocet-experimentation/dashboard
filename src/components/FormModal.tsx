@@ -8,18 +8,20 @@ import {
   DialogRoot,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
-import { IconButton } from "@chakra-ui/react";
-import { ReactNode, useState, cloneElement } from "react";
+} from './ui/dialog';
+import { Button } from './ui/button';
+import { IconButton } from '@chakra-ui/react';
+import { ReactNode, useState, cloneElement, ReactElement } from 'react';
 
-type FormModal = {
+type FormModalProps = {
   triggerButtonIcon: ReactNode;
   triggerButtonText: string;
   title: string;
-  children: ReactNode;
+  children: ReactElement<any, any>;
   formId: string;
   confirmButtonText: string;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const FormModalTrigger = ({
@@ -29,17 +31,27 @@ const FormModalTrigger = ({
   formId,
   confirmButtonText,
   children,
-}: FormModal) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  open,
+  setOpen,
+}: FormModalProps) => {
+  const [isLoading, setIsLoading] = useState(false);
 
   // Clone the child element and add the additional props to it
   const childWithProps = cloneElement(children, {
     setIsLoading: setIsLoading,
     formId: formId,
+    setOpen,
   });
 
   return (
-    <DialogRoot placement="center" motionPreset="slide-in-bottom" size="lg">
+    <DialogRoot
+      lazyMount
+      open={open}
+      onOpenChange={(e) => setOpen(e.open)}
+      placement="center"
+      motionPreset="slide-in-bottom"
+      size="lg"
+    >
       <DialogTrigger asChild>
         <IconButton variant="outline" size="md" padding="15px">
           {triggerButtonIcon}

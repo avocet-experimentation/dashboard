@@ -1,39 +1,40 @@
 /* for now, links to EventTable and FlagTable only
  */
 
-import { Flex, chakra, Icon, Text } from "@chakra-ui/react";
+import { Flex, chakra, Icon, Text } from '@chakra-ui/react';
 import {
   Flag,
   Microscope,
   TestTubes,
   AlignHorizontalDistributeCenter,
-} from "lucide-react";
-import EstuaryLogo from "../assets/svgs/estuary-logo.svg";
-import { Link } from "wouter";
+  Earth,
+} from 'lucide-react';
+import EstuaryLogo from '../assets/svgs/estuary-logo.svg';
+import { Link } from 'wouter';
 
-const NavBox = chakra("div", {
+const NavBox = chakra('div', {
   base: {
-    width: "90%",
-    borderRadius: "5px",
-    color: "black",
-    height: "50px",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    fontSize: "1.15em",
-    padding: "0 20px",
+    width: '90%',
+    borderRadius: '5px',
+    color: 'black',
+    height: '50px',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    fontSize: '1.15em',
+    padding: '0 20px',
     _hover: {
-      bg: "gray.200",
+      bg: 'gray.200',
     },
   },
 });
 
-const NavText = chakra("p", {
+const NavText = chakra('p', {
   base: {
-    color: "black",
-    textDecoration: "none",
-    padding: "15px",
-    width: "15cqi",
+    color: 'black',
+    textDecoration: 'none',
+    padding: '15px',
+    width: '15cqi',
   },
 });
 
@@ -95,6 +96,14 @@ export default function Navbar() {
         </Icon>
         <Link href="/insights" draggable={false}>
           <NavText>Insights</NavText>
+        </Link>
+      </NavBox>
+      <NavBox>
+        <Icon>
+          <Earth />
+        </Icon>
+        <Link href="/environments" draggable={false}>
+          <NavText>Environments</NavText>
         </Link>
       </NavBox>
     </Flex>
