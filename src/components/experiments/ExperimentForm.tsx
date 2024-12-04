@@ -20,14 +20,21 @@ import {
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import FeatureService from '#/services/FeatureService';
 
-import { Experiment } from '@estuary/types';
+import { Experiment, FeatureFlag, FeatureFlagDraft, Treatment } from '@estuary/types';
 import { Slider } from '../ui/slider';
 import { Radio } from '../ui/radio';
 import { ExperimentDraft } from '@estuary/types';
 import ExperimentService from '#/services/ExperimentService';
 import ExpTypeForm from './ExpTypeForm';
 
-const templateToObject = (template) => {
+interface FeatureCollection {
+  label: string
+  value: string
+  type: "string" | "number" | "boolean"
+  initial: string | number | boolean
+}
+
+const templateToObject = (template: ExperimentDraft) => {
   return Object.getOwnPropertyNames(template).reduce((acc, prop) => {
     acc[prop] = template[prop];
     return acc;
@@ -51,15 +58,15 @@ const defaultSwitchback = templateToObject(switchbackTemplate);
 const expService = new ExperimentService();
 const featureService = new FeatureService();
 
-const createTreatmentCollection = (definedTreatments) => {
+const createTreatmentCollection = (definedTreatments: Treatment) => {
   const items = Object.entries(definedTreatments).map(([id, treatment]) => {
     return { label: treatment.name, value: id };
   });
   return createListCollection({ items });
 };
 
-const createFeatureCollection = (features) => {
-  const items = features.map((feature) => {
+const createFeatureCollection = (features: FeatureFlag[]) => {
+  const items: FeatureCollection = features.map((feature) => {
     return {
       label: feature.name,
       value: feature.id,
@@ -140,7 +147,7 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
       }
     };
 
-    return () => handleGetAllFeatures();
+    handleGetAllFeatures();
   }, []);
 
   const definedTreatments = watch('definedTreatments');
