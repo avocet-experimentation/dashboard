@@ -25,7 +25,7 @@ const Experiments = () => {
       }
     };
 
-    return () => handleGetAllExperiments();
+    handleGetAllExperiments();
   }, []);
 
   return (

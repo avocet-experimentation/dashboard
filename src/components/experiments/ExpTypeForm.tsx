@@ -46,7 +46,7 @@ const appendedGroup = (index: number): ExperimentGroup => {
 };
 
 const setEqualProportions = (
-  fields: ExperimentGroup[],
+  fields: Omit<ExperimentGroup, 'id'>[],
   fieldArrayUpdate,
 ): void => {
   const numOfVariations: number = fields.length;
@@ -240,11 +240,12 @@ const ExpTypeForm = ({
                                     if (selectedFeature.type === 'boolean')
                                       return (
                                         <Switch
-                                          id={selectedFeatureId}
+                                          id={id + "." + selectedFeatureId}
+                                          key={id + "." + selectedFeatureId}
                                           name={field.name}
                                           checked={!!field.value}
                                           onCheckedChange={({ checked }) => {
-                                            return field.onChange(checked);
+                                            return field.onChange(!!checked);
                                           }}
                                           inputProps={{ onBlur: field.onBlur }}
                                         >
