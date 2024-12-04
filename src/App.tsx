@@ -1,15 +1,16 @@
-import { Route, Switch } from "wouter";
+import { Route, Switch } from 'wouter';
 // import "./assets/stylesheets/App.css";
-import Navbar from "./components/Navbar";
-import "./services/FeatureService";
-import { Flex } from "@chakra-ui/react";
+import Navbar from './components/Navbar';
+import './services/FeatureService';
+import { Flex } from '@chakra-ui/react';
 
-import Features from "./components/features/Features";
-import EventFeatures from "./components/events/EventFeatures";
-import Experiments from "./components/experiments/Experiments";
-import FeaturePage from "./components/features/FeaturePage";
-import TopBar from "./components/TopBar";
-import ExperimentPage from "./components/experiments/ExperimentPage";
+import Features from './components/features/Features';
+import EventFeatures from './components/events/EventFeatures';
+import Experiments from './components/experiments/Experiments';
+import FeaturePage from './components/features/FeaturePage';
+import TopBar from './components/TopBar';
+import ExperimentPage from './components/experiments/ExperimentPage';
+import EnvironmentsMainPage from './components/environments/EnvironmentsMainPage';
 
 export default function App() {
   return (
@@ -20,6 +21,10 @@ export default function App() {
         <Switch>
           <Route path="/features" component={() => <Features />} />
           <Route path="/features/:id" component={() => <FeaturePage />} />
+          <Route
+            path="/environments"
+            component={() => <EnvironmentsMainPage />}
+          />
           <Route path="/experiments" component={() => <Experiments />} />
           <Route path="/experiments/:id" component={() => <ExperimentPage />} />
           <Route
