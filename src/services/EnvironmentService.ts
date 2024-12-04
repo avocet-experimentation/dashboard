@@ -1,23 +1,14 @@
-/* Todo:
-- CRUD individual environments
-*/
-
 import stringifyObject from 'stringify-object';
 import {
   Environment,
   EnvironmentDraft,
   environmentSchema,
-  isObjectWithProps,
   SchemaParseError,
-  ZodArraySchema,
-  ZodObjectSchema,
 } from '@estuary/types';
 import {
   GQLParsedFailureResponse,
   GQLParsedResponse,
   GQLParsedSuccessResponse,
-  GQLResponse,
-  GQLResponseBody,
 } from '#/lib/fetchTypes';
 import GraphQLFetchWrapper from '#/lib/GraphQLFetchWrapper';
 
@@ -52,6 +43,7 @@ export default class EnvironmentService {
         defaultEnabled
         createdAt
         updatedAt
+        pinToLists
       }
     `;
 
@@ -93,6 +85,7 @@ export default class EnvironmentService {
         defaultEnabled
         createdAt
         updatedAt
+        pinToLists
       }
     `;
 
@@ -134,6 +127,7 @@ export default class EnvironmentService {
         updatedAt
         name
         defaultEnabled
+        pinToLists
       }
     `;
     const response = await this.gqlApi.mutate<Environment>(mutation);
@@ -175,6 +169,7 @@ export default class EnvironmentService {
         updatedAt
         name
         defaultEnabled
+        pinToLists
       }
     `;
 
@@ -227,8 +222,6 @@ export default class EnvironmentService {
       return failure;
     }
 
-    const { deleteEnvironment } = response.body.data;
-    // console.log({ deleted: deleteEnvironment });
     const success: GQLParsedSuccessResponse<boolean> = {
       ok: true,
       body: response.body.data.deleteEnvironment,
