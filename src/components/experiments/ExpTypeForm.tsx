@@ -422,6 +422,11 @@ const ExpTypeForm = ({
                                   value: 1,
                                   message: '<= 1',
                                 },
+                                validate: {
+                                  sumToOne: () => 
+                                    groupValues.reduce((acc: number, { proportion }) => {return acc + proportion}, 0) === 1 ||
+                                    'Group proportions must sum to 1.'
+                                }
                               })}
                             />
                           </Field>
