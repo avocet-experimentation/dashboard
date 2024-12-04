@@ -1,7 +1,7 @@
 import { RequestOptions, ResponseTypes } from './fetchTypes';
 
 export const defaultJsonHeaders: HeadersInit = {
-  'content-type': 'application/json',
+  'Content-Type': 'application/json',
   mode: 'cors',
 };
 
@@ -19,8 +19,7 @@ export async function handleJsonResponse<T>(
 ): Promise<ResponseTypes<T>> {
   if (!response.ok) {
     return { ...response, ok: false };
-  } else {
-    const parsed: T = await response.json();
-    return { ...response, ok: true, body: parsed };
   }
+  const parsed: T = await response.json();
+  return { ...response, ok: true, body: parsed };
 }

@@ -2,14 +2,6 @@
 - CRUD individual environments
 */
 
-import {
-  GQLParsedFailureResponse,
-  GQLParsedResponse,
-  GQLParsedSuccessResponse,
-  GQLResponse,
-  GQLResponseBody,
-} from '#/lib/fetchTypes';
-import GraphQLFetchWrapper from '#/lib/GraphQLFetchWrapper';
 import stringifyObject from 'stringify-object';
 import {
   Environment,
@@ -20,13 +12,20 @@ import {
   ZodArraySchema,
   ZodObjectSchema,
 } from '@estuary/types';
+import {
+  GQLParsedFailureResponse,
+  GQLParsedResponse,
+  GQLParsedSuccessResponse,
+  GQLResponse,
+  GQLResponseBody,
+} from '#/lib/fetchTypes';
+import GraphQLFetchWrapper from '#/lib/GraphQLFetchWrapper';
 
 export default class EnvironmentService {
   gqlApi: GraphQLFetchWrapper;
 
   constructor() {
     const DEFAULT_HEADERS = {
-      'Content-Type': 'application/json',
       mode: 'cors',
     };
 
