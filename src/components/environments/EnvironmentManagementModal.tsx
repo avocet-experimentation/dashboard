@@ -1,8 +1,8 @@
 import { CirclePlus } from 'lucide-react';
 import { useState } from 'react';
-import FormModalTrigger from '../FormModal';
-import EnvironmentManagementForm from './EnvironmentManagementForm';
 import { Environment } from '@estuary/types';
+import FormModal from '../forms/FormModal';
+import EnvironmentManagementForm from './EnvironmentManagementForm';
 
 const ENVIRONMENT_MANAGEMENT_FORM_ID = 'environment-management-form';
 
@@ -10,13 +10,13 @@ interface EnvironmentManagementModalProps {
   // formId: string;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   environment?: Environment;
-  setEnvironments: React.Dispatch<React.SetStateAction<Environment[]>>;
+  // setEnvironments: React.Dispatch<React.SetStateAction<Environment[]>>;
   updateEnvironment: (updated: Environment) => void;
 }
 
 export default function EnvironmentManagementModal({
   environment,
-  setEnvironments,
+  // setEnvironments,
   updateEnvironment,
   setIsLoading,
 }: EnvironmentManagementModalProps) {
@@ -24,18 +24,18 @@ export default function EnvironmentManagementModal({
 
   const formModalProps = environment
     ? {
-        title: `Modify "${environment?.name}" Environment`,
-        confirmButtonText: 'Update',
-        triggerButtonText: environment?.name,
-      }
+      title: `Modify "${environment?.name}" Environment`,
+      confirmButtonText: 'Update',
+      triggerButtonText: environment?.name,
+    }
     : {
-        title: 'Create a New Environment',
-        confirmButtonText: 'Create',
-        triggerButtonText: 'Add Environment',
-      };
+      title: 'Create a New Environment',
+      confirmButtonText: 'Create',
+      triggerButtonText: 'Add Environment',
+    };
 
   return (
-    <FormModalTrigger
+    <FormModal
       triggerButtonIcon={<CirclePlus />}
       formId={ENVIRONMENT_MANAGEMENT_FORM_ID}
       open={open}
@@ -45,11 +45,11 @@ export default function EnvironmentManagementModal({
       <EnvironmentManagementForm
         formId={ENVIRONMENT_MANAGEMENT_FORM_ID}
         setIsLoading={setIsLoading}
-        setEnvironments={setEnvironments}
+        // setEnvironments={setEnvironments}
         updateEnvironment={updateEnvironment}
         environment={environment}
         setOpen={setOpen}
       />
-    </FormModalTrigger>
+    </FormModal>
   );
 }

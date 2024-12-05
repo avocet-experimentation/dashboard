@@ -34,25 +34,20 @@ export default function ControlledSwitch<T extends FieldValues>({
       name={fieldPath}
       control={control}
       render={({ field }) => (
-        <Field
-          invalid={!!formState.errors[fieldPath]}
-          errorText={formState.errors[fieldPath]?.message as string | undefined}
-        >
-          <Flex>
-            {labelPosition === 'left' && <Text marginRight="5px">{label}</Text>}
-            <Switch
-              id={switchId}
-              name={field.name}
-              checked={!!field.value}
-              onCheckedChange={({ checked }) => field.onChange(checked)}
-              onBlur={field.onBlur}
-              width="fit-content"
-            >
-              {labelPosition === 'right'
-                && 'Enabled by default for new feature flags'}
-            </Switch>
-          </Flex>
-        </Field>
+        <Flex>
+          {labelPosition === 'left' && <Text marginRight="5px">{label}</Text>}
+          <Switch
+            id={switchId}
+            name={field.name}
+            checked={!!field.value}
+            onCheckedChange={({ checked }) => field.onChange(checked)}
+            onBlur={field.onBlur}
+            width="fit-content"
+          >
+            {labelPosition === 'right'
+              && 'Enabled by default for new feature flags'}
+          </Switch>
+        </Flex>
       )}
     />
   );

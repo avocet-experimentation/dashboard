@@ -1,29 +1,20 @@
+import { createListCollection, Flex, Stack } from '@chakra-ui/react';
+import { useContext, useState } from 'react';
+import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
 import {
-  createListCollection,
-  Flex,
-  Input,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
-import { Field } from '../ui/field';
-import { Switch } from '../ui/switch';
-import { useState } from 'react';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
+  Environment,
   FeatureFlagDraft,
   featureFlagDraftSchema,
   SchemaParseError,
 } from '@estuary/types';
-import FeatureService from '#/services/FeatureService';
 import { useLocation } from 'wouter';
+import { ServicesContext } from '#/services/ServiceContext';
+import { Field } from '../ui/field';
 import FeatureFlagValueTypeField from './FeatureFlagValueTypeField';
 import FeatureFlagDefaultValueField from './FeatureFlagDefaultValueField';
+import { DescriptionField, NameField } from '../forms/DefinedFields';
+import ControlledSwitch from '../forms/ControlledSwitch';
 
-// todo: replace this placeholder with fetched environment names
-const environments = createListCollection<string>({
-  items: ['dev', 'prod', 'testing', 'staging'],
-});
 const valueTypes = createListCollection({
   items: [
     { label: 'Boolean (on/off)', value: 'boolean' },
@@ -32,148 +23,103 @@ const valueTypes = createListCollection({
   ],
 });
 
-const featureService = new FeatureService();
-
 interface FeatureFlagCreationFormProps {
   formId: string;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  environments: Environment[];
 }
 
-export default function FeatureCreationForm({
+export default function FeatureFlagCreationForm({
   formId,
   setIsLoading,
+  setOpen,
+  environments,
 }: FeatureFlagCreationFormProps) {
   const [isError, setIsError] = useState(null);
   const [location, navigate] = useLocation();
+  const services = useContext(ServicesContext);
 
-  const {
-    control,
-    setValue,
-    register,
-    handleSubmit,
-    getValues,
-    formState: { errors },
-  } = useForm<FeatureFlagDraft>({
+  const pinnedEnvironments = createListCollection<string>({
+    items: environments.filter((env) => env.pinToLists).map((env) => env.name),
+  });
+
+  console.log({ environments, pinnedEnvironments });
+  const formMethods = useForm<FeatureFlagDraft>({
     defaultValues: FeatureFlagDraft.templateBoolean({
       name: '',
     }),
-    // resolver: zodResolver(featureFlagDraftSchema),
   });
 
   const onSubmit: SubmitHandler<FeatureFlagDraft> = async (featureContent) => {
-    console.log('submit handler invoked');
+    // console.log('submit handler invoked');
 
-    // placeholder
-    Object.keys(featureContent.environmentNames).forEach((key) => {
-      if (featureContent.environmentNames[key] !== true) {
-        delete featureContent.environmentNames[key];
+    try {
+      // todo: remove this filtering once no longer needed
+      const filteredEnvironmentNames = Object.fromEntries(
+        Object.entries(featureContent.environmentNames).filter(
+          ([, value]) => value === true,
+        ),
+      );
+
+      const safeParseResult = featureFlagDraftSchema.safeParse({
+        ...featureContent,
+        environmentNames: filteredEnvironmentNames,
+      });
+      if (!safeParseResult.success) {
+        // the error pretty-print the Zod parse error message
+        throw new SchemaParseError(safeParseResult);
       }
-    });
-    console.log({ featureContent });
-    // these lines unnecessary if the resolver argument to `useForm` works
-    const safeParseResult = featureFlagDraftSchema.safeParse(featureContent);
-    if (!safeParseResult.success) {
-      // the error pretty-print the Zod parse error message
-      throw new SchemaParseError(safeParseResult);
+
+      setIsLoading(true);
+      const response = await services.featureFlag.createFeature(
+        safeParseResult.data,
+      );
+      if (response.status === 409) {
+        const { error } = await response.json();
+        setIsError(error);
+      } else if (response.ok) {
+        const { fflagId } = response.body;
+        navigate(`/features/${fflagId}`);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+      setOpen(false);
     }
-    setIsLoading(true);
-    const response = await featureService.createFeature(safeParseResult.data);
-    if (response.status === 409) {
-      const { error } = await response.json();
-      setIsError(error);
-    } else if (response.ok) {
-      const { fflagId } = response.body;
-      navigate(`/features/${fflagId}`);
-    } else if (response.status) {
-    }
-    setIsLoading(false);
   };
 
   return (
-    <form id={formId} onSubmit={handleSubmit(onSubmit)}>
-      <Stack gap="4">
-        <Field
-          label="Feature Name"
-          invalid={!!errors.name}
-          errorText={errors.name?.message}
-        >
-          <Controller
-            name="name"
-            control={control}
-            render={() => (
-              <Input
-                placeholder="my-first-flag"
-                {...register('name', {
-                  required:
-                    'Feature name is required and must be between 3-20 characters long.',
-                  pattern: {
-                    value: /^[0-9A-Za-z-]+$/gi,
-                    message:
-                      'Feature names may only contain letters, numbers, and hyphens.',
-                  },
-                  minLength: 3,
-                  maxLength: 20,
-                })}
-              />
-            )}
-          />
-        </Field>
-        <Field
-          label="Description"
-          invalid={!!errors.description}
-          errorText={errors.description?.message}
-        >
-          <Controller
-            name="description"
-            control={control}
-            render={() => (
-              <Input
-                placeholder="A human-readable description of your feature flag."
-                {...register('description', {
-                  required: 'A description of your feature is required.',
-                })}
-              />
-            )}
-          />
-        </Field>
-        <Field label="Enabled Environments" as="p"></Field>
-        <Flex direction="row" width="100%" justifyContent="space-evenly">
-          {environments.items.map((env: string) => {
-            return (
-              <Controller
+    <FormProvider {...formMethods}>
+      <form id={formId} onSubmit={formMethods.handleSubmit(onSubmit)}>
+        <Stack gap="4">
+          <NameField label="Feature Flag Name" />
+          <DescriptionField />
+          <Field label="Enabled Environments" as="p" />
+          <Flex direction="row" width="100%" justifyContent="space-evenly">
+            {pinnedEnvironments.items.map((env: string) => (
+              <ControlledSwitch
                 key={env}
-                name={`environmentNames.${env}`}
-                control={control}
-                render={({ field }) => (
-                  <Flex>
-                    <Text marginRight="5px">{`${env}:`}</Text>
-                    <Switch
-                      id={env}
-                      name={field.name}
-                      checked={!!field.value}
-                      onCheckedChange={({ checked }) => field.onChange(checked)}
-                      onBlur={field.onBlur}
-                      width="fit-content"
-                    />
-                  </Flex>
-                )}
+                fieldPath={`environmentNames.${env}`}
+                switchId={env}
+                labelPosition="left"
+                label={env}
               />
-            );
-          })}
-        </Flex>
-
-        <FeatureFlagValueTypeField
-          control={control}
-          setValue={setValue}
-          valueTypes={valueTypes}
-        />
-
-        <FeatureFlagDefaultValueField
-          control={control}
-          getValues={getValues}
-          register={register}
-        />
-      </Stack>
-    </form>
+            ))}
+          </Flex>
+          <FeatureFlagValueTypeField
+            control={formMethods.control}
+            setValue={formMethods.setValue}
+            valueTypes={valueTypes}
+          />
+          <FeatureFlagDefaultValueField
+            control={formMethods.control}
+            getValues={formMethods.getValues}
+            register={formMethods.register}
+          />
+        </Stack>
+      </form>
+    </FormProvider>
   );
 }

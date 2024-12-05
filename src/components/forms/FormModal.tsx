@@ -12,8 +12,8 @@ import {
   DialogRoot,
   DialogTitle,
   DialogTrigger,
-} from './ui/dialog';
-import { Button } from './ui/button';
+} from '../ui/dialog';
+import { Button } from '../ui/button';
 
 interface FormModalProps {
   triggerButtonIcon: ReactNode;
@@ -26,7 +26,7 @@ interface FormModalProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function FormModalTrigger({
+export default function FormModal({
   triggerButtonIcon,
   triggerButtonText,
   title,
@@ -83,5 +83,3 @@ function FormModalTrigger({
     </DialogRoot>
   );
 }
-
-export default FormModalTrigger;
