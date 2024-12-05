@@ -11,9 +11,6 @@ import {
 import { Controller, useFieldArray } from 'react-hook-form';
 import { CircleEqual, CirclePlus } from 'lucide-react';
 import { ExperimentGroup, Treatment } from '@estuary/types';
-import {
-  useEffect, useMemo, useRef, useState,
-} from 'react';
 import { Switch } from '../ui/switch';
 import {
   SelectContent,
@@ -37,22 +34,19 @@ const checkInCollection = (data, criteriaArray, property) =>
     criteriaArray.some((criteria) => criteria.value === item[property]));
 
 const setEqualProportions = (
-  fields: Omit<ExperimentGroup, 'id'>[],
-  fieldArrayUpdate,
+  groupValues: ExperimentGroup[],
+  setValue,
 ): void => {
-  const numOfVariations: number = fields.length;
+  const numOfVariations: number = groupValues.length;
   const split: number = Math.trunc((1 / numOfVariations) * 10000) / 10000;
   let remainder = 1 - split * numOfVariations;
-  fields.forEach((_, index) => {
+  groupValues.forEach((_, index) => {
     let refinedSplit = split;
     if (remainder > 0) {
       refinedSplit += 0.0001;
       remainder -= 0.0001;
     }
-    fieldArrayUpdate(index, {
-      ...fields[index],
-      proportion: refinedSplit,
-    });
+    setValue(`groups.${index}.proportion`, refinedSplit);
   });
 };
 
@@ -67,29 +61,10 @@ function ExpTypeForm({
   setValue,
   register,
 }) {
-  const {
-    fields: groupFields,
-    append: addGroup,
-    remove: removeGroup,
-    update: updateGroup,
-  } = useFieldArray({
+  const { fields: groupFields, append: addGroup } = useFieldArray({
     control,
     name: 'groups',
   });
-
-  const [treatmentsState, setTreatmentsState] = useState(definedTreatments);
-
-  // Initialize all field array helpers unconditionally
-  const featureFieldArrayHelpers = Object.keys(treatmentsState).reduce(
-    (acc, id) => {
-      acc[id] = useFieldArray({
-        control,
-        name: `definedTreatments.${id}.flagStates`,
-      });
-      return acc;
-    },
-    {},
-  );
 
   return (
     <>
@@ -163,9 +138,9 @@ function ExpTypeForm({
                                     onValueChange={({ value }) => {
                                       field.onChange(value[0]);
                                       Object.keys(definedTreatments).forEach(
-                                        (id) => {
+                                        (treatmentId) => {
                                           setValue(
-                                            `definedTreatments.${id}.flagStates.${featureIdx}.id`,
+                                            `definedTreatments.${treatmentId}.flagStates.${featureIdx}.id`,
                                             value[0],
                                           );
                                         },
@@ -321,8 +296,8 @@ function ExpTypeForm({
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {groupFields.map((field, index) => (
-                    <Table.Row key={field.id + String(index)}>
+                  {groupFields.map((group, index) => (
+                    <Table.Row key={group.id + String(index)}>
                       <Table.Cell>
                         <Field>
                           <SelectRoot
@@ -330,26 +305,18 @@ function ExpTypeForm({
                             collection={createTreatmentCollection(
                               definedTreatments,
                             )}
-                            // onValueChange={({ value }) => {
-                            //   const {
-                            //     fields: sequence,
-                            //     append: addToSequence,
-                            //     replace: replaceInSequence,
-                            //   } = useFieldArray({
-                            //     control,
-                            //     name: `groups.${index}.sequence`,
-                            //   });
-
-                            //   !sequence.length
-                            //     ? addToSequence(value)
-                            //     : replaceInSequence(value);
-                            // }}
+                            onValueChange={({ value }) => {
+                              setValue(`groups.${index}.sequence`, [value]);
+                            }}
                           >
                             <SelectTrigger>
                               <SelectValueText
                                 placeholder={
                                   expType === 'ab'
-                                    ? 'Select treatment...'
+                                    ? group.sequence.length
+                                      ? definedTreatments[group.sequence[0]]
+                                        .name
+                                      : 'Select treatment...'
                                     : 'ALL'
                                 }
                               />
@@ -377,7 +344,7 @@ function ExpTypeForm({
                           <Input
                             border="0px"
                             width="125px"
-                            defaultValue={field.name || `Variation ${index}`}
+                            defaultValue={group.name || `Variation ${index}`}
                             {...register(`groups.${index}.name`, {
                               required: 'Name is required.',
                               validate: {
@@ -400,7 +367,7 @@ function ExpTypeForm({
                           <Input
                             border="0px"
                             width="75px"
-                            defaultValue={field.proportion || 0}
+                            defaultValue={group.proportion || 0}
                             disabled={expType === 'switchback'}
                             {...register(`groups.${index}.proportion`, {
                               required: 'Group proportion is required.',
@@ -498,7 +465,7 @@ function ExpTypeForm({
                   variant="plain"
                   background="transparent"
                   _hover={{ backgroundColor: 'transparent', color: 'blue' }}
-                  onClick={() => setEqualProportions(groupFields, updateGroup)}
+                  onClick={() => setEqualProportions(groupValues, setValue)}
                 >
                   <CircleEqual />
                   Set equal proportions
