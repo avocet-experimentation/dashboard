@@ -1,19 +1,30 @@
 import { Flex, Heading, Text } from '@chakra-ui/react';
-import { CirclePlus } from 'lucide-react';
-import FeatureService from '#/services/FeatureService';
-import { FeatureFlag } from '@estuary/types';
+import { Environment, FeatureFlag } from '@estuary/types';
 import { useEffect, useState } from 'react';
-import FormModalTrigger from '../FormModal';
-import FeatureCreationForm from './FeatureForm';
-import FeatureTable from './FeatureTable';
-
-const CREATE_FEATURE_FORM_ID = 'create-feature-form';
+import FeatureService from '#/services/FeatureService';
+import EnvironmentService from '#/services/EnvironmentService';
+import FeatureFlagTable from './FeatureFlagTable';
+import FeatureFlagCreationModal from './FeatureFlagCreationModal';
 
 const featureService = new FeatureService();
+const environmentService = new EnvironmentService();
 
-function Features() {
+const getPinned = (envs: Environment[]) => envs.filter((env) => env.pinToLists);
+
+export default function FeatureFlagsMain() {
   const [featureFlags, setFeatureFlags] = useState<FeatureFlag[]>([]);
+  const [environments, setEnvironments] = useState<Environment[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const getAllEnvironments = async () => {
+    try {
+      const response = await environmentService.getMany();
+      const allEnvironments = response.body ?? [];
+      setEnvironments(allEnvironments);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     const handleGetAllFeatures = async () => {
@@ -27,7 +38,19 @@ function Features() {
     };
 
     handleGetAllFeatures();
+    getAllEnvironments();
   }, []);
+
+  const updateFlag = (obj: FeatureFlag) => {
+    setFeatureFlags((prevState) => {
+      const index = prevState.find((el) => el.id === obj.id);
+      if (index) {
+        return prevState.map((el) => (el.id === obj.id ? obj : el));
+      }
+      throw new Error(`Flag ${obj.name} with id ${obj.id} was not found`);
+      // return [...prevState, obj];
+    });
+  };
 
   return (
     <Flex direction="column" padding="25px">
@@ -38,25 +61,20 @@ function Features() {
         alignItems="center"
       >
         <Heading size="3xl">Features</Heading>
-        <FormModalTrigger
-          triggerButtonIcon={<CirclePlus />}
-          triggerButtonText="Add Feature"
-          title="Create a New Feature"
-          formId={CREATE_FEATURE_FORM_ID}
-          confirmButtonText="Create"
-        >
-          <FeatureCreationForm
-            formId={CREATE_FEATURE_FORM_ID}
-            setIsLoading={setIsLoading}
-          />
-        </FormModalTrigger>
+        <FeatureFlagCreationModal
+          setIsLoading={setIsLoading}
+          updateFlag={updateFlag}
+          environments={environments}
+        />
       </Flex>
       <Text margin="15px 0">
         Features enable you to change your app's behavior from within this UI.
       </Text>
       {featureFlags.length ? (
-        <FeatureTable
+        <FeatureFlagTable
           featureFlags={featureFlags}
+          updateFlag={updateFlag}
+          pinnedEnvironments={getPinned(environments)}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
         />
@@ -66,5 +84,3 @@ function Features() {
     </Flex>
   );
 }
-
-export default Features;

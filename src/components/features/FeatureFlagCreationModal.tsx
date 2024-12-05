@@ -9,7 +9,6 @@ const CREATE_FEATURE_FORM_ID = 'create-feature-form';
 interface FeatureFlagCreationModalProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   environments: Environment[];
-  updateFlag: (updated: FeatureFlag) => void;
 }
 
 export default function FeatureFlagCreationModal({

@@ -3,10 +3,10 @@ import { Route, Switch } from 'wouter';
 // import "./assets/stylesheets/App.css";
 import Navbar from './components/Navbar';
 
-import FeaturesMainPage from './components/features/FeaturesMainPage';
+import FeatureFlagsMain from './components/features/FeatureFlagsMain';
 import EventFeatures from './components/events/EventFeatures';
-import Experiments from './components/experiments/Experiments';
-import FeaturePage from './components/features/FeaturePage';
+import ExperimentsMain from './components/experiments/ExperimentsMain';
+import FeatureFlagManagementPage from './components/features/FeatureFlagManagementPage';
 import TopBar from './components/TopBar';
 import ExperimentPage from './components/experiments/ExperimentPage';
 import EnvironmentsMainPage from './components/environments/EnvironmentsMainPage';
@@ -18,13 +18,13 @@ export default function App() {
       <Flex direction="column" width="calc(100% - 250px)" bg="whitesmoke">
         <TopBar />
         <Switch>
-          <Route path="/features" component={FeaturesMainPage} />
+          <Route path="/features" component={FeatureFlagsMain} />
           <Route
             path="/features/:id"
-            component={(id) => <FeaturePage flagId={id} />}
+            component={(id) => <FeatureFlagManagementPage flagId={id} />}
           />
           <Route path="/environments" component={EnvironmentsMainPage} />
-          <Route path="/experiments" component={Experiments} />
+          <Route path="/experiments" component={ExperimentsMain} />
           <Route path="/experiments/:id" component={() => <ExperimentPage />} />
           <Route path="/events" component={EventFeatures} />
         </Switch>

@@ -1,4 +1,3 @@
-import FeatureService from '#/services/FeatureService';
 import {
   Box,
   Editable,
@@ -11,48 +10,67 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../ui/menu';
-import { Switch } from '../ui/switch';
-import { useEffect, useState } from 'react';
-import { FeatureFlag, FeatureFlagDraft } from '@estuary/types';
-import { Check, EllipsisVertical, FilePenLine, Trash2, X } from 'lucide-react';
+import { useContext, useEffect, useState } from 'react';
+import { Environment, FeatureFlag, FeatureFlagDraft } from '@estuary/types';
+import {
+  Check, EllipsisVertical, FilePenLine, Trash2, X,
+} from 'lucide-react';
 import { useLocation, useRoute } from 'wouter';
+import deepcopy from 'deepcopy';
+import deepmerge from 'deepmerge';
+import { ServicesContext } from '#/services/ServiceContext';
+import { Switch } from '../ui/switch';
+import {
+  MenuContent, MenuItem, MenuRoot, MenuTrigger,
+} from '../ui/menu';
 import NotFound from '../NotFound';
 import EnvironmentTabs from './EnvironmentTabs';
 
-const featureService = new FeatureService();
-
 const VALUE_FONT = "'Lucida Console', 'Courier New', monospace";
 
-export default function FeaturePage() {
+interface FeatureFlagManagementPageProps {
+  // environments: Environment[];
+}
+
+export default function FeatureFlagManagementPage(
+  {
+    // environments,
+  }: FeatureFlagManagementPageProps,
+) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [editDesc, setEditDesc] = useState<boolean>(false);
-  const [feature, setFeature] = useState<FeatureFlag | null>(null);
-  const [environments, setEnvironments] =
-    useState<FeatureFlag['environmentNames']>();
+  const [featureFlag, setFeatureFlag] = useState<FeatureFlag>();
+  const [environments, setEnvironments] = useState<Environment[]>();
   const [match, params] = useRoute('/features/:id');
   const [location, navigate] = useLocation();
+  const services = useContext(ServicesContext);
 
   // todo: consider passing a prop in instead of using route params
   if (params === null) {
-    throw new Error(`Missing 'id' param for component FeaturePage!`);
+    throw new Error("Missing 'id' param!");
   }
 
   useEffect(() => {
     const handleGetFeature = async () => {
+      setIsLoading(true);
       try {
-        const response = await featureService.getFeature(params.id);
-        if (!response.ok) {
-          // todo: replace this placeholder
+        const flagResponse = await services.featureFlag.getFeature(params.id);
+        if (!flagResponse.ok) {
+          // todo: better error handling
           throw new Error(`Couldn't fetch flag data for id ${params.id}!`);
-        } else {
-          setFeature(response.body);
-          setEnvironments(response.body.environmentNames);
         }
+
+        const envResponse = await services.environment.getMany();
+        // todo: better error handling
+        if (!envResponse.ok) throw new Error("Couldn't load environments!");
+
+        setFeatureFlag(flagResponse.body);
+        setEnvironments(envResponse.body);
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     handleGetFeature();
@@ -60,35 +78,56 @@ export default function FeaturePage() {
   }, []);
 
   const handleDeleteFeature = () => {
-    if (feature) {
-      featureService.deleteFeature(feature.id);
+    if (featureFlag) {
+      services.featureFlag.deleteFeature(featureFlag.id);
       navigate('/features');
     }
   };
 
-  const cancelHandler = (feature: FeatureFlag) => {
+  const cancelHandler = (flag: FeatureFlag) => {
     const textarea = document.querySelector('textarea');
     if (textarea) {
-      if (textarea.value !== undefined) textarea.value = feature.description;
+      if (textarea.value !== undefined) textarea.value = flag.description;
       textarea.blur();
     }
-    console.log("cancel clicked, reset to:", feature.description);
+    console.log('cancel clicked, reset to:', flag.description);
     setEditDesc(false);
-  }
-  
-  const submitHandler = (feature: FeatureFlag) => {
-    const newValue = document.querySelector('textarea')?.value || feature.description;
-    console.log("value:", { newValue })
-    featureService.patchFeature(feature.id, { description: newValue });
+  };
+
+  const submitHandler = (flag: FeatureFlag) => {
+    const newValue = document.querySelector('textarea')?.value || flag.description;
+    console.log('value:', { newValue });
+    services.featureFlag.patchFeature(flag.id, { description: newValue });
     setEditDesc(false);
-  }
+  };
+
+  const handleEnvToggleChange = async (envName: string, checked: boolean) => {
+    if (!featureFlag) {
+      throw new Error('Feature flag was not set on state');
+    }
+    try {
+      const response = await services.featureFlag.toggleEnvironment(
+        params.id,
+        envName,
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to update record for flag ${params.id}`);
+      }
+      const updatedFlag = deepcopy(featureFlag);
+      FeatureFlagDraft.toggleEnvironment(updatedFlag, envName);
+
+      setFeatureFlag(updatedFlag);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
-    <>
-      {!isLoading && feature ? (
+    <div>
+      {!isLoading && featureFlag ? (
         <Stack gap={4} padding="25px" overflowY="scroll">
           <Flex justifyContent="space-between">
-            <Heading size="3xl">{feature.name}</Heading>
+            <Heading size="3xl">{featureFlag.name}</Heading>
             <MenuRoot>
               <MenuTrigger asChild>
                 <IconButton size="md">
@@ -126,7 +165,7 @@ export default function FeaturePage() {
                 </Icon>
               </HStack>
               <Editable.Root
-                value={feature.description ?? ''}
+                value={featureFlag.description ?? ''}
                 edit={editDesc}
                 activationMode="focus"
                 onBlur={() => {
@@ -134,7 +173,7 @@ export default function FeaturePage() {
                 }}
                 onSubmit={(event) => {
                   console.log('submit');
-                  featureService.patchFeature(feature.id, {
+                  services.featureFlag.patchFeature(featureFlag.id, {
                     description: event.target.value,
                   });
                 }}
@@ -147,18 +186,22 @@ export default function FeaturePage() {
                 <Editable.Textarea />
                 <Editable.Control>
                   <Editable.CancelTrigger asChild>
-                    <IconButton variant="outline" size="xs"
+                    <IconButton
+                      variant="outline"
+                      size="xs"
                       onClick={() => {
-                        cancelHandler(feature);
+                        cancelHandler(featureFlag);
                       }}
                     >
                       <X />
                     </IconButton>
                   </Editable.CancelTrigger>
                   <Editable.SubmitTrigger asChild>
-                    <IconButton variant="outline" size="xs"
+                    <IconButton
+                      variant="outline"
+                      size="xs"
                       onClick={() => {
-                        submitHandler(feature);
+                        submitHandler(featureFlag);
                       }}
                     >
                       <Check />
@@ -186,49 +229,24 @@ export default function FeaturePage() {
                 </Text>
               </Flex>
               <Flex direction="row">
-                {environments &&
-                  Object.keys(environments).map((env) => {
-                    return (
-                      <Flex
-                        position="relative"
-                        margin="0 15px 0 0"
-                        key={`${env}-switch`}
-                      >
-                        <Text marginRight="5px">{env}:</Text>
-                        <Switch
-                          checked={env in environments}
-                          onCheckedChange={async ({ checked }) => {
-                            const toggleResult =
-                              await featureService.toggleEnvironment(
-                                feature.id,
-                                env,
-                              );
-                            if (toggleResult.ok) {
-                              setEnvironments((prevState) => {
-                                const prevEnv = prevState ?? {};
-                                const prevFlag: FeatureFlagDraft = {
-                                  ...feature,
-                                  environmentNames: prevEnv,
-                                };
-                                if (checked === true) {
-                                  FeatureFlagDraft.enableEnvironment(
-                                    prevFlag,
-                                    env,
-                                  );
-                                } else {
-                                  FeatureFlagDraft.disableEnvironment(
-                                    prevFlag,
-                                    env,
-                                  );
-                                }
-                                return prevFlag.environmentNames;
-                              });
-                            }
-                          }}
-                        />
-                      </Flex>
-                    );
-                  })}
+                {environments
+                  && environments.map((env) => (
+                    <Flex
+                      position="relative"
+                      margin="0 15px 0 0"
+                      key={`${env.name}-switch`}
+                    >
+                      <Text marginRight="5px">
+                        {env.name}
+                        :
+                      </Text>
+                      <Switch
+                        checked={env.name in featureFlag.environmentNames}
+                        onCheckedChange={async ({ checked }) =>
+                          handleEnvToggleChange(env.name, checked)}
+                      />
+                    </Flex>
+                  ))}
               </Flex>
             </Stack>
           </Box>
@@ -241,14 +259,14 @@ export default function FeaturePage() {
               <Heading size="lg">Default Value</Heading>
               <Flex border="1px solid gray" borderRadius="5px" padding="15px">
                 <Text fontWeight="bold" width="fit-content" padding="0 5px">
-                  {feature.value.type.toUpperCase()}
+                  {featureFlag.value.type.toUpperCase()}
                 </Text>
                 <Text
                   fontWeight="normal"
                   fontFamily={VALUE_FONT}
                   padding="0 10px"
                 >
-                  {String(feature.value.initial)}
+                  {String(featureFlag.value.initial)}
                 </Text>
               </Flex>
 
@@ -259,13 +277,13 @@ export default function FeaturePage() {
                 Add powerful logic on top of your feature. The first matching
                 rule applies and overrides the default value.
               </Text>
-              <EnvironmentTabs {...feature} />
+              <EnvironmentTabs featureFlag={featureFlag} />
             </Stack>
           </Box>
         </Stack>
       ) : (
-        <NotFound componentName={'feature'} />
+        <NotFound componentName="feature" />
       )}
-    </>
+    </div>
   );
 }

@@ -7,39 +7,34 @@ import {
   HStack,
   createListCollection,
 } from '@chakra-ui/react';
-import { RadioGroup } from '../ui/radio';
+import { useForm, Controller } from 'react-hook-form';
+import {
+  Experiment,
+  FeatureFlag,
+  Treatment,
+  ExperimentDraft,
+} from '@estuary/types';
+import { RadioGroup, Radio } from '../ui/radio';
 import { Field } from '../ui/field';
 
-import {
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from '../ui/select';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import FeatureService from '#/services/FeatureService';
 
-import { Experiment, FeatureFlag, FeatureFlagDraft, Treatment } from '@estuary/types';
 import { Slider } from '../ui/slider';
-import { Radio } from '../ui/radio';
-import { ExperimentDraft } from '@estuary/types';
 import ExperimentService from '#/services/ExperimentService';
 import ExpTypeForm from './ExpTypeForm';
 
 interface FeatureCollection {
-  label: string
-  value: string
-  type: "string" | "number" | "boolean"
-  initial: string | number | boolean
+  label: string;
+  value: string;
+  type: 'string' | 'number' | 'boolean';
+  initial: string | number | boolean;
 }
 
-const templateToObject = (template: ExperimentDraft) => {
-  return Object.getOwnPropertyNames(template).reduce((acc, prop) => {
+const templateToObject = (template: ExperimentDraft) =>
+  Object.getOwnPropertyNames(template).reduce((acc, prop) => {
     acc[prop] = template[prop];
     return acc;
   }, {});
-};
 
 const abTemplate = ExperimentDraft.templateAB({
   name: 'my-first-exp',
@@ -59,21 +54,20 @@ const expService = new ExperimentService();
 const featureService = new FeatureService();
 
 const createTreatmentCollection = (definedTreatments: Treatment) => {
-  const items = Object.entries(definedTreatments).map(([id, treatment]) => {
-    return { label: treatment.name, value: id };
-  });
+  const items = Object.entries(definedTreatments).map(([id, treatment]) => ({
+    label: treatment.name,
+    value: id,
+  }));
   return createListCollection({ items });
 };
 
 const createFeatureCollection = (features: FeatureFlag[]) => {
-  const items: FeatureCollection = features.map((feature) => {
-    return {
-      label: feature.name,
-      value: feature.id,
-      type: feature.value.type,
-      initial: feature.value.initial,
-    };
-  });
+  const items: FeatureCollection[] = features.map((feature) => ({
+    label: feature.name,
+    value: feature.id,
+    type: feature.value.type,
+    initial: feature.value.initial,
+  }));
   return createListCollection({ items });
 };
 
@@ -93,7 +87,17 @@ const collectFeatureIds = (expContent: ExperimentDraft): void => {
   expContent.flagIds = collectedIds;
 };
 
-const ExperimentCreationForm = ({ formId, setIsLoading }) => {
+interface ExperimentCreationFormProps {
+  formId: string;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export default function ExperimentCreationForm({
+  formId,
+  setIsLoading,
+  setOpen,
+}: ExperimentCreationFormProps) {
   const [expType, setExpType] = useState<'ab' | 'switchback'>('ab');
   const [formValues, setFormValues] = useState({
     ab: defaultAB,
@@ -115,7 +119,7 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
     createListCollection({ items: [] }),
   );
   const [featuresCollection, setFeaturesCollection] = useState(
-    createListCollection({ items: [] }),
+    createListCollection<FeatureCollection>({ items: [] }),
   );
 
   // Save current form state before switching
@@ -137,11 +141,14 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
     const handleGetAllFeatures = async () => {
       try {
         const allFeatures = await featureService.getAllFeatures();
-        setFeaturesCollection(
-          allFeatures.ok
-            ? createFeatureCollection(await allFeatures.body)
-            : null,
-        );
+        if (allFeatures.ok) {
+          setFeaturesCollection(createFeatureCollection(allFeatures.body));
+        }
+        // setFeaturesCollection(
+        //   allFeatures.ok
+        //     ? createFeatureCollection(await allFeatures.body)
+        //     : null,
+        // );
       } catch (error) {
         console.log(error);
       }
@@ -154,16 +161,25 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
 
   const groupValues = watch('groups');
 
-  const onSubmit = (expContent: Experiment) => {
+  const onSubmit = async (expContent: Experiment) => {
+    setIsLoading(true);
     // createGroupIds(expContent);
-
-    reformatAllTrafficProportion(expContent);
-    collectFeatureIds(expContent);
-    if (expType === 'switchback') {
-      expContent.groups[0].sequence = Object.keys(expContent.definedTreatments);
+    try {
+      reformatAllTrafficProportion(expContent);
+      collectFeatureIds(expContent);
+      if (expType === 'switchback') {
+        expContent.groups[0].sequence = Object.keys(
+          expContent.definedTreatments,
+        );
+      }
+      console.log('data', expContent);
+      const result = await expService.createExperiment(expContent);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+      setOpen(false);
     }
-    console.log('data', expContent);
-    expService.createExperiment(expContent);
   };
 
   return (
@@ -289,8 +305,7 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
           <RadioGroup
             defaultValue={expType}
             onValueChange={({ value }) =>
-              handleSwitchForm(value as 'ab' | 'switchback')
-            }
+              handleSwitchForm(value as 'ab' | 'switchback')}
           >
             <HStack gap="6">
               <Radio value="ab" cursor="pointer">
@@ -316,5 +331,4 @@ const ExperimentCreationForm = ({ formId, setIsLoading }) => {
       </Stack>
     </chakra.form>
   );
-};
-export default ExperimentCreationForm;
+}

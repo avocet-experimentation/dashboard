@@ -1,8 +1,4 @@
-import ExperimentService from '#/services/ExperimentService';
-import FeatureService from '#/services/FeatureService';
 import { useLocation, useRoute } from 'wouter';
-import NotFound from '../NotFound';
-
 import { useEffect, useState } from 'react';
 import {
   PieChart,
@@ -23,9 +19,8 @@ import {
   IconButton,
   Stack,
   Table,
-  Text
+  Text,
 } from '@chakra-ui/react';
-import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../ui/menu';
 import {
   ALargeSmall,
   Check,
@@ -33,7 +28,6 @@ import {
   FilePenLine,
   Hash,
   Link,
-  LucideProps,
   OctagonX,
   Play,
   Power,
@@ -42,7 +36,15 @@ import {
   TriangleAlert,
   X,
 } from 'lucide-react';
-import FormModalTrigger from '../FormModal';
+import { Experiment, ExperimentGroup, FeatureFlag } from '@estuary/types';
+import FeatureService from '#/services/FeatureService';
+import ExperimentService from '#/services/ExperimentService';
+import NotFound from '../NotFound';
+
+import {
+  MenuContent, MenuItem, MenuRoot, MenuTrigger,
+} from '../ui/menu';
+import FormModal from '../forms/FormModal';
 import LinkFeatureForm from './LinkFeatureForm';
 import {
   AccordionItem,
@@ -50,7 +52,6 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from '../ui/accordion';
-import { Experiment, ExperimentGroup, FeatureFlag } from '@estuary/types';
 import { Button } from '../ui/button';
 import { Tag } from '../ui/tag';
 import { Tooltip as ChakraTooltip } from '../ui/tooltip';
@@ -95,43 +96,59 @@ const renderCustomizedLabel = ({
   );
 };
 
-const formatGroups = (groups) => {
-  return groups.map((group) => ({
+const formatGroups = (groups) =>
+  groups.map((group) => ({
     name: group.name,
     value: group.proportion * 1000,
   }));
-};
 
 const renderValueTypeIcon = (valueType: string) => {
-  switch(valueType) {
-    case "string":
-      return <ALargeSmall/>
-    case "number":
-      return <Hash/>
-    case "boolean":
-      return <ToggleLeft/>
+  switch (valueType) {
+    case 'string':
+      return <ALargeSmall />;
+    case 'number':
+      return <Hash />;
+    case 'boolean':
+      return <ToggleLeft />;
     default:
-      return <></>
+      return <></>;
   }
-}
+};
 
-const flagTagProperties = (expEnvironment: string, flagEnvironments: string[]) => {
+const flagTagProperties = (
+  expEnvironment: string,
+  flagEnvironments: string[],
+) => {
   const environmentEnabled = Object.keys(flagEnvironments).includes(expEnvironment);
   const icon = environmentEnabled ? <Play /> : <TriangleAlert />;
-  const text = environmentEnabled ? "Live" : "Disabled";
-  const colorPalette = environmentEnabled ? "green" : "red";
-  const tooltip = environmentEnabled ? `This feature has the ${expEnvironment} environment enabled.` : `The ${expEnvironment} environment is disabled for this feature, so the experiment is not active`
-  return { icon, text, colorPalette, tooltip };
-}
+  const text = environmentEnabled ? 'Live' : 'Disabled';
+  const colorPalette = environmentEnabled ? 'green' : 'red';
+  const tooltip = environmentEnabled
+    ? `This feature has the ${expEnvironment} environment enabled.`
+    : `The ${expEnvironment} environment is disabled for this feature, so the experiment is not active`;
+  return {
+    icon,
+    text,
+    colorPalette,
+    tooltip,
+  };
+};
 
 const experimentButtonProperties = (expStatus: string, expId: string) => {
-  const active = expStatus === "active";
-  const icon = active ? <OctagonX /> : <Power/>;
-  const text = active ? "Stop Experiment" : "Start Experiment";
-  const colorPalette = active ? "red" : "green";
-  const onClick = active ? () => {} : () => experimentService.startExperiment(expId);
-  return { icon, text, colorPalette, onClick };
-}
+  const active = expStatus === 'active';
+  const icon = active ? <OctagonX /> : <Power />;
+  const text = active ? 'Stop Experiment' : 'Start Experiment';
+  const colorPalette = active ? 'red' : 'green';
+  const onClick = active
+    ? () => {}
+    : () => experimentService.startExperiment(expId);
+  return {
+    icon,
+    text,
+    colorPalette,
+    onClick,
+  };
+};
 
 const data = [
   { name: 'Group A', value: 400 },
@@ -141,12 +158,14 @@ const data = [
 ];
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
-const ExperimentPage = () => {
+function ExperimentPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [editDesc, setEditDesc] = useState<boolean>(false);
   const [editHypo, setEditHypo] = useState<boolean>(false);
   const [experiment, setExperiment] = useState<Experiment | null>(null);
-  const [linkedFeatures, setLinkedFeatures] = useState<Partial<FeatureFlag>[]>([]);
+  const [linkedFeatures, setLinkedFeatures] = useState<Partial<FeatureFlag>[]>(
+    [],
+  );
   const [match, params] = useRoute('/experiments/:id');
   const [location, navigate] = useLocation();
 
@@ -200,13 +219,20 @@ const ExperimentPage = () => {
   if (isLoading) return <></>;
 
   if (experiment) {
-    const expButtonProps = experimentButtonProperties(experiment.status, experiment.id);
+    const expButtonProps = experimentButtonProperties(
+      experiment.status,
+      experiment.id,
+    );
     return (
       <Stack gap={4} padding="25px" overflowY="scroll">
         <Flex justifyContent="space-between">
           <Heading size="3xl">{experiment.name}</Heading>
           <HStack>
-            <Button variant="solid" colorPalette={expButtonProps.colorPalette} onClick={expButtonProps.onClick}>
+            <Button
+              variant="solid"
+              colorPalette={expButtonProps.colorPalette}
+              onClick={expButtonProps.onClick}
+            >
               {expButtonProps.icon}
               {expButtonProps.text}
             </Button>
@@ -357,76 +383,107 @@ const ExperimentPage = () => {
             <Stack padding="15px" bg="white" borderRadius="5px">
               <Flex justifyContent="space-between">
                 <Heading size="lg">
-                  Linked Features ({experiment.flagIds.length})
+                  Linked Features (
+                  {experiment.flagIds.length}
+                  )
                 </Heading>
-                <FormModalTrigger
+                <FormModal
                   triggerButtonIcon={<Link />}
-                  triggerButtonText={'Link Feature Flag'}
+                  triggerButtonText="Link Feature Flag"
                   title={`Link Feature to ${experiment.name}`}
                   formId={LINK_FEATURE_FORM}
-                  confirmButtonText={'Link'}
+                  confirmButtonText="Link"
                 >
                   <LinkFeatureForm
                     formId={LINK_FEATURE_FORM}
                     setIsLoading={undefined}
                   />
-                </FormModalTrigger>
+                </FormModal>
               </Flex>
               <AccordionRoot variant="enclosed" multiple>
                 {linkedFeatures.map((feature) => {
-                  console.log(feature.environmentNames)
-                  const statusTagProperties = flagTagProperties(experiment.environmentName, feature.environmentNames)
+                  console.log(feature.environmentNames);
+                  const statusTagProperties = flagTagProperties(
+                    experiment.environmentName,
+                    feature.environmentNames,
+                  );
                   return (
-                  <AccordionItem key={feature.id} value={feature.name}>
-                    <AccordionItemTrigger id={feature.id}>
-                      <Stack direction="row" gap={4}>
-                      <Text>{feature.name}</Text>
-                      <Tag size="md" variant="outline" startElement={renderValueTypeIcon(feature.valueType)}>{feature.valueType}</Tag>
-                      <ChakraTooltip
-                        showArrow
-                        openDelay={50}
-                        content={statusTagProperties.tooltip}
-                      >
-                        <Tag size="md" startElement={statusTagProperties.icon} colorPalette={statusTagProperties.colorPalette}>{statusTagProperties.text}</Tag>
-                      </ChakraTooltip>
-                      </Stack>
-                    </AccordionItemTrigger>
-                    <AccordionItemContent>
-                      <Stack gap={2}>
-                        <Text>Feature Values</Text>
-                        <Table.Root width="250px" size="sm" variant="outline" showColumnBorder>
-                          <Table.Header>
-                            <Table.Row>
-                              <Table.ColumnHeader>GROUP</Table.ColumnHeader>
-                              <Table.ColumnHeader>SERVING</Table.ColumnHeader>
-                            </Table.Row>
-                          </Table.Header>
-                          <Table.Body>
-                            {experiment.groups.map((group: ExperimentGroup) => {
-                              const sequence = group.sequence[0];
-                              const servedValue = experiment.definedTreatments[sequence].flagStates.find((treatmentFeature) => treatmentFeature.id === feature.id).value
-                              return (
-                                <Table.Row key={group.id}>
-                                  <Table.Cell>{group.name}</Table.Cell>
-                                  <Table.Cell>{servedValue}</Table.Cell>
-                                </Table.Row>
-                              )
-                            })}
-                          </Table.Body>
-                        </Table.Root>
-                      </Stack>
-                    </AccordionItemContent>
-                  </AccordionItem>
-                )})}
+                    <AccordionItem key={feature.id} value={feature.name}>
+                      <AccordionItemTrigger id={feature.id}>
+                        <Stack direction="row" gap={4}>
+                          <Text>{feature.name}</Text>
+                          <Tag
+                            size="md"
+                            variant="outline"
+                            startElement={renderValueTypeIcon(
+                              feature.valueType,
+                            )}
+                          >
+                            {feature.valueType}
+                          </Tag>
+                          <ChakraTooltip
+                            showArrow
+                            openDelay={50}
+                            content={statusTagProperties.tooltip}
+                          >
+                            <Tag
+                              size="md"
+                              startElement={statusTagProperties.icon}
+                              colorPalette={statusTagProperties.colorPalette}
+                            >
+                              {statusTagProperties.text}
+                            </Tag>
+                          </ChakraTooltip>
+                        </Stack>
+                      </AccordionItemTrigger>
+                      <AccordionItemContent>
+                        <Stack gap={2}>
+                          <Text>Feature Values</Text>
+                          <Table.Root
+                            width="250px"
+                            size="sm"
+                            variant="outline"
+                            showColumnBorder
+                          >
+                            <Table.Header>
+                              <Table.Row>
+                                <Table.ColumnHeader>GROUP</Table.ColumnHeader>
+                                <Table.ColumnHeader>SERVING</Table.ColumnHeader>
+                              </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                              {experiment.groups.map(
+                                (group: ExperimentGroup) => {
+                                  const sequence = group.sequence[0];
+                                  const servedValue = experiment.definedTreatments[
+                                    sequence
+                                  ].flagStates.find(
+                                    (treatmentFeature) =>
+                                      treatmentFeature.id === feature.id,
+                                  ).value;
+                                  return (
+                                    <Table.Row key={group.id}>
+                                      <Table.Cell>{group.name}</Table.Cell>
+                                      <Table.Cell>{servedValue}</Table.Cell>
+                                    </Table.Row>
+                                  );
+                                },
+                              )}
+                            </Table.Body>
+                          </Table.Root>
+                        </Stack>
+                      </AccordionItemContent>
+                    </AccordionItem>
+                  );
+                })}
               </AccordionRoot>
             </Stack>
           </Stack>
         </Box>
       </Stack>
     );
-  } else {
-    return <NotFound componentName={'experiment'} />;
   }
-};
+  return <NotFound componentName="experiment" />;
+}
 
 export default ExperimentPage;
