@@ -306,7 +306,7 @@ function ExpTypeForm({
                               definedTreatments,
                             )}
                             onValueChange={({ value }) => {
-                              setValue(`groups.${index}.sequence`, [value]);
+                              setValue(`groups.${index}.sequence`, value);
                             }}
                           >
                             <SelectTrigger>
