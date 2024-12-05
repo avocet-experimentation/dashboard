@@ -1,37 +1,49 @@
 import { CirclePlus } from 'lucide-react';
 import { useState } from 'react';
-import { Environment } from '@estuary/types';
 import FormModal from '../forms/FormModal';
 import ExperimentCreationForm from './ExperimentForm';
 
-const CREATE_FEATURE_FORM_ID = 'create-feature-form';
+const CREATE_EXPERIMENT_FORM_ID = 'experiment-management-form';
 
 interface FeatureFlagCreationModalProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  environments: Environment[];
 }
 
-export default function FeatureFlagCreationModal({
+export default function ExperimentCreationModal({
   setIsLoading,
-  environments,
 }: FeatureFlagCreationModalProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <FormModal
       triggerButtonIcon={<CirclePlus />}
-      formId={CREATE_FEATURE_FORM_ID}
+      triggerButtonText="Create Experiment"
+      title="Create a New Experiment"
+      formId={CREATE_EXPERIMENT_FORM_ID}
+      confirmButtonText="Create"
       open={open}
       setOpen={setOpen}
-      title="Create a New Feature Flag"
-      confirmButtonText="Create"
-      triggerButtonText="Add Feature Flag"
     >
       <ExperimentCreationForm
-        formId={CREATE_FEATURE_FORM_ID}
+        formId={CREATE_EXPERIMENT_FORM_ID}
         setIsLoading={setIsLoading}
         setOpen={setOpen}
       />
     </FormModal>
+    // <FormModal
+    //   triggerButtonIcon={<CirclePlus />}
+    //   formId={CREATE_FEATURE_FORM_ID}
+    //   open={open}
+    //   setOpen={setOpen}
+    //   title="Create a New Feature Flag"
+    //   confirmButtonText="Create"
+    //   triggerButtonText="Add Feature Flag"
+    // >
+    //   <ExperimentCreationForm
+    //     formId={CREATE_FEATURE_FORM_ID}
+    //     setIsLoading={setIsLoading}
+    //     setOpen={setOpen}
+    //   />
+    // </FormModal>
   );
 }

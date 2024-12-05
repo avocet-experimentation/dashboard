@@ -1,5 +1,5 @@
 import {
-  ExperimentDraft,
+  Experiment,
   experimentSchema,
   isObjectWithProps,
   SchemaParseError,
@@ -27,7 +27,7 @@ export default class ExperimentService {
     );
   }
 
-  async getAllExperiments(): Promise<ResponseTypes<ExperimentDraft[]>> {
+  async getAllExperiments(): Promise<ResponseTypes<Experiment[]>> {
     console.log('fetching experiments');
     const startTime = Date.now();
     const response = await this.fetch.get('');
@@ -43,7 +43,7 @@ export default class ExperimentService {
     }
 
     // const parsed = response.body as FeatureFlag[];
-    const parsedResponse: ParsedResponse<ExperimentDraft[]> = {
+    const parsedResponse: ParsedResponse<Experiment[]> = {
       ...response,
       ok: true,
       body: safeParseResult.data,
@@ -54,7 +54,7 @@ export default class ExperimentService {
 
   async getExperiment(
     experimentId: string,
-  ): Promise<ResponseTypes<ExperimentDraft>> {
+  ): Promise<ResponseTypes<Experiment>> {
     const response = await this.fetch.get(`/id/${experimentId}`);
     if (!response.ok) {
       return response;
@@ -64,7 +64,7 @@ export default class ExperimentService {
     if (!safeParseResult.success) {
       throw new SchemaParseError(safeParseResult);
     }
-    const parsedResponse: ParsedResponse<ExperimentDraft> = {
+    const parsedResponse: ParsedResponse<Experiment> = {
       ...response,
       ok: true,
       body: safeParseResult.data,
@@ -74,7 +74,7 @@ export default class ExperimentService {
   }
 
   async createExperiment(
-    experimentContent: ExperimentDraft,
+    experimentContent: Experiment,
   ): Promise<ResponseTypes<{ experimentId: string }>> {
     const response = await this.fetch.post('', experimentContent);
     if (!response.ok) return response;
@@ -91,7 +91,7 @@ export default class ExperimentService {
 
   async startExperiment(
     experimentId: string,
-  ): Promise<ResponseTypes<ExperimentDraft>> {
+  ): Promise<ResponseTypes<Experiment>> {
     const response = await this.fetch.get(`/id/${experimentId}/start`);
     if (!response.ok) {
       return response;
@@ -101,7 +101,7 @@ export default class ExperimentService {
     if (!safeParseResult.success) {
       throw new SchemaParseError(safeParseResult);
     }
-    const parsedResponse: ParsedResponse<ExperimentDraft> = {
+    const parsedResponse: ParsedResponse<Experiment> = {
       ...response,
       ok: true,
       body: safeParseResult.data,

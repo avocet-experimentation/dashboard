@@ -1,71 +1,49 @@
-import {
-  createListCollection,
-  Flex,
-  Input,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
-import { Field } from '../ui/field';
-import { Switch } from '../ui/switch';
-import { useState } from 'react';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import { Stack } from '@chakra-ui/react';
+import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
 import {
   Environment,
   EnvironmentDraft,
   environmentDraftSchema,
   SchemaParseError,
 } from '@estuary/types';
-import EnvironmentService from '#/services/EnvironmentService';
-import { useLocation } from 'wouter';
-
-const environmentService = new EnvironmentService();
+import { useContext } from 'react';
+import { ServicesContext } from '#/services/ServiceContext';
+import { NameField } from '../forms/DefinedFields';
+import ControlledSwitch from '../forms/ControlledSwitch';
 
 interface EnvironmentManagementFormProps {
   formId: string;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  // onSubmitSuccess: (environment: Environment, updated: boolean) => void;
   environment?: Environment;
-  setEnvironments: React.Dispatch<React.SetStateAction<Environment[]>>;
   updateEnvironment: (updated: Environment) => void;
 }
 
 /**
- * Create and update environments
+ * Create an environment or update an existing one, if passed as an argument
  */
 export default function EnvironmentManagementForm({
   formId,
   setIsLoading,
   setOpen,
   environment,
-  setEnvironments,
   updateEnvironment,
 }: EnvironmentManagementFormProps) {
   // const [isError, setIsError] = useState(null);
   // const [location, navigate] = useLocation();
+  const { environment: environmentService } = useContext(ServicesContext);
 
-  const defaultValues: EnvironmentDraft = environment ?? {
-    name: '',
-    defaultEnabled: false,
-  };
+  const defaultValues: EnvironmentDraft = environment ?? EnvironmentDraft.template({ name: '' });
 
-  const {
-    control,
-    setValue,
-    register,
-    handleSubmit,
-    getValues,
-    formState: { errors },
-  } = useForm<Environment>({
+  const formMethods = useForm<Environment>({
     defaultValues,
   });
 
   const createOrUpdate = async (data: EnvironmentDraft) => {
     if (environment) {
-      return environmentService.updateEnvironment(environment.id, data);
-    } else {
-      return environmentService.createEnvironment(data);
+      return environmentService.update(environment.id, data);
     }
+    return environmentService.create(data);
   };
 
   const onSubmit: SubmitHandler<EnvironmentDraft> = async (
@@ -74,8 +52,7 @@ export default function EnvironmentManagementForm({
     // console.log('submit handler invoked');
 
     // console.log({ environmentContent });
-    const safeParseResult =
-      environmentDraftSchema.safeParse(environmentContent);
+    const safeParseResult = environmentDraftSchema.safeParse(environmentContent);
     if (!safeParseResult.success) {
       // the error pretty-print the Zod parse error message
       throw new SchemaParseError(safeParseResult);
@@ -89,7 +66,6 @@ export default function EnvironmentManagementForm({
         // todo: handle errors correctly
         return;
       }
-      // navigate('/environments');
       updateEnvironment(response.body);
     } catch (e) {
       console.error(e);
@@ -99,79 +75,25 @@ export default function EnvironmentManagementForm({
     }
   };
 
-  // const handleFormSubmitSuccess = (validatedEnvironment: Environment) => {
-  //   setEnvironments((prevState) => {
-  //     if (environment) {
-  //       const updatedIndex = prevState.findIndex(
-  //         (el) => el.id === validatedEnvironment.id,
-  //       );
-  //       if (updatedIndex === -1) {
-  //         throw new Error(
-  //           `Attempted to update environment ${validatedEnvironment.id}` +
-  //             `, but no such environment was found`,
-  //         );
-  //       }
-  //       const newState = [...prevState];
-  //       newState.splice(updatedIndex, 1, validatedEnvironment);
-  //       return newState;
-  //     } else {
-  //       return [...prevState, validatedEnvironment];
-  //     }
-  //   });
-  // };
-
   return (
-    <form id={formId} onSubmit={handleSubmit(onSubmit)}>
-      <Stack gap="4">
-        <Field
-          label="Environment Name"
-          invalid={!!errors.name}
-          errorText={errors.name?.message}
-        >
-          <Controller
-            name="name"
-            control={control}
-            render={() => (
-              <Input
-                placeholder="environment"
-                {...register('name', {
-                  required:
-                    'An environment name is required and must be between 3-20 characters long.',
-                  pattern: {
-                    value: /^[0-9A-Za-z-]+$/gi,
-                    message:
-                      'Environment names may only contain letters, numbers, and hyphens.',
-                  },
-                  minLength: 3,
-                  maxLength: 20,
-                })}
-              />
-            )}
+    <FormProvider {...formMethods}>
+      <form id={formId} onSubmit={formMethods.handleSubmit(onSubmit)}>
+        <Stack gap="4">
+          <NameField label="Environment Name" />
+          <ControlledSwitch
+            fieldPath="defaultEnabled"
+            label="Enabled by default for new feature flags"
+            labelPosition="left"
+            switchId="set-default-enabled"
           />
-        </Field>
-        <Controller
-          name={`defaultEnabled`}
-          control={control}
-          render={({ field }) => (
-            <Flex>
-              <Text marginRight="5px">
-                Enabled by default for new feature flags
-              </Text>
-              <Switch
-                id="set-default-enabled"
-                name={field.name}
-                checked={!!field.value}
-                onCheckedChange={({ checked }) => field.onChange(checked)}
-                onBlur={field.onBlur}
-                width="fit-content"
-              />
-            </Flex>
-          )}
-        />
-        {/* );
-          })}
-        </Flex> */}
-      </Stack>
-    </form>
+          <ControlledSwitch
+            fieldPath="pinToLists"
+            label="Display a quick toggler on the feature flags list"
+            labelPosition="left"
+            switchId="set-pin-to-lists"
+          />
+        </Stack>
+      </form>
+    </FormProvider>
   );
 }

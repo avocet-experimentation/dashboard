@@ -10,13 +10,11 @@ interface RuleModalProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   featureFlag: FeatureFlag;
   environmentName: string;
-  // updateFlag: (updated: FeatureFlag) => void;
 }
 
 export default function RuleCreationModal({
   featureFlag,
   environmentName,
-  // updateFlag,
   setIsLoading,
 }: RuleModalProps) {
   const [open, setOpen] = useState(false);

@@ -1,11 +1,9 @@
 import { Flex, Heading, Text } from '@chakra-ui/react';
 import { Environment } from '@estuary/types';
-import { useEffect, useState } from 'react';
-import EnvironmentService from '#/services/EnvironmentService';
+import { useContext, useEffect, useState } from 'react';
+import { ServicesContext } from '#/services/ServiceContext';
 import EnvironmentTable from './EnvironmentTable';
 import EnvironmentManagementModal from './EnvironmentManagementModal';
-
-// const CREATE_ENVIRONMENT_FORM_ID = 'create-environment-form';
 
 /**
  * Parent component for Environments
@@ -13,31 +11,29 @@ import EnvironmentManagementModal from './EnvironmentManagementModal';
 export default function EnvironmentsMainPage() {
   const [environments, setEnvironments] = useState<Environment[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  // const [modalVisible, setModalVisible] = useState(false);
-  const environmentService = new EnvironmentService();
-
-  const getAllEnvironments = async () => {
-    try {
-      const response = await environmentService.getEnvironments();
-      const allEnvironments = response.body ?? [];
-      setEnvironments(allEnvironments);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const { environment } = useContext(ServicesContext);
 
   const updateEnvironment = (obj: Environment) => {
     setEnvironments((prevState) => {
       const environmentIndex = prevState.find((el) => el.id === obj.id);
       if (environmentIndex) {
         return prevState.map((el) => (el.id === obj.id ? obj : el));
-      } else {
-        return [...prevState, obj];
       }
+      return [...prevState, obj];
     });
   };
 
   useEffect(() => {
+    const getAllEnvironments = async () => {
+      try {
+        const response = await environment.getMany();
+        const allEnvironments = response.body ?? [];
+        setEnvironments(allEnvironments);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     getAllEnvironments();
   }, []);
 
@@ -52,7 +48,6 @@ export default function EnvironmentsMainPage() {
         <Heading size="3xl">Environments</Heading>
         <EnvironmentManagementModal
           setIsLoading={setIsLoading}
-          setEnvironments={setEnvironments}
           updateEnvironment={updateEnvironment}
         />
       </Flex>
@@ -63,9 +58,7 @@ export default function EnvironmentsMainPage() {
       {environments.length ? (
         <EnvironmentTable
           environments={environments}
-          setEnvironments={setEnvironments}
           updateEnvironment={updateEnvironment}
-          isLoading={isLoading}
           setIsLoading={setIsLoading}
         />
       ) : (
