@@ -1,10 +1,9 @@
+import { Flex } from '@chakra-ui/react';
 import { Route, Switch } from 'wouter';
 // import "./assets/stylesheets/App.css";
 import Navbar from './components/Navbar';
-import './services/FeatureService';
-import { Flex } from '@chakra-ui/react';
 
-import Features from './components/features/Features';
+import FeaturesMainPage from './components/features/FeaturesMainPage';
 import EventFeatures from './components/events/EventFeatures';
 import Experiments from './components/experiments/Experiments';
 import FeaturePage from './components/features/FeaturePage';
@@ -19,18 +18,15 @@ export default function App() {
       <Flex direction="column" width="calc(100% - 250px)" bg="whitesmoke">
         <TopBar />
         <Switch>
-          <Route path="/features" component={() => <Features />} />
-          <Route path="/features/:id" component={() => <FeaturePage />} />
+          <Route path="/features" component={FeaturesMainPage} />
           <Route
-            path="/environments"
-            component={() => <EnvironmentsMainPage />}
+            path="/features/:id"
+            component={(id) => <FeaturePage flagId={id} />}
           />
-          <Route path="/experiments" component={() => <Experiments />} />
+          <Route path="/environments" component={EnvironmentsMainPage} />
+          <Route path="/experiments" component={Experiments} />
           <Route path="/experiments/:id" component={() => <ExperimentPage />} />
-          <Route
-            path="/events"
-            component={() => <EventFeatures></EventFeatures>}
-          />
+          <Route path="/events" component={EventFeatures} />
         </Switch>
       </Flex>
     </Flex>

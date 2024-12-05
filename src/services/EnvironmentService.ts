@@ -30,7 +30,7 @@ export default class EnvironmentService {
   /**
    * Get up to `limit` Environments, starting from index `offset`
    */
-  async getEnvironments(
+  async getMany(
     limit?: number,
     offset?: number,
   ): Promise<GQLParsedResponse<Environment[]>> {
@@ -75,11 +75,19 @@ export default class EnvironmentService {
     return parsedResponse;
   }
 
-  async findEnvironment(
+  /**
+   * Find environments that match the passed partial
+   * @param limit defaults to 1
+   */
+  async find(
     partial: Partial<Environment>,
+    limit: number = 1,
   ): Promise<GQLParsedResponse<Environment>> {
     const query = /* gql */ `
-      findMatchingEnvironments(partial: ${stringifyObject(partial, { singleQuotes: false })}, limit: 1) {
+      findMatchingEnvironments(
+        partial: ${stringifyObject(partial, { singleQuotes: false })},
+        limit: ${limit}
+      ) {
         id
         name
         defaultEnabled
@@ -116,7 +124,7 @@ export default class EnvironmentService {
     return success;
   }
 
-  async createEnvironment(
+  async create(
     content: EnvironmentDraft,
   ): Promise<GQLParsedResponse<Environment>> {
     const mutation = /* gql */ `
@@ -155,7 +163,7 @@ export default class EnvironmentService {
     return success;
   }
 
-  async updateEnvironment(
+  async update(
     environmentId: string,
     updates: Partial<Environment>,
   ): Promise<GQLParsedResponse<Environment>> {
@@ -204,9 +212,7 @@ export default class EnvironmentService {
     return success;
   }
 
-  async deleteEnvironment(
-    environmentId: string,
-  ): Promise<GQLParsedResponse<boolean>> {
+  async delete(environmentId: string): Promise<GQLParsedResponse<boolean>> {
     const mutation = /* gql */ `
       deleteEnvironment(id: ${environmentId})
     `;
