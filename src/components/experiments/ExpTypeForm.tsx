@@ -478,11 +478,13 @@ function ExpTypeForm({
                     ...definedTreatments,
                     [newTreatment.id]: newTreatment,
                   });
-                  addGroup(
-                    ExperimentGroup.template({
-                      name: `Variation Group ${groupFields.length}`,
-                    }),
-                  );
+                  if (expType === 'ab') {
+                    addGroup(
+                      ExperimentGroup.template({
+                        name: `Variation Group ${groupFields.length}`,
+                      }),
+                    );
+                  }
                 }}
               >
                 <CirclePlus />
