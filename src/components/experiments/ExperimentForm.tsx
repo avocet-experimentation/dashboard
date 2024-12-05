@@ -220,7 +220,11 @@ export default function ExperimentCreationForm({
           name="description"
           control={control}
           render={({ field }) => (
-            <Field label="Description">
+            <Field
+              label="Description"
+              invalid={!!errors.description}
+              errorText={errors.description?.message}
+            >
               <Input
                 placeholder="A human-readable description of your experiment."
                 {...register('description', {
@@ -234,7 +238,11 @@ export default function ExperimentCreationForm({
           name="hypothesis"
           control={control}
           render={() => (
-            <Field label="Hypothesis">
+            <Field
+              label="Hypothesis"
+              invalid={!!errors.hypothesis}
+              errorText={errors.hypothesis?.message}
+            >
               <Input
                 placeholder="What do you expect to happen in this experiment ?"
                 {...register('hypothesis', {
