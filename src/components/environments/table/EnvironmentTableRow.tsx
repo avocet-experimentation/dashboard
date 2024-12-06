@@ -3,9 +3,9 @@ import { Table, Text } from '@chakra-ui/react';
 import { useContext } from 'react';
 import { lastUpdated, formatDate } from '#/lib/timeFunctions';
 import { ServicesContext } from '#/services/ServiceContext';
-import { Switch } from '../ui/switch';
-import { Tooltip } from '../ui/tooltip';
-import EnvironmentManagementModal from './EnvironmentManagementModal';
+import { Switch } from '../../ui/switch';
+import { Tooltip } from '../../ui/tooltip';
+import EnvironmentManagementModal from '../management-form/EnvironmentManagementModal';
 
 interface EnvironmentTableRowProps {
   environment: Environment;

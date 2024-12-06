@@ -3,9 +3,9 @@ import { Environment, FeatureFlag } from '@estuary/types';
 import { useEffect, useState } from 'react';
 import FeatureService from '#/services/FeatureService';
 import EnvironmentService from '#/services/EnvironmentService';
-import FeatureFlagTable from './FeatureFlagTable';
-import FeatureFlagCreationModal from './FeatureFlagCreationModal';
+import FeatureFlagCreationModal from './creation-form/FeatureFlagCreationModal';
 import { LoaderWrapper } from '../helpers/LoaderWrapper';
+import FeatureFlagTable from './table/FeatureFlagTable';
 
 const featureService = new FeatureService();
 const environmentService = new EnvironmentService();

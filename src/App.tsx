@@ -3,10 +3,10 @@ import { Route, Switch } from 'wouter';
 // import "./assets/stylesheets/App.css";
 import Navbar from './components/Navbar';
 
-import FeatureFlagsMain from './components/features/FeatureFlagsMain';
+import FeatureFlagsMain from './components/feature-flags/FeatureFlagsMain';
 import EventFeatures from './components/events/EventFeatures';
 import ExperimentsMain from './components/experiments/ExperimentsMain';
-import FeatureFlagManagementPage from './components/features/FeatureFlagManagementPage';
+import FeatureFlagManagementPage from './components/feature-flags/edit-page/FeatureFlagManagementPage';
 import TopBar from './components/TopBar';
 import ExperimentPage from './components/experiments/ExperimentPage';
 import EnvironmentsMainPage from './components/environments/EnvironmentsMainPage';
@@ -19,13 +19,10 @@ export default function App() {
         <TopBar />
         <Switch>
           <Route path="/features" component={FeatureFlagsMain} />
-          <Route
-            path="/features/:id"
-            component={(id) => <FeatureFlagManagementPage flagId={id} />}
-          />
+          <Route path="/features/:id" component={FeatureFlagManagementPage} />
           <Route path="/environments" component={EnvironmentsMainPage} />
           <Route path="/experiments" component={ExperimentsMain} />
-          <Route path="/experiments/:id" component={() => <ExperimentPage />} />
+          <Route path="/experiments/:id" component={ExperimentPage} />
           <Route path="/events" component={EventFeatures} />
         </Switch>
       </Flex>

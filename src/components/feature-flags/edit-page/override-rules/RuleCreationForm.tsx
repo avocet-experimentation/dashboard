@@ -1,8 +1,15 @@
 import { Flex } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FlagValueTypeDef, OverrideRuleUnion, RuleType } from '@estuary/types';
-import { RULE_TYPES, RuleTypeDisplayDataTuple } from '#/lib/featureConstants';
-import { RadioCardItem, RadioCardLabel, RadioCardRoot } from '../ui/radio-card';
+import {
+  RULE_TYPES,
+  RuleTypeDisplayDataTuple,
+} from '#/components/feature-flags/feature-constants';
+import {
+  RadioCardItem,
+  RadioCardLabel,
+  RadioCardRoot,
+} from '#/components/ui/radio-card';
 import ForcedValueInitForm from './ForcedValueInitForm';
 
 interface RuleTypeSelectorProps {
@@ -55,7 +62,7 @@ interface RuleFormProps {
  * - add a route for this form, and navigate back to the flag's page on
  * successful submission
  */
-export default function RuleInitializationForm({
+export default function RuleCreationForm({
   formId,
   setIsLoading,
   featureFlagId,
@@ -63,7 +70,8 @@ export default function RuleInitializationForm({
   environmentName,
   setOpen,
 }: RuleFormProps) {
-  const [ruleType, setRuleType] = useState<OverrideRuleUnion['type']>('ForcedValue');
+  const [ruleType, setRuleType] =
+    useState<OverrideRuleUnion['type']>('ForcedValue');
 
   return (
     <Flex direction="column">

@@ -1,8 +1,8 @@
 import { Input } from '@chakra-ui/react';
 import { Controller, Control, UseFormRegister } from 'react-hook-form';
 import { ForcedValue } from '@estuary/types';
-import { Switch } from '../ui/switch';
-import { Field } from '../ui/field';
+import { Switch } from '#/components/ui/switch';
+import { Field } from '#/components/ui/field';
 
 interface OverrideValueFieldProps {
   control: Control<ForcedValue>;

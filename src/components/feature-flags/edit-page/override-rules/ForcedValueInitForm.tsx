@@ -10,7 +10,7 @@ import {
 } from '@estuary/types';
 import { useContext } from 'react';
 import { ServicesContext } from '#/services/ServiceContext';
-import { Field } from '../ui/field';
+import { Field } from '#/components/ui/field';
 import OverrideValueField from './OverrideValueField';
 
 const validateFormData = <R extends { type: OverrideRuleUnion['type'] }>(

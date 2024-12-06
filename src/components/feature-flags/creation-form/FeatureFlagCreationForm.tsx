@@ -9,19 +9,12 @@ import {
 } from '@estuary/types';
 import { useLocation } from 'wouter';
 import { ServicesContext } from '#/services/ServiceContext';
-import { Field } from '../ui/field';
+import { Field } from '#/components/ui/field';
 import FeatureFlagValueTypeField from './FeatureFlagValueTypeField';
 import FeatureFlagDefaultValueField from './FeatureFlagDefaultValueField';
-import { DescriptionField, NameField } from '../forms/DefinedFields';
-import ControlledSwitch from '../forms/ControlledSwitch';
-
-const valueTypes = createListCollection({
-  items: [
-    { label: 'Boolean (on/off)', value: 'boolean' },
-    { label: 'String', value: 'string' },
-    { label: 'Number', value: 'number' },
-  ],
-});
+import { DescriptionField, NameField } from '#/components/forms/DefinedFields';
+import ControlledSwitch from '#/components/forms/ControlledSwitch';
+import { VALUE_TYPES_DISPLAY_LIST } from '../feature-constants';
 
 interface FeatureFlagCreationFormProps {
   formId: string;
@@ -111,7 +104,7 @@ export default function FeatureFlagCreationForm({
           <FeatureFlagValueTypeField
             control={formMethods.control}
             setValue={formMethods.setValue}
-            valueTypes={valueTypes}
+            valueTypes={VALUE_TYPES_DISPLAY_LIST}
           />
           <FeatureFlagDefaultValueField
             control={formMethods.control}

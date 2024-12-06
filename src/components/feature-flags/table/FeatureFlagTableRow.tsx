@@ -9,8 +9,8 @@ import { lastUpdated, formatDate } from '#/lib/timeFunctions';
 import { ServicesContext } from '#/services/ServiceContext';
 
 // local components
-import { Switch } from '../ui/switch';
-import { Tooltip } from '../ui/tooltip';
+import { Switch } from '#/components/ui/switch';
+import { Tooltip } from '#/components/ui/tooltip';
 
 interface FeatureFlagTableRowProps {
   allEnvironmentNames: string[];

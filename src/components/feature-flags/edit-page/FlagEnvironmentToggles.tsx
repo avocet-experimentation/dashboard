@@ -1,9 +1,7 @@
-import {
-  Box, Heading, Stack, Flex, Text, Highlight,
-} from '@chakra-ui/react';
+import { Box, Heading, Stack, Flex, Text, Highlight } from '@chakra-ui/react';
 import { Environment, FeatureFlag } from '@estuary/types';
 import { VALUE_FONT } from '#/lib/constants';
-import { Switch } from '../ui/switch';
+import { Switch } from '#/components/ui/switch';
 
 interface FlagEnvironmentTogglesProps {
   environments: Environment[] | undefined;
@@ -33,21 +31,19 @@ export function FlagEnvironmentToggles({
           </Text>
         </Flex>
         <Flex direction="row">
-          {environments
-            && environments.map((env) => (
+          {environments &&
+            environments.map((env) => (
               <Flex
                 position="relative"
                 margin="0 15px 0 0"
                 key={`${env.name}-switch`}
               >
-                <Text marginRight="5px">
-                  {env.name}
-                  :
-                </Text>
+                <Text marginRight="5px">{env.name}:</Text>
                 <Switch
                   checked={env.name in featureFlag.environmentNames}
                   onCheckedChange={async ({ checked }) =>
-                    handleEnvToggleChange(env.name, checked)}
+                    handleEnvToggleChange(env.name, checked)
+                  }
                 />
               </Flex>
             ))}

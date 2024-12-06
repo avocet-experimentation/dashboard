@@ -5,8 +5,8 @@ import {
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-} from '../ui/select';
-import { Field } from '../ui/field';
+} from '#/components/ui/select';
+import { Field } from '#/components/ui/field';
 import {
   FeatureFlagDraft,
   flagDefaultValueMap,
@@ -15,8 +15,8 @@ import {
 import { Control, Controller, UseFormSetValue } from 'react-hook-form';
 
 interface FeatureFlagValueTypeProps {
-  control: Control<FeatureFlagDraft<'string' | 'number' | 'boolean'>, any>;
-  setValue: UseFormSetValue<FeatureFlagDraft<'string' | 'number' | 'boolean'>>;
+  control: Control<FeatureFlagDraft, any>;
+  setValue: UseFormSetValue<FeatureFlagDraft>;
   valueTypes: ListCollection<{
     label: string;
     value: string;

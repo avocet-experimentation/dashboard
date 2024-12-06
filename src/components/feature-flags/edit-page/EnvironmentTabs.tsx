@@ -1,9 +1,9 @@
 import { Flex, Tabs, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { FeatureFlag } from '@estuary/types';
-import ForcedValueStub from './ForcedValueStub';
-import ExperimentReferenceStub from './ExperimentReferenceStub';
-import RuleCreationModal from './RuleCreationModal';
+import ForcedValueStub from './override-rules/ForcedValueStub';
+import ExperimentReferenceStub from './override-rules/ExperimentReferenceStub';
+import RuleCreationModal from './override-rules/RuleCreationModal';
 
 interface EnvironmentTabsProps {
   featureFlag: FeatureFlag;
