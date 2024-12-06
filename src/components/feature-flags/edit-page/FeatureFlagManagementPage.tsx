@@ -14,10 +14,15 @@ import { useLocation, useRoute } from 'wouter';
 import deepcopy from 'deepcopy';
 import { ServicesContext } from '#/services/ServiceContext';
 import { VALUE_FONT } from '#/lib/constants';
-import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../ui/menu';
-import NotFound from '../NotFound';
+import {
+  MenuContent,
+  MenuItem,
+  MenuRoot,
+  MenuTrigger,
+} from '#/components/ui/menu';
+import NotFound from '../../NotFound';
 import EnvironmentTabs from './EnvironmentTabs';
-import ControlledEditable from '../forms/ControlledEditable';
+import ControlledEditable from '../../forms/ControlledEditable';
 import { FlagEnvironmentToggles } from './FlagEnvironmentToggles';
 
 interface FeatureFlagManagementPageProps {

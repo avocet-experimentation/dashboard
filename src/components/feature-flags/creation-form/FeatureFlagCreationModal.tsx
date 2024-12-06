@@ -1,10 +1,9 @@
 import { CirclePlus } from 'lucide-react';
 import { useState } from 'react';
 import { Environment } from '@estuary/types';
-import FormModal from '../forms/FormModal';
-import FeatureFlagCreationForm from './FeatureForm';
-
-const CREATE_FEATURE_FORM_ID = 'create-feature-form';
+import FormModal from '#/components/forms/FormModal';
+import FeatureFlagCreationForm from './FeatureFlagCreationForm';
+import { CREATE_FEATURE_FORM_ID } from '../feature-constants';
 
 interface FeatureFlagCreationModalProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;

@@ -1,10 +1,9 @@
 import { CirclePlus } from 'lucide-react';
 import { useState } from 'react';
 import { FeatureFlag } from '@estuary/types';
-import FormModal from '../forms/FormModal';
-import RuleInitializationForm from './RuleForm';
-
-const ADD_RULE_FORM_ID = 'add-rule-form';
+import FormModal from '../../../forms/FormModal';
+import RuleCreationForm from './RuleCreationForm';
+import { ADD_RULE_FORM_ID } from '../../feature-constants';
 
 interface RuleModalProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -36,7 +35,7 @@ export default function RuleCreationModal({
       open={open}
       setOpen={setOpen}
     >
-      <RuleInitializationForm
+      <RuleCreationForm
         formId={ADD_RULE_FORM_ID}
         setIsLoading={setIsLoading}
         valueType={featureFlag.value.type}

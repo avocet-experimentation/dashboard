@@ -1,7 +1,7 @@
 import { CirclePlus } from 'lucide-react';
 import { useState } from 'react';
 import { Environment } from '@estuary/types';
-import FormModal from '../forms/FormModal';
+import FormModal from '../../forms/FormModal';
 import EnvironmentManagementForm from './EnvironmentManagementForm';
 
 const ENVIRONMENT_MANAGEMENT_FORM_ID = 'environment-management-form';
@@ -24,15 +24,15 @@ export default function EnvironmentManagementModal({
 
   const formModalProps = environment
     ? {
-      title: `Modify "${environment?.name}" Environment`,
-      confirmButtonText: 'Update',
-      triggerButtonText: environment?.name,
-    }
+        title: `Modify "${environment?.name}" Environment`,
+        confirmButtonText: 'Update',
+        triggerButtonText: environment?.name,
+      }
     : {
-      title: 'Create a New Environment',
-      confirmButtonText: 'Create',
-      triggerButtonText: 'Add Environment',
-    };
+        title: 'Create a New Environment',
+        confirmButtonText: 'Create',
+        triggerButtonText: 'Add Environment',
+      };
 
   return (
     <FormModal

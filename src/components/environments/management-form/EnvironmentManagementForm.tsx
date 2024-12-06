@@ -8,8 +8,8 @@ import {
 } from '@estuary/types';
 import { useContext } from 'react';
 import { ServicesContext } from '#/services/ServiceContext';
-import { NameField } from '../forms/DefinedFields';
-import ControlledSwitch from '../forms/ControlledSwitch';
+import { NameField } from '../../forms/DefinedFields';
+import ControlledSwitch from '../../forms/ControlledSwitch';
 
 interface EnvironmentManagementFormProps {
   formId: string;
@@ -33,7 +33,8 @@ export default function EnvironmentManagementForm({
   // const [location, navigate] = useLocation();
   const { environment: environmentService } = useContext(ServicesContext);
 
-  const defaultValues: EnvironmentDraft = environment ?? EnvironmentDraft.template({ name: '' });
+  const defaultValues: EnvironmentDraft =
+    environment ?? EnvironmentDraft.template({ name: '' });
 
   const formMethods = useForm<Environment>({
     defaultValues,
@@ -52,7 +53,8 @@ export default function EnvironmentManagementForm({
     // console.log('submit handler invoked');
 
     // console.log({ environmentContent });
-    const safeParseResult = environmentDraftSchema.safeParse(environmentContent);
+    const safeParseResult =
+      environmentDraftSchema.safeParse(environmentContent);
     if (!safeParseResult.success) {
       // the error pretty-print the Zod parse error message
       throw new SchemaParseError(safeParseResult);

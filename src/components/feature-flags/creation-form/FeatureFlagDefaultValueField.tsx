@@ -1,6 +1,6 @@
 import { Input } from '@chakra-ui/react';
-import { Field } from '../ui/field';
-import { Switch } from '../ui/switch';
+import { Field } from '#/components/ui/field';
+import { Switch } from '#/components/ui/switch';
 import {
   Controller,
   Control,

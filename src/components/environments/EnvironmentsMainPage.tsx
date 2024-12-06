@@ -2,8 +2,8 @@ import { Flex, Heading, Text } from '@chakra-ui/react';
 import { Environment } from '@estuary/types';
 import { useContext, useEffect, useState } from 'react';
 import { ServicesContext } from '#/services/ServiceContext';
-import EnvironmentTable from './EnvironmentTable';
-import EnvironmentManagementModal from './EnvironmentManagementModal';
+import EnvironmentTable from './table/EnvironmentTable';
+import EnvironmentManagementModal from './management-form/EnvironmentManagementModal';
 
 /**
  * Parent component for Environments
