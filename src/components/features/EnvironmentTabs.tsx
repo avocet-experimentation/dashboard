@@ -1,5 +1,5 @@
 import { Flex, Tabs, Text } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FeatureFlag } from '@estuary/types';
 import ForcedValueStub from './ForcedValueStub';
 import ExperimentReferenceStub from './ExperimentReferenceStub';
@@ -13,10 +13,16 @@ export default function EnvironmentTabs({ featureFlag }: EnvironmentTabsProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   // todo: fetch or pass in environment objects to list all environment names
   // set to show in toggle list and rest in something like an overflow dropdown
-  const [envNames, setEnvNames] = useState<string[]>(
-    Object.keys(featureFlag.environmentNames),
-  );
-  const [selectedTab, setSelectedTab] = useState<string>(`${envNames[0]}-tab`);
+  const [envNames, setEnvNames] = useState<string[]>([]);
+  const [selectedTab, setSelectedTab] = useState<string>();
+
+  useEffect(() => {
+    setEnvNames(Object.keys(featureFlag.environmentNames));
+  }, [featureFlag]);
+
+  useEffect(() => {
+    setSelectedTab(`${envNames[0]}-tab`);
+  }, [envNames]);
 
   return (
     <div id="flag-environment-tabs">
@@ -63,39 +69,41 @@ export default function EnvironmentTabs({ featureFlag }: EnvironmentTabsProps) {
                     {!rules.length
                       ? 'There are no rules for this environment yet.'
                       : rules.map((rule) => {
-                        if (rule.type === 'ForcedValue') {
-                          return (
-                            <ForcedValueStub rule={rule} key={rule.id} />
-                          );
-                        }
-                        if (rule.type === 'Experiment') {
-                          return (
-                            <ExperimentReferenceStub
-                              rule={rule}
-                              key={rule.id}
-                            />
-                          );
-                        }
-                        throw new TypeError(`Rule ${rule} is not handled!`);
-                      })}
+                          if (rule.type === 'ForcedValue') {
+                            return (
+                              <ForcedValueStub rule={rule} key={rule.id} />
+                            );
+                          }
+                          if (rule.type === 'Experiment') {
+                            return (
+                              <ExperimentReferenceStub
+                                rule={rule}
+                                key={rule.id}
+                              />
+                            );
+                          }
+                          throw new TypeError(`Rule ${rule} is not handled!`);
+                        })}
                   </Tabs.Content>
                 );
               })}
             </Tabs.ContentGroup>
-            <Flex
-              direction="row"
-              justifyContent="space-between"
-              border="1px solid grey"
-              alignItems="center"
-              padding="15px"
-            >
-              <Text>{`Add a new rule to ${selectedTab.slice(0, -4)}`}</Text>
-              <RuleCreationModal
-                setIsLoading={setIsLoading}
-                featureFlag={featureFlag}
-                environmentName={selectedTab.slice(0, -4)}
-              />
-            </Flex>
+            {selectedTab && (
+              <Flex
+                direction="row"
+                justifyContent="space-between"
+                border="1px solid grey"
+                alignItems="center"
+                padding="15px"
+              >
+                <Text>{`Add a new rule to ${selectedTab.slice(0, -4)}`}</Text>
+                <RuleCreationModal
+                  setIsLoading={setIsLoading}
+                  featureFlag={featureFlag}
+                  environmentName={selectedTab.slice(0, -4)}
+                />
+              </Flex>
+            )}
           </Tabs.Root>
         </>
       ) : (

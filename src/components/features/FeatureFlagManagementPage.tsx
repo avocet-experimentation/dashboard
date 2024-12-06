@@ -14,9 +14,7 @@ import { useLocation, useRoute } from 'wouter';
 import deepcopy from 'deepcopy';
 import { ServicesContext } from '#/services/ServiceContext';
 import { VALUE_FONT } from '#/lib/constants';
-import {
-  MenuContent, MenuItem, MenuRoot, MenuTrigger,
-} from '../ui/menu';
+import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../ui/menu';
 import NotFound from '../NotFound';
 import EnvironmentTabs from './EnvironmentTabs';
 import ControlledEditable from '../forms/ControlledEditable';
@@ -54,29 +52,29 @@ export default function FeatureFlagManagementPage(
     return flagResponse.ok;
   };
 
-  useEffect(() => {
-    const handleGetFeature = async () => {
-      setIsLoading(true);
-      try {
-        const flagResponse = await services.featureFlag.getFeature(params.id);
-        if (!flagResponse.ok) {
-          // todo: better error handling
-          throw new Error(`Couldn't fetch flag data for id ${params.id}!`);
-        }
-
-        const envResponse = await services.environment.getMany();
+  const handleGetFeature = async () => {
+    setIsLoading(true);
+    try {
+      const flagResponse = await services.featureFlag.getFeature(params.id);
+      if (!flagResponse.ok) {
         // todo: better error handling
-        if (!envResponse.ok) throw new Error("Couldn't load environments!");
-
-        setFeatureFlag(flagResponse.body);
-        setEnvironments(envResponse.body);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(false);
+        throw new Error(`Couldn't fetch flag data for id ${params.id}!`);
       }
-    };
 
+      const envResponse = await services.environment.getMany();
+      // todo: better error handling
+      if (!envResponse.ok) throw new Error("Couldn't load environments!");
+
+      setFeatureFlag(flagResponse.body);
+      setEnvironments(envResponse.body);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     handleGetFeature();
     // return () => handleGetFeature();
   }, []);
@@ -100,10 +98,16 @@ export default function FeatureFlagManagementPage(
       if (!response.ok) {
         throw new Error(`Failed to update record for flag ${params.id}`);
       }
-      const updatedFlag = deepcopy(featureFlag);
-      FeatureFlagDraft.toggleEnvironment(updatedFlag, envName);
 
-      setFeatureFlag(updatedFlag);
+      setFeatureFlag((prevState) => {
+        if (!prevState)
+          throw new Error(
+            'Attempted to update flag before it was set on state!',
+          );
+        const updatedFlag = deepcopy(prevState);
+        FeatureFlagDraft.toggleEnvironment(updatedFlag, envName);
+        return updatedFlag;
+      });
     } catch (e) {
       console.error(e);
     }

@@ -19,12 +19,13 @@ export default function RuleCreationModal({
 }: RuleModalProps) {
   const [open, setOpen] = useState(false);
 
-  if (!(environmentName in featureFlag.environmentNames)) {
-    throw new Error(
-      `Flag ${featureFlag.name} not enabled on environment`
-        + ` ${environmentName}. This is likely a bug!`,
-    );
-  }
+  // if (!(environmentName in featureFlag.environmentNames)) {
+  //   throw new Error(
+  //     `Flag "${featureFlag.name}" not enabled on environment` +
+  //       ` ${environmentName}. This is likely a bug!`,
+  //   );
+  // }
+
   return (
     <FormModal
       triggerButtonIcon={<CirclePlus />}
