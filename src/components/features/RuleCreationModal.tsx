@@ -22,7 +22,7 @@ export default function RuleCreationModal({
   if (!(environmentName in featureFlag.environmentNames)) {
     throw new Error(
       `Flag ${featureFlag.name} not enabled on environment`
-        + ` ${environmentName}. This is likely a mistake!`,
+        + ` ${environmentName}. This is likely a bug!`,
     );
   }
   return (

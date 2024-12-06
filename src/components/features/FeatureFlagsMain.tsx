@@ -5,6 +5,7 @@ import FeatureService from '#/services/FeatureService';
 import EnvironmentService from '#/services/EnvironmentService';
 import FeatureFlagTable from './FeatureFlagTable';
 import FeatureFlagCreationModal from './FeatureFlagCreationModal';
+import { LoaderWrapper } from '../helpers/LoaderWrapper';
 
 const featureService = new FeatureService();
 const environmentService = new EnvironmentService();
@@ -16,29 +17,31 @@ export default function FeatureFlagsMain() {
   const [environments, setEnvironments] = useState<Environment[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const getAllFeatures = async () => {
+    const featureResponse = await featureService.getAllFeatures();
+    const allFeatures = featureResponse.ok ? featureResponse.body : [];
+    setFeatureFlags(allFeatures);
+  };
+
   const getAllEnvironments = async () => {
-    try {
-      const response = await environmentService.getMany();
-      const allEnvironments = response.body ?? [];
-      setEnvironments(allEnvironments);
-    } catch (error) {
-      console.error(error);
-    }
+    const response = await environmentService.getMany();
+    setEnvironments(response.body ?? []);
   };
 
   useEffect(() => {
-    const handleGetAllFeatures = async () => {
+    setIsLoading(true);
+
+    const loadData = async () => {
       try {
-        const featureResponse = await featureService.getAllFeatures();
-        const allFeatures = featureResponse.ok ? featureResponse.body : [];
-        setFeatureFlags(allFeatures);
-      } catch (error) {
-        console.log(error);
+        await Promise.all([getAllFeatures(), getAllEnvironments()]);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    handleGetAllFeatures();
-    getAllEnvironments();
+    loadData();
   }, []);
 
   const updateFlag = (obj: FeatureFlag) => {
@@ -63,24 +66,25 @@ export default function FeatureFlagsMain() {
         <Heading size="3xl">Features</Heading>
         <FeatureFlagCreationModal
           setIsLoading={setIsLoading}
-          updateFlag={updateFlag}
+          // updateFlag={updateFlag}
           environments={environments}
         />
       </Flex>
       <Text margin="15px 0">
         Features enable you to change your app's behavior from within this UI.
       </Text>
-      {featureFlags.length ? (
-        <FeatureFlagTable
-          featureFlags={featureFlags}
-          updateFlag={updateFlag}
-          pinnedEnvironments={getPinned(environments)}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-        />
-      ) : (
-        'No features found. Please create one.'
-      )}
+      <LoaderWrapper isLoading={isLoading}>
+        {featureFlags.length ? (
+          <FeatureFlagTable
+            featureFlags={featureFlags}
+            updateFlag={updateFlag}
+            pinnedEnvironments={getPinned(environments)}
+            isLoading={isLoading}
+          />
+        ) : (
+          'No features found. Please create one.'
+        )}
+      </LoaderWrapper>
     </Flex>
   );
 }
