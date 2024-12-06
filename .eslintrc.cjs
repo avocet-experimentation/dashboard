@@ -29,6 +29,7 @@ module.exports = {
     'react/require-default-props': 'off',
     'no-unused-vars': 'off', // handled by typescript-eslint
     'implicit-arrow-linebreak': 'off',
+    allowObjectPatternsAsParameters: 'true',
     'import/prefer-default-export': 'off',
     'import/no-extraneous-dependencies': [
       'error',
