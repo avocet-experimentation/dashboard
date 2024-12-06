@@ -1,6 +1,6 @@
 import { CirclePlus } from 'lucide-react';
 import { useState } from 'react';
-import { Environment, FeatureFlag } from '@estuary/types';
+import { Environment } from '@estuary/types';
 import FormModal from '../forms/FormModal';
 import FeatureFlagCreationForm from './FeatureForm';
 

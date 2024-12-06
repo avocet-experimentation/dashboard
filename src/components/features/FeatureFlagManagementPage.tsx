@@ -1,32 +1,26 @@
 import {
   Box,
-  Editable,
+  EditableValueChangeDetails,
   Flex,
   Heading,
-  Highlight,
-  HStack,
-  Icon,
   IconButton,
   Stack,
   Text,
 } from '@chakra-ui/react';
 import { useContext, useEffect, useState } from 'react';
 import { Environment, FeatureFlag, FeatureFlagDraft } from '@estuary/types';
-import {
-  Check, EllipsisVertical, FilePenLine, Trash2, X,
-} from 'lucide-react';
+import { EllipsisVertical, Trash2 } from 'lucide-react';
 import { useLocation, useRoute } from 'wouter';
 import deepcopy from 'deepcopy';
-import deepmerge from 'deepmerge';
 import { ServicesContext } from '#/services/ServiceContext';
-import { Switch } from '../ui/switch';
+import { VALUE_FONT } from '#/lib/constants';
 import {
   MenuContent, MenuItem, MenuRoot, MenuTrigger,
 } from '../ui/menu';
 import NotFound from '../NotFound';
 import EnvironmentTabs from './EnvironmentTabs';
-
-const VALUE_FONT = "'Lucida Console', 'Courier New', monospace";
+import ControlledEditable from '../forms/ControlledEditable';
+import { FlagEnvironmentToggles } from './FlagEnvironmentToggles';
 
 interface FeatureFlagManagementPageProps {
   // environments: Environment[];
@@ -38,7 +32,6 @@ export default function FeatureFlagManagementPage(
   }: FeatureFlagManagementPageProps,
 ) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [editDesc, setEditDesc] = useState<boolean>(false);
   const [featureFlag, setFeatureFlag] = useState<FeatureFlag>();
   const [environments, setEnvironments] = useState<Environment[]>();
   const [match, params] = useRoute('/features/:id');
@@ -49,6 +42,17 @@ export default function FeatureFlagManagementPage(
   if (params === null) {
     throw new Error("Missing 'id' param!");
   }
+
+  const handleFlagUpdate = async (
+    updates: Partial<FeatureFlagDraft>,
+  ): Promise<boolean> => {
+    const flagResponse = await services.featureFlag.updateFeature(
+      params.id,
+      updates,
+    );
+
+    return flagResponse.ok;
+  };
 
   useEffect(() => {
     const handleGetFeature = async () => {
@@ -82,23 +86,6 @@ export default function FeatureFlagManagementPage(
       services.featureFlag.deleteFeature(featureFlag.id);
       navigate('/features');
     }
-  };
-
-  const cancelHandler = (flag: FeatureFlag) => {
-    const textarea = document.querySelector('textarea');
-    if (textarea) {
-      if (textarea.value !== undefined) textarea.value = flag.description;
-      textarea.blur();
-    }
-    console.log('cancel clicked, reset to:', flag.description);
-    setEditDesc(false);
-  };
-
-  const submitHandler = (flag: FeatureFlag) => {
-    const newValue = document.querySelector('textarea')?.value || flag.description;
-    console.log('value:', { newValue });
-    services.featureFlag.patchFeature(flag.id, { description: newValue });
-    setEditDesc(false);
   };
 
   const handleEnvToggleChange = async (envName: string, checked: boolean) => {
@@ -153,103 +140,23 @@ export default function FeatureFlagManagementPage(
             <Heading size="xl" marginBottom="15px">
               Overview
             </Heading>
-            <Stack padding="15px" bg="white" borderRadius="5px">
-              <HStack gap={2.5}>
-                <Heading size="lg">Description</Heading>
-                <Icon
-                  size="sm"
-                  cursor="pointer"
-                  onClick={() => setEditDesc(true)}
-                >
-                  <FilePenLine color="black" />
-                </Icon>
-              </HStack>
-              <Editable.Root
-                value={featureFlag.description ?? ''}
-                edit={editDesc}
-                activationMode="focus"
-                onBlur={() => {
-                  // setEditDesc(false);
-                }}
-                onSubmit={(event) => {
-                  console.log('submit');
-                  services.featureFlag.patchFeature(featureFlag.id, {
-                    description: event.target.value,
-                  });
-                }}
-              >
-                <Editable.Preview
-                  minH="48px"
-                  alignItems="flex-start"
-                  width="full"
-                />
-                <Editable.Textarea />
-                <Editable.Control>
-                  <Editable.CancelTrigger asChild>
-                    <IconButton
-                      variant="outline"
-                      size="xs"
-                      onClick={() => {
-                        cancelHandler(featureFlag);
-                      }}
-                    >
-                      <X />
-                    </IconButton>
-                  </Editable.CancelTrigger>
-                  <Editable.SubmitTrigger asChild>
-                    <IconButton
-                      variant="outline"
-                      size="xs"
-                      onClick={() => {
-                        submitHandler(featureFlag);
-                      }}
-                    >
-                      <Check />
-                    </IconButton>
-                  </Editable.SubmitTrigger>
-                </Editable.Control>
-              </Editable.Root>
-            </Stack>
+            <ControlledEditable
+              label="Description"
+              initialValue={featureFlag.description ?? ''}
+              submitHandler={async (e: EditableValueChangeDetails) => {
+                const success = await handleFlagUpdate({
+                  description: e.value,
+                });
+                return success ? e.value : (featureFlag.description ?? '');
+              }}
+            />
           </Box>
-          <Box>
-            <Heading size="xl" marginBottom="15px">
-              Enabled Environments
-            </Heading>
-            <Stack padding="15px" bg="white" borderRadius="5px">
-              <Flex>
-                <Text>
-                  <Highlight
-                    query={['null']}
-                    styles={{ color: 'red', fontFamily: VALUE_FONT }}
-                  >
-                    In a disabled environment, the feature will always evaluate
-                    to null. The default value and override rules will be
-                    ignored.
-                  </Highlight>
-                </Text>
-              </Flex>
-              <Flex direction="row">
-                {environments
-                  && environments.map((env) => (
-                    <Flex
-                      position="relative"
-                      margin="0 15px 0 0"
-                      key={`${env.name}-switch`}
-                    >
-                      <Text marginRight="5px">
-                        {env.name}
-                        :
-                      </Text>
-                      <Switch
-                        checked={env.name in featureFlag.environmentNames}
-                        onCheckedChange={async ({ checked }) =>
-                          handleEnvToggleChange(env.name, checked)}
-                      />
-                    </Flex>
-                  ))}
-              </Flex>
-            </Stack>
-          </Box>
+
+          <FlagEnvironmentToggles
+            environments={environments}
+            featureFlag={featureFlag}
+            handleEnvToggleChange={handleEnvToggleChange}
+          />
 
           <Box>
             <Heading size="xl" marginBottom="15px">
@@ -273,10 +180,6 @@ export default function FeatureFlagManagementPage(
               <Heading size="lg" margin="15px 0 0 0">
                 Rules
               </Heading>
-              <Text>
-                Add powerful logic on top of your feature. The first matching
-                rule applies and overrides the default value.
-              </Text>
               <EnvironmentTabs featureFlag={featureFlag} />
             </Stack>
           </Box>
