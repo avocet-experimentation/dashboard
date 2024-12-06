@@ -79,7 +79,6 @@ export default function FeatureFlagsMain() {
             featureFlags={featureFlags}
             updateFlag={updateFlag}
             pinnedEnvironments={getPinned(environments)}
-            isLoading={isLoading}
           />
         ) : (
           'No features found. Please create one.'
