@@ -6,44 +6,38 @@ export interface FeatureFlagTableProps {
   featureFlags: FeatureFlag[];
   updateFlag: (updated: FeatureFlag) => void;
   pinnedEnvironments: Environment[];
-  isLoading: boolean;
 }
 
 export default function FeatureFlagTable({
   featureFlags,
   updateFlag,
   pinnedEnvironments,
-  isLoading,
 }: FeatureFlagTableProps) {
   return (
-    <div>
-      {featureFlags.length && !isLoading && (
-        <Table.Root className="table">
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeader>Feature Name</Table.ColumnHeader>
-              {pinnedEnvironments.map((env) => (
-                <Table.ColumnHeader key={`${env.name}-header`}>
-                  {env.name.charAt(0).toUpperCase() + env.name.slice(1)}
-                </Table.ColumnHeader>
-              ))}
-              <Table.ColumnHeader>Default Value</Table.ColumnHeader>
-              <Table.ColumnHeader>Override Rules</Table.ColumnHeader>
-              <Table.ColumnHeader>Last Updated</Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {featureFlags.map((flag: FeatureFlag) => (
-              <FeatureFlagTableRow
-                key={flag.id}
-                updateFlag={updateFlag}
-                allEnvironmentNames={pinnedEnvironments.map((env) => env.name)}
-                flag={flag}
-              />
-            ))}
-          </Table.Body>
-        </Table.Root>
-      )}
-    </div>
+    <Table.Root className="table">
+      <Table.Header>
+        <Table.Row>
+          <Table.ColumnHeader>Feature Name</Table.ColumnHeader>
+          {pinnedEnvironments.map((env) => (
+            <Table.ColumnHeader key={`${env.name}-header`}>
+              {env.name.charAt(0).toUpperCase() + env.name.slice(1)}
+            </Table.ColumnHeader>
+          ))}
+          <Table.ColumnHeader>Default Value</Table.ColumnHeader>
+          <Table.ColumnHeader>Override Rules</Table.ColumnHeader>
+          <Table.ColumnHeader>Last Updated</Table.ColumnHeader>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {featureFlags.map((flag: FeatureFlag) => (
+          <FeatureFlagTableRow
+            key={flag.id}
+            updateFlag={updateFlag}
+            allEnvironmentNames={pinnedEnvironments.map((env) => env.name)}
+            flag={flag}
+          />
+        ))}
+      </Table.Body>
+    </Table.Root>
   );
 }
