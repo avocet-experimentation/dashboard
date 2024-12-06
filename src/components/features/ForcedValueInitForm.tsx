@@ -53,6 +53,7 @@ export default function ForcedValueInitForm({
     defaultValues: ForcedValue.template({
       value: flagDefaultValueMap[valueType],
       environmentName: envName,
+      status: 'active',
     }),
   });
 
