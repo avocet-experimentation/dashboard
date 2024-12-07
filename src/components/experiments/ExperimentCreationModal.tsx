@@ -1,7 +1,7 @@
 import { CirclePlus } from 'lucide-react';
 import { useState } from 'react';
-import FormModal from '../forms/FormModal';
 import ExperimentCreationForm from './ExperimentForm';
+import MultiFormModal from '../forms/MultiFormModal';
 
 const CREATE_EXPERIMENT_FORM_ID = 'experiment-management-form';
 
@@ -15,7 +15,7 @@ export default function ExperimentCreationModal({
   const [open, setOpen] = useState(false);
 
   return (
-    <FormModal
+    <MultiFormModal
       triggerButtonIcon={<CirclePlus />}
       triggerButtonText="Create Experiment"
       title="Create a New Experiment"
@@ -23,12 +23,13 @@ export default function ExperimentCreationModal({
       confirmButtonText="Create"
       open={open}
       setOpen={setOpen}
+      numberOfSteps={2}
     >
       <ExperimentCreationForm
         formId={CREATE_EXPERIMENT_FORM_ID}
         setIsLoading={setIsLoading}
         setOpen={setOpen}
       />
-    </FormModal>
+    </MultiFormModal>
   );
 }
