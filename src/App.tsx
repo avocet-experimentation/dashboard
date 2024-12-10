@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import FeatureFlagsMain from './components/feature-flags/FeatureFlagsMain';
 import ExperimentsMain from './components/experiments/ExperimentsMain';
 import FeatureFlagManagementPage from './components/feature-flags/edit-page/FeatureFlagManagementPage';
-import ExperimentPage from './components/experiments/ExperimentPage';
+import ExperimentPage from './components/experiments/edit-page/ExperimentPage';
 import EnvironmentsMainPage from './components/environments/EnvironmentsMainPage';
 import TelemetryMain from './telemetry/TelemetryMain';
 

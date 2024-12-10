@@ -3,7 +3,7 @@ import {
   DescriptionField,
   HypothesisField,
   NameField,
-} from '../forms/DefinedFields';
+} from '../../forms/DefinedFields';
 
 function ExperimentFormGeneralSection() {
   return (

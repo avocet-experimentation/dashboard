@@ -1,7 +1,7 @@
 import { Controller, useFormContext } from 'react-hook-form';
 import { Input, ListCollection } from '@chakra-ui/react';
 import { Treatment } from '@estuary/types';
-import { Switch } from '../ui/switch';
+import { Switch } from '../../ui/switch';
 import { FeatureCollection } from './ExperimentTreatmentField';
 
 interface Props {

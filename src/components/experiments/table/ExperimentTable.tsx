@@ -1,6 +1,6 @@
 // components
 import { Table } from '@chakra-ui/react';
-import { Status } from '../ui/status';
+import { Status } from '../../ui/status';
 
 // library
 import { formatDate } from '#/lib/timeFunctions';
@@ -10,7 +10,7 @@ import { Experiment } from '@avocet/core';
 
 // util
 import { Link } from 'wouter';
-import { Tooltip } from '../ui/tooltip';
+import { Tooltip } from '../../ui/tooltip';
 
 const statusLegend = {
   draft: {
