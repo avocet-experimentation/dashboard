@@ -3,7 +3,12 @@ import {
   handleJsonResponse,
   encodeToJson,
 } from './fetchHelpers';
-import { RequestOptions, ResponseHandler, BodyEncoder } from './fetchTypes';
+import {
+  RequestOptions,
+  ResponseHandler,
+  BodyEncoder,
+  ResponseTypes,
+} from './fetchTypes';
 
 /**
  * Streamlines fetch syntax by creating an object that makes requests to a given address.
@@ -36,62 +41,61 @@ export default class FetchWrapper {
   }
 
   // #region FUNCTIONS FOR VARIOUS HTTP METHODS
-  async get(path: string, headers: HeadersInit = this.defaultHeaders) {
-    return this.#send('GET', path, undefined, headers);
+  async get<T>(path: string, headers: HeadersInit = this.defaultHeaders) {
+    return this.#send<T>('GET', path, undefined, headers);
   }
 
-  put(
+  put<T>(
     path: string,
     body?: unknown,
     headers: HeadersInit = this.defaultHeaders,
   ) {
-    return this.#send('PUT', path, body, headers);
+    return this.#send<T>('PUT', path, body, headers);
   }
 
-  post(
+  post<T>(
     path: string,
     body?: unknown,
     headers: HeadersInit = this.defaultHeaders,
   ) {
-    return this.#send('POST', path, body, headers);
+    return this.#send<T>('POST', path, body, headers);
   }
 
-  patch(
+  patch<T>(
     path: string,
     body?: unknown,
     headers: HeadersInit = this.defaultHeaders,
   ) {
-    return this.#send('PATCH', path, body, headers);
+    return this.#send<T>('PATCH', path, body, headers);
   }
 
-  delete(
+  delete<T>(
     path: string,
     body?: unknown,
     headers: HeadersInit = this.defaultHeaders,
   ) {
-    return this.#send('DELETE', path, body, headers);
+    return this.#send<T>('DELETE', path, body, headers);
   }
   // #endregion
 
-  async #send(
+  async #send<T>(
     method: string,
     path: string,
     body?: unknown,
     headers?: HeadersInit,
-  ) {
+  ): Promise<ResponseTypes<T>> {
     const requestOptions = this.#buildRequestOptions(method, body, headers);
     try {
       const response = await fetch(this.baseURL + path, requestOptions);
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`Response status: ${response.status}`);
+      // }
 
-      return this.handleResponse(response);
+      return this.handleResponse<T>(response);
     } catch (error) {
       if (error instanceof Response) {
         return this.handleResponse(error);
       } else {
-        // this block shouldn't be reachable
         console.error(error);
         throw new TypeError(`Error ${JSON.stringify(error)} not recognized!`);
       }
@@ -104,7 +108,9 @@ export default class FetchWrapper {
       headers: { ...this.defaultHeaders, ...headers },
     };
 
-    Object.assign(options, { body: this.bodyEncoder(body) });
+    if (body) {
+      Object.assign(options, { body: this.bodyEncoder(body) });
+    }
 
     return options;
   }
