@@ -4,12 +4,12 @@ import { Route, Switch } from 'wouter';
 import Navbar from './components/Navbar';
 
 import FeatureFlagsMain from './components/feature-flags/FeatureFlagsMain';
-import EventFeatures from './components/events/EventFeatures';
 import ExperimentsMain from './components/experiments/ExperimentsMain';
 import FeatureFlagManagementPage from './components/feature-flags/edit-page/FeatureFlagManagementPage';
 import TopBar from './components/TopBar';
 import ExperimentPage from './components/experiments/ExperimentPage';
 import EnvironmentsMainPage from './components/environments/EnvironmentsMainPage';
+import TelemetryMain from './telemetry/TelemetryMain';
 
 export default function App() {
   return (
@@ -23,7 +23,7 @@ export default function App() {
           <Route path="/environments" component={EnvironmentsMainPage} />
           <Route path="/experiments" component={ExperimentsMain} />
           <Route path="/experiments/:id" component={ExperimentPage} />
-          <Route path="/events" component={EventFeatures} />
+          <Route path="/telemetry" component={TelemetryMain} />
         </Switch>
       </Flex>
     </Flex>

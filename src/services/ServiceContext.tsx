@@ -3,11 +3,13 @@ import { createContext } from 'react';
 import EnvironmentService from '#/services/EnvironmentService';
 import FeatureService from '#/services/FeatureService';
 import ExperimentService from './ExperimentService';
+import TelemetryService from './TelemetryService';
 
 const services = Object.seal({
   environment: new EnvironmentService(),
   featureFlag: new FeatureService(),
   experiment: new ExperimentService(),
+  telemetry: new TelemetryService(),
 });
 
 export const ServicesContext = createContext(services);
