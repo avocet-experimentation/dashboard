@@ -364,7 +364,7 @@ const ExperimentPage = () => {
                 <Heading size="lg">
                   Linked Features ({experiment.flagIds.length})
                 </Heading>
-                <FormModalTrigger
+                <FormModal
                   triggerButtonIcon={<Link />}
                   triggerButtonText={'Link Feature Flag'}
                   title={`Link Feature to ${experiment.name}`}
@@ -375,7 +375,7 @@ const ExperimentPage = () => {
                     formId={LINK_FEATURE_FORM}
                     setIsLoading={undefined}
                   />
-                </FormModalTrigger>
+                </FormModal>
               </Flex>
               <AccordionRoot variant="enclosed" multiple>
                 {linkedFeatures.map((feature) => {
