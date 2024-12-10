@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react';
-import { Group } from '@chakra-ui/react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Experiment, ExperimentDraft, Treatment } from '@estuary/types';
 import { ServicesContext } from '#/services/ServiceContext';
@@ -7,13 +6,9 @@ import {
   StepsContent,
   StepsItem,
   StepsList,
-  StepsRoot,
-  StepsPrevTrigger,
-  StepsNextTrigger,
-} from '../ui/steps';
+} from '../../ui/steps';
 import ExperimentFormGeneralSection from './ExperimentFormGeneralSection';
 import ExperimentFormTreatmentSection from './ExperimentFormTreatmentSection';
-import { Button } from '../ui/button';
 import { ALargeSmall, Users } from 'lucide-react';
 
 export type ExperimentType = 'ab' | 'switchback';
@@ -74,6 +69,10 @@ export default function ExperimentCreationForm({
   const services = useContext(ServicesContext);
   const formMethods = useForm<ExperimentDraft>({
     defaultValues: formValues[expType],
+    reValidateMode: 'onBlur',
+    criteriaMode: 'all',
+    shouldFocusError: true,
+    shouldUnregister: false,
   });
 
   // Handle form switching

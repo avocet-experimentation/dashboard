@@ -1,7 +1,7 @@
 import { CirclePlus } from 'lucide-react';
 import { useState } from 'react';
 import ExperimentCreationForm from './ExperimentForm';
-import MultiFormModal from '../forms/MultiFormModal';
+import MultiFormModal from '../../forms/MultiFormModal';
 
 const CREATE_EXPERIMENT_FORM_ID = 'experiment-management-form';
 

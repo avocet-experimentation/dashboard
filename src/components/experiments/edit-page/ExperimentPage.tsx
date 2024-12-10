@@ -1,7 +1,7 @@
 import ExperimentService from '#/services/ExperimentService';
 import FeatureService from '#/services/FeatureService';
 import { useLocation, useRoute } from 'wouter';
-import NotFound from '../NotFound';
+import NotFound from '../../NotFound';
 
 import { useEffect, useState } from 'react';
 import {
@@ -25,7 +25,7 @@ import {
   Table,
   Text
 } from '@chakra-ui/react';
-import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../ui/menu';
+import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../../ui/menu';
 import {
   ALargeSmall,
   Check,
@@ -42,18 +42,18 @@ import {
   TriangleAlert,
   X,
 } from 'lucide-react';
-import FormModalTrigger from '../FormModal';
+import FormModal from '../../forms/FormModal';
 import LinkFeatureForm from './LinkFeatureForm';
 import {
   AccordionItem,
   AccordionItemContent,
   AccordionItemTrigger,
   AccordionRoot,
-} from '../ui/accordion';
+} from '../../ui/accordion';
 import { Experiment, ExperimentGroup, FeatureFlag } from '@estuary/types';
-import { Button } from '../ui/button';
-import { Tag } from '../ui/tag';
-import { Tooltip as ChakraTooltip } from '../ui/tooltip';
+import { Button } from '../../ui/button';
+import { Tag } from '../../ui/tag';
+import { Tooltip as ChakraTooltip } from '../../ui/tooltip';
 
 interface CustomLabelProps extends RechartsLabelProps {
   innerRadius: number; // The inner radius of the pie slice
@@ -364,7 +364,7 @@ const ExperimentPage = () => {
                 <Heading size="lg">
                   Linked Features ({experiment.flagIds.length})
                 </Heading>
-                <FormModalTrigger
+                <FormModal
                   triggerButtonIcon={<Link />}
                   triggerButtonText={'Link Feature Flag'}
                   title={`Link Feature to ${experiment.name}`}
@@ -375,7 +375,7 @@ const ExperimentPage = () => {
                     formId={LINK_FEATURE_FORM}
                     setIsLoading={undefined}
                   />
-                </FormModalTrigger>
+                </FormModal>
               </Flex>
               <AccordionRoot variant="enclosed" multiple>
                 {linkedFeatures.map((feature) => {

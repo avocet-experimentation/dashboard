@@ -16,8 +16,8 @@ import {
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-} from '../ui/select';
-import { Field } from '../ui/field';
+} from '../../ui/select';
+import { Field } from '../../ui/field';
 import TreatmentFeatureValueType from './TreatmentFeatureValueType';
 import FeatureCountButtons from './FeatureCountButtons';
 

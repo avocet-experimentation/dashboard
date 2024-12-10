@@ -2,9 +2,9 @@ import { useContext, useEffect, useState } from 'react';
 import { Flex, Heading, Text } from '@chakra-ui/react';
 import { Experiment } from '@avocet/core';
 import { ServicesContext } from '#/services/ServiceContext';
-import ExperimentTable from './ExperimentTable';
-import ExperimentCreationModal from './ExperimentCreationModal';
-import ExperimentInitModal from './ExperimentInitModal';
+import ExperimentTable from './table/ExperimentTable';
+import ExperimentCreationModal from './creation-form/ExperimentCreationModal';
+import ExperimentInitModal from './ExperimentInitModal'
 
 // const CREATE_EXPERIMENT_FORM_ID = 'experiment-management-form';
 
@@ -38,11 +38,11 @@ export default function ExperimentsMain() {
         alignItems="center"
       >
         <Heading size="3xl">Experiments</Heading>
-        {/* <ExperimentCreationModal setIsLoading={setIsLoading} /> */}
-        <ExperimentInitModal
+        <ExperimentCreationModal setIsLoading={setIsLoading} />
+        {/* <ExperimentInitModal
           isLoading={isLoading}
           setIsLoading={setIsLoading}
-        />
+        /> */}
       </Flex>
       <Text margin="15px 0">
         Experiments are useful for tracking and assessing feature performance.

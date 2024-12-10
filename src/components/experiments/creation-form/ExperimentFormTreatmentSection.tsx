@@ -1,5 +1,5 @@
 import { Fieldset, HStack, Stack } from '@chakra-ui/react';
-import { RadioGroup, Radio } from '../ui/radio';
+import { RadioGroup, Radio } from '../../ui/radio';
 import ExperimentGroupField from './ExperimentGroupField';
 import ExperimentTreatmentField from './ExperimentTreatmentField';
 import { useFormContext } from 'react-hook-form';
@@ -41,7 +41,7 @@ function ExperimentFormTreatmentSection({
           </HStack>
         </RadioGroup>
       </Fieldset.Root>
-      <HStack>
+      <HStack alignItems="start">
         <ExperimentTreatmentField definedTreatments={definedTreatments} />
         <ExperimentGroupField
           expType={expType}

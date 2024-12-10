@@ -1,6 +1,6 @@
 import { Controller, useFormContext } from 'react-hook-form';
-import { Field } from '../ui/field';
-import { Slider } from '../ui/slider';
+import { Field } from '../../ui/field';
+import { Slider } from '../../ui/slider';
 
 function ExperimentTotalTrafficSlider() {
   const { control } = useFormContext();

@@ -7,8 +7,8 @@ import {
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-} from '../ui/select';
-import { Field } from '../ui/field';
+} from '../../ui/select';
+import { Field } from '../../ui/field';
 import { DefinedTreatments, ExperimentType } from './ExperimentForm';
 import GroupCountButtons from './GroupCountButtons';
 
