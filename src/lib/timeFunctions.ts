@@ -1,3 +1,5 @@
+const MS_PER_SEC = 1000;
+
 export const lastUpdated = (unixTimestamp: number): string => {
   // Ensure the timestamp is in milliseconds
   const timestamp =
@@ -9,24 +11,24 @@ export const lastUpdated = (unixTimestamp: number): string => {
 
   // Define time intervals in seconds
   const intervals: { label: string; seconds: number }[] = [
-    { label: "year", seconds: 31536000 },
-    { label: "month", seconds: 2592000 },
-    { label: "week", seconds: 604800 },
-    { label: "day", seconds: 86400 },
-    { label: "hour", seconds: 3600 },
-    { label: "minute", seconds: 60 },
-    { label: "second", seconds: 1 },
+    { label: 'year', seconds: 31536000 },
+    { label: 'month', seconds: 2592000 },
+    { label: 'week', seconds: 604800 },
+    { label: 'day', seconds: 86400 },
+    { label: 'hour', seconds: 3600 },
+    { label: 'minute', seconds: 60 },
+    { label: 'second', seconds: 1 },
   ];
 
   // Find the largest applicable time interval
   for (const interval of intervals) {
     const count = Math.floor(secondsAgo / interval.seconds);
     if (count >= 1) {
-      return `${count} ${interval.label}${count > 1 ? "s" : ""} ago`;
+      return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
     }
   }
 
-  return "just now";
+  return 'just now';
 };
 
 export const formatDate = (unixTimestamp: number): string => {
@@ -39,10 +41,20 @@ export const formatDate = (unixTimestamp: number): string => {
 
   // Format options for "Month Day, Year"
   const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   };
 
-  return date.toLocaleDateString("en-US", options);
+  return date.toLocaleDateString('en-US', options);
+};
+
+/**
+ * Returns the seconds passed since a specified timestamp and now
+ * @param startTime the Unix timestamp to compare against
+ * @param precision The number of decimal places to round to, up to 3.
+ * @returns
+ */
+export const timeElapsed = (startTime: number): number => {
+  return (Date.now() - startTime) / MS_PER_SEC;
 };
