@@ -49,7 +49,7 @@ export default function FeatureFlagTableRow({
       {allEnvironmentNames.map((envName: string) => (
         <Table.Cell key={envName}>
           <Switch
-            checked={flag.environmentNames[envName]}
+            checked={!!flag.environmentNames[envName]}
             onCheckedChange={(e) => handleCheckedChange(envName, e.checked)}
           />
         </Table.Cell>
