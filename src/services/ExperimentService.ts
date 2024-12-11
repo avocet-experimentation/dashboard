@@ -103,6 +103,18 @@ export default class ExperimentService {
     return response;
   }
 
+  async updateExperiment(
+    experimentId: string,
+    experimentContent: Partial<ExperimentDraft>,
+  ) {
+    const updateObj = {
+      id: experimentId,
+      ...experimentContent,
+    };
+    const response = await this.fetch.patch(`/id/${experimentId}`, updateObj);
+    return response;
+  }
+
   async startExperiment(
     experimentId: string,
   ): Promise<ResponseTypes<Experiment>> {
