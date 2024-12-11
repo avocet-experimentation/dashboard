@@ -1,4 +1,4 @@
-import { Flex, Tabs, Text } from '@chakra-ui/react';
+import { Flex, Stack, Tabs, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { FeatureFlag } from '@estuary/types';
 import ForcedValueStub from './override-rules/ForcedValueStub';
@@ -35,7 +35,7 @@ export default function EnvironmentTabs({ featureFlag }: EnvironmentTabsProps) {
           <Tabs.Root
             value={selectedTab}
             margin="15px 0 0 0"
-            variant="plain"
+            variant="outline"
             onValueChange={(e) => setSelectedTab(e.value)}
           >
             <Tabs.List>
@@ -45,11 +45,13 @@ export default function EnvironmentTabs({ featureFlag }: EnvironmentTabsProps) {
                 );
                 return (
                   <Tabs.Trigger
+                    border="1px solid"
+                    borderColor="gray.200"
                     defaultValue={`${envNames[0]}-tab`}
                     value={`${envName}-tab`}
                     key={`${envName}-tab`}
                   >
-                    {`${envName} ${rules.length}`}
+                    {`${envName} (${rules.length})`}
                   </Tabs.Trigger>
                 );
               })}
@@ -61,29 +63,33 @@ export default function EnvironmentTabs({ featureFlag }: EnvironmentTabsProps) {
                 );
                 return (
                   <Tabs.Content
+                    border="1px solid"
+                    borderColor="gray.200"
                     value={`${envName}-tab`}
                     key={`${envName}-tab-content`}
                     background="whitesmoke"
                     padding="15px"
                   >
-                    {!rules.length
-                      ? 'There are no rules for this environment yet.'
-                      : rules.map((rule) => {
-                          if (rule.type === 'ForcedValue') {
-                            return (
-                              <ForcedValueStub rule={rule} key={rule.id} />
-                            );
-                          }
-                          if (rule.type === 'Experiment') {
-                            return (
-                              <ExperimentReferenceStub
-                                rule={rule}
-                                key={rule.id}
-                              />
-                            );
-                          }
-                          throw new TypeError(`Rule ${rule} is not handled!`);
-                        })}
+                    <Stack gap={4}>
+                      {!rules.length
+                        ? 'There are no rules for this environment yet.'
+                        : rules.map((rule) => {
+                            if (rule.type === 'ForcedValue') {
+                              return (
+                                <ForcedValueStub rule={rule} key={rule.id} />
+                              );
+                            }
+                            if (rule.type === 'Experiment') {
+                              return (
+                                <ExperimentReferenceStub
+                                  rule={rule}
+                                  key={rule.id}
+                                />
+                              );
+                            }
+                            throw new TypeError(`Rule ${rule} is not handled!`);
+                          })}
+                    </Stack>
                   </Tabs.Content>
                 );
               })}
@@ -93,6 +99,8 @@ export default function EnvironmentTabs({ featureFlag }: EnvironmentTabsProps) {
                 direction="row"
                 justifyContent="space-between"
                 border="1px solid grey"
+                borderBottomRadius="5px"
+                borderTopColor="gray.300"
                 alignItems="center"
                 padding="15px"
               >
