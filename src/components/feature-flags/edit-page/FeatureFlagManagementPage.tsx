@@ -3,13 +3,15 @@ import {
   EditableValueChangeDetails,
   Flex,
   Heading,
+  HStack,
+  Icon,
   IconButton,
   Stack,
   Text,
 } from '@chakra-ui/react';
 import { useContext, useEffect, useState } from 'react';
 import { Environment, FeatureFlag, FeatureFlagDraft } from '@estuary/types';
-import { EllipsisVertical, Trash2 } from 'lucide-react';
+import { CircleHelp, EllipsisVertical, Trash2 } from 'lucide-react';
 import { useLocation, useRoute } from 'wouter';
 import deepcopy from 'deepcopy';
 import { ServicesContext } from '#/services/ServiceContext';
@@ -24,6 +26,7 @@ import NotFound from '../../NotFound';
 import EnvironmentTabs from './EnvironmentTabs';
 import ControlledEditable from '../../forms/ControlledEditable';
 import { FlagEnvironmentToggles } from './FlagEnvironmentToggles';
+import { Tooltip } from '#/components/ui/tooltip';
 
 interface FeatureFlagManagementPageProps {
   // environments: Environment[];
@@ -119,9 +122,9 @@ export default function FeatureFlagManagementPage(
   };
 
   return (
-    <div>
+    <>
       {!isLoading && featureFlag ? (
-        <Stack gap={4} padding="25px" overflowY="scroll">
+        <Stack gap={4} padding="25px" height="100vh" overflowY="scroll">
           <Flex justifyContent="space-between">
             <Heading size="3xl">{featureFlag.name}</Heading>
             <MenuRoot>
@@ -187,7 +190,20 @@ export default function FeatureFlagManagementPage(
               </Flex>
 
               <Heading size="lg" margin="15px 0 0 0">
-                Rules
+                <HStack gap={2.5}>
+                  Rules{' '}
+                  <Tooltip
+                    showArrow
+                    openDelay={50}
+                    content={
+                      'Only enabled environments will only be shown. Enable an environment to view and edit its rules.'
+                    }
+                  >
+                    <Icon size="md">
+                      <CircleHelp />
+                    </Icon>
+                  </Tooltip>
+                </HStack>
               </Heading>
               <EnvironmentTabs featureFlag={featureFlag} />
             </Stack>
@@ -196,6 +212,6 @@ export default function FeatureFlagManagementPage(
       ) : (
         <NotFound componentName="feature" />
       )}
-    </div>
+    </>
   );
 }
