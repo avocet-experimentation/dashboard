@@ -4,7 +4,7 @@ import {
   TransformedSpanAttributes,
   CoercedSpanAttributes,
   TextPrimitive,
-  PrimitiveLabel,
+  PrimitiveTypeLabel,
 } from '@estuary/types';
 import { useState } from 'react';
 import { TelemetryContext } from './TelemetryContext';
@@ -52,7 +52,7 @@ export function TelemetryProvider({ children }: { children: React.ReactNode }) {
     ]);
   };
 
-  const coerceValue = (value: string, type: PrimitiveLabel) => {
+  const coerceValue = (value: string, type: PrimitiveTypeLabel) => {
     switch (type) {
       case 'string':
         return String(value);
