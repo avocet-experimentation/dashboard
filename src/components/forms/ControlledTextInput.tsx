@@ -1,8 +1,6 @@
 import { Input } from '@chakra-ui/react';
 import {
   FieldValues,
-  // FieldErrors,
-  // Control,
   Controller,
   FieldPath,
   UseFormRegisterReturn,
@@ -10,12 +8,13 @@ import {
 } from 'react-hook-form';
 import { Field } from '../ui/field';
 
-interface ControlledFieldProps<
+export interface ControlledTextInputProps<
   T extends FieldValues,
   K extends FieldPath<T> = FieldPath<T>,
 > {
   fieldPath: K;
   label: string;
+  disabled?: boolean;
   registerReturn: UseFormRegisterReturn<K>;
 }
 
@@ -25,8 +24,9 @@ interface ControlledFieldProps<
 export default function ControlledTextInput<T extends FieldValues>({
   fieldPath,
   label,
+  disabled,
   registerReturn,
-}: ControlledFieldProps<T>) {
+}: ControlledTextInputProps<T>) {
   const { control, formState } = useFormContext<T>();
 
   return (
@@ -38,7 +38,7 @@ export default function ControlledTextInput<T extends FieldValues>({
       <Controller
         name={fieldPath}
         control={control}
-        render={() => <Input {...registerReturn} />}
+        render={() => <Input {...registerReturn} disabled={disabled} />}
       />
     </Field>
   );

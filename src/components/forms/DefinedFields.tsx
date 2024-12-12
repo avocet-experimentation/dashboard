@@ -1,15 +1,21 @@
 import { useFormContext } from 'react-hook-form';
 import ControlledTextInput from './ControlledTextInput';
 
+interface DefinedTextFieldProps {
+  label: string;
+  disabled?: boolean;
+}
+
 /**
  * These components require the parent form be wrapped in a FormProvider
  */
-export function NameField({ label }: { label: string }) {
+export function NameField({ label, disabled = false }: DefinedTextFieldProps) {
   const { register } = useFormContext();
   return (
     <ControlledTextInput
       label={label}
       fieldPath="name"
+      disabled={disabled}
       registerReturn={register('name', {
         required:
           'A name is required and must be between 3-20 characters long.',
@@ -26,14 +32,14 @@ export function NameField({ label }: { label: string }) {
 
 export function DescriptionField({
   label = 'Description',
-}: {
-  label?: string;
-}) {
+  disabled = false,
+}: DefinedTextFieldProps) {
   const { register } = useFormContext();
   return (
     <ControlledTextInput
       label={label}
       fieldPath="description"
+      disabled={disabled}
       registerReturn={register('description', {
         required: 'A description is required.',
       })}
