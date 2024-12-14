@@ -5,18 +5,15 @@ import Navbar from './components/Navbar';
 import FeatureFlagsMain from './components/feature-flags/FeatureFlagsMain';
 import ExperimentsMain from './components/experiments/ExperimentsMain';
 import FeatureFlagManagementPage from './components/feature-flags/edit-page/FeatureFlagManagementPage';
-import TopBar from './components/TopBar';
 import ExperimentPage from './components/experiments/ExperimentPage';
 import EnvironmentsMainPage from './components/environments/EnvironmentsMainPage';
 import TelemetryMain from './telemetry/TelemetryMain';
 
 export default function App() {
   return (
-    <Flex direction="row" width="100vw" height="100vh" overflow="hidden">
-      <Navbar />
-      <Grid bg="whitesmoke" templateRows="60px 1fr" width="100%" height="100vh">
-        <GridItem>
-          <TopBar />
+      <Grid bg="whitesmoke" templateColumns="300px 1fr" templateRows="1fr" width="100vw" height="100vh" overflow="hidden">
+        <GridItem display="flex"  flexDir="row" justifyContent="center">
+          <Navbar />
         </GridItem>
         <GridItem>
           <Switch>
@@ -29,6 +26,5 @@ export default function App() {
           </Switch>
         </GridItem>
       </Grid>
-    </Flex>
   );
 }
