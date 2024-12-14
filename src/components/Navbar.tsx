@@ -9,7 +9,7 @@ import {
   AlignHorizontalDistributeCenter,
   Earth,
 } from 'lucide-react';
-import EstuaryLogo from '../assets/svgs/estuary-logo.svg';
+import EstuaryLogo from '../assets/svgs/avocet-logo.svg';
 import { Link } from 'wouter';
 
 const NavBox = chakra('div', {
@@ -24,7 +24,7 @@ const NavBox = chakra('div', {
     fontSize: '1.15em',
     padding: '0 20px',
     _hover: {
-      bg: 'gray.200',
+      bg: 'gray.100',
     },
   },
 });
@@ -34,14 +34,15 @@ const NavText = chakra('p', {
     color: 'black',
     textDecoration: 'none',
     padding: '15px',
-    width: '15cqi',
+    width: '200px',
   },
 });
 
 const LogoBox = () => {
   return (
     <Flex
-      borderBottom="1px solid gray"
+      borderBottom="1px solid"
+      borderColor="gray.400"
       width="100%"
       height="60px"
       marginBottom="25px"
@@ -49,8 +50,8 @@ const LogoBox = () => {
       justifyContent="center"
     >
       <chakra.img src={EstuaryLogo} height="45px" />
-      <Text fontFamily="Pacifico" fontSize="2em" marginLeft="15px">
-        estuary
+      <Text fontFamily="Pacifico" fontSize="2em">
+        avocet
       </Text>
     </Flex>
   );
@@ -60,10 +61,13 @@ export default function Navbar() {
   return (
     <Flex
       direction="column"
-      width="250px"
       bg="white"
       alignItems="center"
-      borderRight="1px solid gray"
+      border="1px solid black"
+      borderRadius="5px"
+      height="98%"
+      width="90%"
+      margin="auto"
     >
       <LogoBox />
       <NavBox>

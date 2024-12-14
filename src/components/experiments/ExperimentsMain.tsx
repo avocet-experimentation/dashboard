@@ -30,7 +30,7 @@ export default function ExperimentsMain() {
   }, []);
 
   return (
-    <Flex direction="column" padding="25px">
+    <Flex direction="column" padding="25px" height="100vh" overflowY="scroll">
       <Flex
         direction="row"
         width="100%"

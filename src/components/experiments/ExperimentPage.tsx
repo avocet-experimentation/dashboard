@@ -224,7 +224,7 @@ function ExperimentPage() {
       experiment.id,
     );
     return (
-      <Stack gap={4} padding="25px" overflowY="scroll">
+      <Stack gap={4} padding="25px" height="100vh" overflowY="scroll">
         <Flex justifyContent="space-between">
           <Heading size="3xl">{experiment.name}</Heading>
           <HStack>
