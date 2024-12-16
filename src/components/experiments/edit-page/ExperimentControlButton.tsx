@@ -1,6 +1,6 @@
 import { Button } from '#/components/ui/button';
 import ExperimentService from '#/services/ExperimentService';
-import { Experiment } from '@estuary/types';
+import { Experiment } from '@avocet/core';
 import { OctagonX, Power } from 'lucide-react';
 
 export default function ExperimentControlButton({

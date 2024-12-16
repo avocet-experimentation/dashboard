@@ -15,7 +15,7 @@ import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../../ui/menu';
 import { EllipsisVertical, Link, Trash2 } from 'lucide-react';
 import FormModal from '../../forms/FormModal';
 import LinkFeatureForm from './LinkFeatureForm';
-import { Experiment, ExperimentDraft } from '@estuary/types';
+import { Experiment, ExperimentDraft } from '@avocet/core';
 import VariationGroups from './VariationGroupsSection';
 import ExperimentControlButton from './ExperimentControlButton';
 import LinkedFeatures from './LinkedFeaturesSection';

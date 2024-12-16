@@ -1,12 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { Experiment, ExperimentDraft, Treatment } from '@estuary/types';
+import { Experiment, ExperimentDraft, Treatment } from '@avocet/core';
 import { ServicesContext } from '#/services/ServiceContext';
-import {
-  StepsContent,
-  StepsItem,
-  StepsList,
-} from '../../ui/steps';
+import { StepsContent, StepsItem, StepsList } from '../../ui/steps';
 import ExperimentFormGeneralSection from './ExperimentFormGeneralSection';
 import ExperimentFormTreatmentSection from './ExperimentFormTreatmentSection';
 import { ALargeSmall, Users } from 'lucide-react';

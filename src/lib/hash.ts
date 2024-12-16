@@ -1,4 +1,9 @@
-import { ClientPropMapping, ExperimentGroup, Treatment, Experiment } from '@avocet/core';
+import {
+  ClientPropMapping,
+  ExperimentGroup,
+  Treatment,
+  Experiment,
+} from '@avocet/core';
 import crypto from 'node:crypto';
 /*
 MD5 vs DJB2:
@@ -14,10 +19,9 @@ MD5 vs DJB2:
 // function hashIdentifiers <T extends boolean | string | number> (identifiers: { [attributeName: string]: string }, flagValues: Set<T>): T {
 //
 
-
 /**
  * DJB2 Hash function.
- * @param input 
+ * @param input
  * @returns a signed 32-bit integer
  */
 export function hashStringDJB2(input: string) {
@@ -26,7 +30,7 @@ export function hashStringDJB2(input: string) {
   // subtract the hash from the result
   // Add the utf char value
   for (let i = 0; i < input.length; i++) {
-    hash = (hash << 5) - hash + input.charCodeAt(i); 
+    hash = (hash << 5) - hash + input.charCodeAt(i);
     // console.log('left shifted:', hash)
     hash |= 0; // Convert to 32bit integer -- bitwise OR operator(?)
     // console.log('converted to 32 bit:', hash)
@@ -52,10 +56,12 @@ export function hashStringSet(strings: readonly string[]) {
 
 export function hashIdentifiers(identifierMap: ClientPropMapping) {
   const identifiers = Object.entries(identifierMap);
-  const sortedIdentifiers = identifiers.toSorted((a, b) => (a[0] > b[0]) ? 1 : -1);
+  const sortedIdentifiers = identifiers.toSorted((a, b) =>
+    a[0] > b[0] ? 1 : -1,
+  );
   let string = '';
 
-  sortedIdentifiers.forEach(([ name, value ]) => {
+  sortedIdentifiers.forEach(([name, value]) => {
     string += name + value;
   });
 
@@ -70,7 +76,10 @@ export function hashIdentifiers(identifierMap: ClientPropMapping) {
  * @param assignmentOptions An array of IDs for possible assignments
  * @returns one of the options passed in
  */
-export function hashAndAssign(identifiers: ClientPropMapping, assignmentOptions: readonly string[]): string {
+export function hashAndAssign(
+  identifiers: ClientPropMapping,
+  assignmentOptions: readonly string[],
+): string {
   const hash = hashIdentifiers(identifiers);
   const sortedOptions = [...assignmentOptions].sort();
   const index = Math.abs(hash) % sortedOptions.length;
@@ -80,7 +89,7 @@ export function hashAndAssign(identifiers: ClientPropMapping, assignmentOptions:
 export const getExpHash = (
   experiment: Experiment,
   group: ExperimentGroup,
-  treatment: Treatment
+  treatment: Treatment,
 ) => hashStringSet([experiment.id, group.id, treatment.id]);
 
 // const flagValues = ['active', 'inactive', 'pending', 'suspended'];
@@ -97,7 +106,7 @@ export const getExpHash = (
 //   sortedKeys.forEach((key) => {
 //     string += identifiers[key];
 //   });
-  
+
 //   //Create a new MD5 hash instance -> Produces 128bit hash value (32char hexadecimal string)
 //   const hexString = crypto.createHash('md5')
 //     .update(string) //Feed the input string into the hash instance

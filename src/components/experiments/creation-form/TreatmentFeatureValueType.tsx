@@ -1,6 +1,6 @@
 import { Controller, useFormContext } from 'react-hook-form';
 import { Input, ListCollection } from '@chakra-ui/react';
-import { Treatment } from '@estuary/types';
+import { Treatment } from '@avocet/core';
 import { Switch } from '../../ui/switch';
 import { FeatureCollection } from './ExperimentTreatmentField';
 
@@ -24,7 +24,8 @@ function TreatmentFeatureValueType({
       name={`definedTreatments.${id}.flagStates.${featureIdx}.value`}
       control={control}
       render={({ field }) => {
-        const selectedFeatureId = definedTreatments[id].flagStates[featureIdx].id;
+        const selectedFeatureId =
+          definedTreatments[id].flagStates[featureIdx].id;
         if (selectedFeatureId) {
           const selectedFeature = featuresCollection.items.find(
             (featObj) => featObj.value === selectedFeatureId,

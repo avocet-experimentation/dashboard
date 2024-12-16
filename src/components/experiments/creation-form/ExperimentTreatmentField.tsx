@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useContext, useEffect, useState } from 'react';
-import { FeatureFlag } from '@estuary/types';
+import { FeatureFlag } from '@avocet/core';
 import { ServicesContext } from '#/services/ServiceContext';
 import {
   SelectContent,

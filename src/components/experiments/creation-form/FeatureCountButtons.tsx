@@ -1,5 +1,5 @@
 import { Button, Flex } from '@chakra-ui/react';
-import { Treatment } from '@estuary/types';
+import { Treatment } from '@avocet/core';
 import { CircleMinus, CirclePlus } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 
