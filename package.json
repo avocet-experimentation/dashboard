@@ -14,7 +14,7 @@
   "dependencies": {
     "@chakra-ui/react": "^3.0.2",
     "@emotion/react": "^11.13.3",
-    "@estuary/types": "file:../packages/estuary-types",
+    "@avocet/core": "file:../packages/avocet-core",
     "@hookform/resolvers": "^3.9.1",
     "@vitejs/plugin-react": "^4.2.1",
     "deepcopy": "^2.1.0",

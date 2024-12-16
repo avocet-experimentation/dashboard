@@ -1,6 +1,6 @@
 import { CirclePlus, CircleEllipsis } from 'lucide-react';
 import { useState } from 'react';
-import { Environment } from '@estuary/types';
+import { Environment } from '@avocet/core';
 import FormModal from '../../forms/FormModal';
 import EnvironmentManagementForm from './EnvironmentManagementForm';
 

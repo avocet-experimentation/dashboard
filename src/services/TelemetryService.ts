@@ -1,7 +1,7 @@
 import { ResponseTypes } from '#/lib/fetchTypes';
 import FetchWrapper from '#/lib/FetchWrapper';
 import { timeElapsed } from '#/lib/timeFunctions';
-import { TransformedSpan } from '@estuary/types';
+import { TransformedSpan } from '@avocet/core';
 
 export default class TelemetryService {
   fetch: FetchWrapper;

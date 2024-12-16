@@ -6,7 +6,7 @@ import { Status } from "../ui/status";
 import { formatDate } from "#/lib/timeFunctions";
 
 // types
-import { Experiment } from "@estuary/types";
+import { Experiment } from "@avocet/core";
 
 // util
 import { Link } from "wouter";

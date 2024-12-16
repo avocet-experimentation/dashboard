@@ -10,7 +10,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useContext, useEffect, useState } from 'react';
-import { Environment, FeatureFlag, FeatureFlagDraft } from '@estuary/types';
+import { Environment, FeatureFlag, FeatureFlagDraft } from '@avocet/core';
 import { CircleHelp, EllipsisVertical, Trash2 } from 'lucide-react';
 import { useLocation, useRoute } from 'wouter';
 import deepcopy from 'deepcopy';

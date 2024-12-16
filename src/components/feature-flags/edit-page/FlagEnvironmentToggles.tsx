@@ -1,5 +1,5 @@
 import { Box, Heading, Stack, Flex, Text, Highlight } from '@chakra-ui/react';
-import { Environment, FeatureFlag } from '@estuary/types';
+import { Environment, FeatureFlag } from '@avocet/core';
 import { VALUE_FONT } from '#/lib/constants';
 import { Switch } from '#/components/ui/switch';
 

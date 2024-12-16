@@ -1,6 +1,6 @@
 import { Flex, Stack, Tabs, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { FeatureFlag } from '@estuary/types';
+import { FeatureFlag } from '@avocet/core';
 import ForcedValueStub from './override-rules/ForcedValueStub';
 import ExperimentReferenceStub from './override-rules/ExperimentReferenceStub';
 import RuleCreationModal from './override-rules/RuleCreationModal';

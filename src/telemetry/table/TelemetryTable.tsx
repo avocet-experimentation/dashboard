@@ -1,4 +1,4 @@
-import { TransformedSpan } from '@estuary/types';
+import { TransformedSpan } from '@avocet/core';
 import { Table } from '@chakra-ui/react';
 import TelemetryTableRow from './TelemetryTableRow';
 import { useContext, useState } from 'react';

@@ -4,7 +4,7 @@ import {
   TextPrimitive,
   TransformedSpan,
   TransformedSpanAttributes,
-} from '@estuary/types';
+} from '@avocet/core';
 import { createContext } from 'react';
 
 interface TelemetryContextValue {

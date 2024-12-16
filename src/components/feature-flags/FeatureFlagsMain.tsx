@@ -1,5 +1,5 @@
 import { Flex, Heading, Text } from '@chakra-ui/react';
-import { Environment, FeatureFlag } from '@estuary/types';
+import { Environment, FeatureFlag } from '@avocet/core';
 import { useEffect, useState } from 'react';
 import FeatureService from '#/services/FeatureService';
 import EnvironmentService from '#/services/EnvironmentService';

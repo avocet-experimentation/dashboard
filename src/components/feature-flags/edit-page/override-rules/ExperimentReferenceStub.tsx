@@ -2,7 +2,7 @@ import { Status } from '#/components/ui/status';
 import { Tag } from '#/components/ui/tag';
 import { Tooltip } from '#/components/ui/tooltip';
 import { Stack, Flex, Text, HStack } from '@chakra-ui/react';
-import { ExperimentReference } from '@estuary/types';
+import { ExperimentReference } from '@avocet/core';
 
 // todo: add to constants.ts file after merge
 const statusLegend = {

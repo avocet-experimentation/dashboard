@@ -1,5 +1,5 @@
 import { Flex, Heading, Text } from '@chakra-ui/react';
-import { Environment } from '@estuary/types';
+import { Environment } from '@avocet/core';
 import { useContext, useEffect, useState } from 'react';
 import { ServicesContext } from '#/services/ServiceContext';
 import EnvironmentTable from './table/EnvironmentTable';

@@ -1,4 +1,4 @@
-import { SafeOmit } from '@estuary/types';
+import { SafeOmit } from '@avocet/core';
 
 /**
  * Options to configure requests, excluding headers and body.
@@ -75,5 +75,5 @@ export type GQLParsedResponse<T> =
 //  * When multiple types of data are fetched at once
 //  */
 // export type GQLParsedCompoundResponse<U, T extends U> = GQLParsedResponse<
-//   Record<EstuaryMongoCollectionName, T>
+//   Record<AvocetMongoCollectionName, T>
 // >;

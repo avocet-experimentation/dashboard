@@ -36,7 +36,7 @@ import {
   TriangleAlert,
   X,
 } from 'lucide-react';
-import { Experiment, ExperimentGroup, FeatureFlag } from '@estuary/types';
+import { Experiment, ExperimentGroup, FeatureFlag } from '@avocet/core';
 import FeatureService from '#/services/FeatureService';
 import ExperimentService from '#/services/ExperimentService';
 import NotFound from '../NotFound';

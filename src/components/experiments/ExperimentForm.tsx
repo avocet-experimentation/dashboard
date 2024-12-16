@@ -13,7 +13,7 @@ import {
   FeatureFlag,
   Treatment,
   ExperimentDraft,
-} from '@estuary/types';
+} from '@avocet/core';
 import { RadioGroup, Radio } from '../ui/radio';
 import { Field } from '../ui/field';
 

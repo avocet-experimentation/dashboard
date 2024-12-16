@@ -7,7 +7,7 @@ import {
   isObjectWithProps,
   OverrideRuleUnion,
   SchemaParseError,
-} from '@estuary/types';
+} from '@avocet/core';
 
 export default class FeatureService {
   fetch: FetchWrapper;

@@ -3,7 +3,7 @@ import {
   experimentSchema,
   isObjectWithProps,
   SchemaParseError,
-} from '@estuary/types';
+} from '@avocet/core';
 import { ResponseTypes, ParsedResponse } from '#/lib/fetchTypes';
 import FetchWrapper from '#/lib/FetchWrapper';
 
