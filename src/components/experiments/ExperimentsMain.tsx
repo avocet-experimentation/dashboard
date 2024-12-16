@@ -4,6 +4,7 @@ import { Experiment } from '@avocet/core';
 import { ServicesContext } from '#/services/ServiceContext';
 import ExperimentTable from './ExperimentTable';
 import ExperimentCreationModal from './ExperimentCreationModal';
+import ExperimentInitModal from './ExperimentInitModal';
 
 // const CREATE_EXPERIMENT_FORM_ID = 'experiment-management-form';
 
@@ -20,7 +21,6 @@ export default function ExperimentsMain() {
           throw new Error(response.statusText);
         }
         setExperiments(response.body);
-        console.log(experiments);
       } catch (error) {
         console.log(error);
       }
@@ -38,7 +38,11 @@ export default function ExperimentsMain() {
         alignItems="center"
       >
         <Heading size="3xl">Experiments</Heading>
-        <ExperimentCreationModal setIsLoading={setIsLoading} />
+        {/* <ExperimentCreationModal setIsLoading={setIsLoading} /> */}
+        <ExperimentInitModal
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+        />
       </Flex>
       <Text margin="15px 0">
         Experiments are useful for tracking and assessing feature performance.
