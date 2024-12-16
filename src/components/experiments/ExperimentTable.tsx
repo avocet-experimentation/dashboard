@@ -1,35 +1,35 @@
 // components
-import { Table } from "@chakra-ui/react";
-import { Status } from "../ui/status";
+import { Table } from '@chakra-ui/react';
+import { Status } from '../ui/status';
 
 // library
-import { formatDate } from "#/lib/timeFunctions";
+import { formatDate } from '#/lib/timeFunctions';
 
 // types
-import { Experiment } from "@avocet/core";
+import { Experiment } from '@avocet/core';
 
 // util
-import { Link } from "wouter";
-import { Tooltip } from "../ui/tooltip";
+import { Link } from 'wouter';
+import { Tooltip } from '../ui/tooltip';
 
 const statusLegend = {
   draft: {
-    color: "yellow",
-    description: "This experiment is still being configured.",
+    color: 'yellow',
+    description: 'This experiment is still being configured.',
   },
-  active: { color: "green", description: "This experiment is in progress." },
+  active: { color: 'green', description: 'This experiment is in progress.' },
   paused: {
-    color: "red",
-    description: "This experiment is currently not running.",
+    color: 'red',
+    description: 'This experiment is currently not running.',
   },
   completed: {
-    color: "blue",
-    description: "This experiment has reached its end.",
+    color: 'blue',
+    description: 'This experiment has reached its end.',
   },
 };
 
-const ExperimentTable = ({ experiments }) => {
-  console.log(experiments);
+const ExperimentTable = ({ experiments }: { experiments: Experiment[] }) => {
+  console.table(experiments);
   return (
     <Table.Root className="table">
       <Table.Header>
