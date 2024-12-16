@@ -6,7 +6,7 @@ import {
   UseFieldArrayRemove,
   useFormContext,
 } from 'react-hook-form';
-import { ExperimentGroup, FlagState, Treatment } from '@estuary/types';
+import { ExperimentGroup, FlagState, Treatment } from '@avocet/core';
 import { CircleEqual, CircleMinus, CirclePlus } from 'lucide-react';
 import { DefinedTreatments, ExperimentType } from './ExperimentForm';
 import deepcopy from 'deepcopy';

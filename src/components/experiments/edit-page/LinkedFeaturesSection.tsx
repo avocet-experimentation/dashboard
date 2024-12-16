@@ -8,7 +8,7 @@ import { Tag } from '#/components/ui/tag';
 import { Tooltip } from '#/components/ui/tooltip';
 import { ServicesContext } from '#/services/ServiceContext';
 import { Stack, Table, Text } from '@chakra-ui/react';
-import { Experiment, ExperimentGroup, FeatureFlag } from '@estuary/types';
+import { Experiment, ExperimentGroup, FeatureFlag } from '@avocet/core';
 import {
   ALargeSmall,
   Hash,

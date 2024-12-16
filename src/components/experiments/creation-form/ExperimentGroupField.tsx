@@ -1,6 +1,6 @@
 import { Box, createListCollection, Input, Table } from '@chakra-ui/react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
-import { Treatment } from '@estuary/types';
+import { Treatment } from '@avocet/core';
 import {
   SelectContent,
   SelectItem,

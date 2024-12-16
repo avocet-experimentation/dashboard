@@ -1,6 +1,6 @@
 import { COLORS, RADIAN } from '#/lib/constants';
 import { Box, Heading, Stack } from '@chakra-ui/react';
-import { ExperimentDraft } from '@estuary/types';
+import { ExperimentDraft } from '@avocet/core';
 import {
   PieChart,
   Pie,
