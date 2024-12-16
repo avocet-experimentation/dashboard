@@ -1,5 +1,6 @@
 import {
   Experiment,
+  ExperimentDraft,
   experimentSchema,
   isObjectWithProps,
   SchemaParseError,
@@ -73,20 +74,33 @@ export default class ExperimentService {
     return parsedResponse;
   }
 
-  async createExperiment(
-    experimentContent: Experiment,
+  async create(
+    experimentContent: ExperimentDraft,
   ): Promise<ResponseTypes<{ experimentId: string }>> {
     const response = await this.fetch.post('', experimentContent);
+    console.log({ response });
+
     if (!response.ok) return response;
 
     if (
-      !isObjectWithProps(response.body)
-      || !('experimentId' in response.body)
-      || typeof response.body.experimentId !== 'string'
+      !isObjectWithProps(response.body) ||
+      !('experimentId' in response.body) ||
+      typeof response.body.experimentId !== 'string'
     ) {
       throw new TypeError('Expected a flag id to be returned!');
     }
     return response as ParsedResponse<{ experimentId: string }>;
+  }
+
+  async delete(
+    experimentId: string,
+  ): Promise<ResponseTypes<{ deleted: boolean }>> {
+    const response = await this.fetch.delete<{ deleted: boolean }>(
+      `/id/${experimentId}`,
+    );
+    console.log({ response });
+
+    return response;
   }
 
   async startExperiment(
