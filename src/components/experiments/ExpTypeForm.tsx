@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { Controller, useFieldArray } from 'react-hook-form';
 import { CircleEqual, CirclePlus } from 'lucide-react';
-import { ExperimentGroup, Treatment } from '@estuary/types';
+import { ExperimentGroup, Treatment } from '@avocet/core';
 import { Switch } from '../ui/switch';
 import {
   SelectContent,

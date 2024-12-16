@@ -7,7 +7,7 @@ import {
   UseFormGetValues,
   UseFormRegister,
 } from 'react-hook-form';
-import { FeatureFlagDraft } from '@estuary/types';
+import { FeatureFlagDraft } from '@avocet/core';
 
 interface FeatureFlagDefaultValueFieldProps {
   control: Control<FeatureFlagDraft, any>;

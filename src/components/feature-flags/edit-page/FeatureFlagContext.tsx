@@ -1,4 +1,4 @@
-import { Environment, FeatureFlag, FeatureFlagDraft } from '@estuary/types';
+import { Environment, FeatureFlag, FeatureFlagDraft } from '@avocet/core';
 import {
   createContext,
   ReactNode,

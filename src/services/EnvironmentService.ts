@@ -4,7 +4,7 @@ import {
   EnvironmentDraft,
   environmentSchema,
   SchemaParseError,
-} from '@estuary/types';
+} from '@avocet/core';
 import {
   GQLParsedFailureResponse,
   GQLParsedResponse,

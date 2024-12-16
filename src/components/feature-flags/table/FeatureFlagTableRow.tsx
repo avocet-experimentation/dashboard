@@ -3,7 +3,7 @@ import { useContext } from 'react';
 
 // module components
 import { Table, Text } from '@chakra-ui/react';
-import { FeatureFlag, FeatureFlagDraft } from '@estuary/types';
+import { FeatureFlag, FeatureFlagDraft } from '@avocet/core';
 import { Link } from 'wouter';
 import { lastUpdated, formatDate } from '#/lib/timeFunctions';
 import { ServicesContext } from '#/services/ServiceContext';

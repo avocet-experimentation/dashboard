@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { Flex, Heading, Text } from '@chakra-ui/react';
-import { Experiment } from '@estuary/types';
+import { Experiment } from '@avocet/core';
 import { ServicesContext } from '#/services/ServiceContext';
 import ExperimentTable from './ExperimentTable';
 import ExperimentCreationModal from './ExperimentCreationModal';

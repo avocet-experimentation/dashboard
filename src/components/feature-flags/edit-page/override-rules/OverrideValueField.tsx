@@ -1,6 +1,6 @@
 import { Input } from '@chakra-ui/react';
 import { Controller, Control, UseFormRegister } from 'react-hook-form';
-import { ForcedValue } from '@estuary/types';
+import { ForcedValue } from '@avocet/core';
 import { Switch } from '#/components/ui/switch';
 import { Field } from '#/components/ui/field';
 

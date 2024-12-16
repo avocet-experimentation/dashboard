@@ -13,10 +13,10 @@
 */
 
 import * as hashLib from './hash';
-import { ClientPropMapping, ExperimentGroup, Treatment, Experiment } from '@estuary/types';
+import { ClientPropMapping, ExperimentGroup, Treatment, Experiment } from '@avocet/core';
 
-const flagVariantRegex = /estuary-exp\.\S{3,}\.variant/;
-const flagHashRegex = /estuary-exp\.\S{3,}\.hash/;
+const flagVariantRegex = /avocet\.\S{3,}\.variant/;
+const flagHashRegex = /avocet\.\S{3,}\.hash/;
 
 const spansWithFlags = (spans) => {
   return spans.filter(span => {
@@ -32,12 +32,9 @@ const spansWithFlags = (spans) => {
   }); // if spans exists, return true
 }
 
-// span.spanattributes.spans is an Object with flag keys in this format:
-// [`estuary-exp.${flagName}.variant`]: String(flag.value),
-// [`estuary-exp.${flagName}.hash`]: String(flag.hash),
 const spansWithFlagName = (spans, flagName: String) => {
   return spans.filter(span => {
-    return `estuary-exp.${flagName}.variant` in span.spanattributes;
+    return `avocet.${flagName}.variant` in span.spanattributes;
   });
 }
 

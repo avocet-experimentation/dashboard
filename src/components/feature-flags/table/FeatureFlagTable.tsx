@@ -1,5 +1,5 @@
 import { Table } from '@chakra-ui/react';
-import { Environment, FeatureFlag } from '@estuary/types';
+import { Environment, FeatureFlag } from '@avocet/core';
 import FeatureFlagTableRow from './FeatureFlagTableRow';
 
 export interface FeatureFlagTableProps {

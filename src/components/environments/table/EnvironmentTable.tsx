@@ -1,4 +1,4 @@
-import { Environment } from '@estuary/types';
+import { Environment } from '@avocet/core';
 import { Table } from '@chakra-ui/react';
 import EnvironmentTableRow from './EnvironmentTableRow';
 

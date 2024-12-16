@@ -1,4 +1,4 @@
-import { ClientPropMapping, ExperimentGroup, Treatment, Experiment } from '@estuary/types';
+import { ClientPropMapping, ExperimentGroup, Treatment, Experiment } from '@avocet/core';
 import crypto from 'node:crypto';
 /*
 MD5 vs DJB2:

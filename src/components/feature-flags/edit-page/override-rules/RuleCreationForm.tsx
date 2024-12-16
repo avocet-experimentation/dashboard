@@ -1,6 +1,6 @@
 import { Flex } from '@chakra-ui/react';
 import { useState } from 'react';
-import { FlagValueTypeDef, OverrideRuleUnion, RuleType } from '@estuary/types';
+import { FlagValueTypeDef, OverrideRuleUnion, RuleType } from '@avocet/core';
 import {
   RULE_TYPES,
   RuleTypeDisplayDataTuple,

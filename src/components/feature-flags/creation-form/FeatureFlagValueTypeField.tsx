@@ -11,7 +11,7 @@ import {
   FeatureFlagDraft,
   flagDefaultValueMap,
   flagValueTypeDefSchema,
-} from '@estuary/types';
+} from '@avocet/core';
 import { Control, Controller, UseFormSetValue } from 'react-hook-form';
 
 interface FeatureFlagValueTypeProps {

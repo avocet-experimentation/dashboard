@@ -1,4 +1,4 @@
-import { Environment } from '@estuary/types';
+import { Environment } from '@avocet/core';
 import { Table, Text } from '@chakra-ui/react';
 import { useContext } from 'react';
 import { lastUpdated, formatDate } from '#/lib/timeFunctions';

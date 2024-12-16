@@ -33,7 +33,7 @@ export default function ControlledTextInput<T extends FieldValues>({
     <Field
       label={label}
       invalid={!!formState.errors[fieldPath]}
-      errorText={formState.errors[fieldPath]?.message as string | undefined}
+      errorText={(formState.errors[fieldPath]?.message as string) ?? undefined}
     >
       <Controller
         name={fieldPath}

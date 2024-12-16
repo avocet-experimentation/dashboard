@@ -1,4 +1,4 @@
-import { TransformedSpan } from '@estuary/types';
+import { TransformedSpan } from '@avocet/core';
 import { Stack, Table, Text } from '@chakra-ui/react';
 import { useContext } from 'react';
 import { lastUpdated, formatDate } from '#/lib/timeFunctions';

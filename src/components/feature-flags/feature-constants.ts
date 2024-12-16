@@ -1,5 +1,5 @@
 import { createListCollection } from '@chakra-ui/react';
-import { RuleType } from '@estuary/types';
+import { RuleType } from '@avocet/core';
 
 export interface RuleTypeData {
   name: string;

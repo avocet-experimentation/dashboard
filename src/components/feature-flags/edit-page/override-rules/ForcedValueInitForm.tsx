@@ -7,7 +7,7 @@ import {
   getOverrideRuleSchemaFromType,
   OverrideRuleUnion,
   SchemaParseError,
-} from '@estuary/types';
+} from '@avocet/core';
 import { useContext } from 'react';
 import { ServicesContext } from '#/services/ServiceContext';
 import { Field } from '#/components/ui/field';

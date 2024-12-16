@@ -5,7 +5,7 @@ import {
   EnvironmentDraft,
   environmentDraftSchema,
   SchemaParseError,
-} from '@estuary/types';
+} from '@avocet/core';
 import { useContext } from 'react';
 import { ServicesContext } from '#/services/ServiceContext';
 import { NameField } from '../../forms/DefinedFields';
@@ -81,7 +81,7 @@ export default function EnvironmentManagementForm({
     <FormProvider {...formMethods}>
       <form id={formId} onSubmit={formMethods.handleSubmit(onSubmit)}>
         <Stack gap="4">
-          <NameField label="Environment Name" />
+          <NameField disabled={!!environment} label="Environment Name" />
           <ControlledSwitch
             fieldPath="defaultEnabled"
             label="Enabled by default for new feature flags"

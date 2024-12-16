@@ -1,4 +1,4 @@
-// import { SafeOmit } from '@estuary/types';
+// import { SafeOmit } from '@avocet/core';
 
 import { defaultJsonHeaders } from './fetchHelpers';
 import { RequestOptions, GQLResponse } from './fetchTypes';

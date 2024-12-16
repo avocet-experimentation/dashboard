@@ -6,7 +6,7 @@ import {
   FeatureFlagDraft,
   featureFlagDraftSchema,
   SchemaParseError,
-} from '@estuary/types';
+} from '@avocet/core';
 import { useLocation } from 'wouter';
 import { ServicesContext } from '#/services/ServiceContext';
 import { Field } from '#/components/ui/field';

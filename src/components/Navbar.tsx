@@ -9,7 +9,7 @@ import {
   AlignHorizontalDistributeCenter,
   Earth,
 } from 'lucide-react';
-import EstuaryLogo from '../assets/svgs/avocet-logo.svg';
+import AvocetLogo from '../assets/svgs/avocet-logo.svg';
 import { Link } from 'wouter';
 
 const NavBox = chakra('div', {
@@ -49,7 +49,7 @@ const LogoBox = () => {
       alignItems="center"
       justifyContent="center"
     >
-      <chakra.img src={EstuaryLogo} height="45px" />
+      <chakra.img src={AvocetLogo} height="45px" />
       <Text fontFamily="Pacifico" fontSize="2em">
         avocet
       </Text>

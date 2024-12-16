@@ -1,6 +1,6 @@
 import { CirclePlus } from 'lucide-react';
 import { useState } from 'react';
-import { FeatureFlag } from '@estuary/types';
+import { FeatureFlag } from '@avocet/core';
 import FormModal from '../../../forms/FormModal';
 import RuleCreationForm from './RuleCreationForm';
 import { ADD_RULE_FORM_ID } from '../../feature-constants';

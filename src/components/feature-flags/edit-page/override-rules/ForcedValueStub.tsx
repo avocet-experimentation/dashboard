@@ -1,6 +1,6 @@
 import { Tag } from '#/components/ui/tag';
 import { Stack, Flex, Text } from '@chakra-ui/react';
-import { ForcedValue } from '@estuary/types';
+import { ForcedValue } from '@avocet/core';
 
 export default function ForcedValueStub({ rule }: { rule: ForcedValue }) {
   return (

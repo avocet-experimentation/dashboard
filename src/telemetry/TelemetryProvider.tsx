@@ -5,7 +5,7 @@ import {
   CoercedSpanAttributes,
   TextPrimitive,
   PrimitiveTypeLabel,
-} from '@estuary/types';
+} from '@avocet/core';
 import { useState } from 'react';
 import { TelemetryContext } from './TelemetryContext';
 
