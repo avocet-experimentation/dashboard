@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form';
 import ControlledTextInput from './ControlledTextInput';
 
-interface DefinedTextFieldProps {
+interface NameFieldProps {
   label: string;
   disabled?: boolean;
 }
@@ -9,7 +9,7 @@ interface DefinedTextFieldProps {
 /**
  * These components require the parent form be wrapped in a FormProvider
  */
-export function NameField({ label, disabled = false }: DefinedTextFieldProps) {
+export function NameField({ label, disabled = false }: NameFieldProps) {
   const { register } = useFormContext();
   return (
     <ControlledTextInput
@@ -30,10 +30,15 @@ export function NameField({ label, disabled = false }: DefinedTextFieldProps) {
   );
 }
 
+interface DescriptionFieldProps {
+  label?: string;
+  disabled?: boolean;
+}
+
 export function DescriptionField({
   label = 'Description',
   disabled = false,
-}: DefinedTextFieldProps) {
+}: DescriptionFieldProps) {
   const { register } = useFormContext();
   return (
     <ControlledTextInput
