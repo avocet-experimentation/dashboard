@@ -6,7 +6,6 @@ import {
   useFormContext,
 } from 'react-hook-form';
 import { Switch } from '../ui/switch';
-import { Field } from '../ui/field';
 
 interface ControlledSwitchProps<
   T extends FieldValues,
@@ -44,8 +43,9 @@ export default function ControlledSwitch<T extends FieldValues>({
             onBlur={field.onBlur}
             width="fit-content"
           >
-            {labelPosition === 'right'
-              && 'Enabled by default for new feature flags'}
+            {labelPosition === 'right' && (
+              <Text marginRight="5px">{label}</Text>
+            )}
           </Switch>
         </Flex>
       )}
