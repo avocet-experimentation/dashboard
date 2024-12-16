@@ -29,8 +29,6 @@ export default function EnvironmentManagementForm({
   environment,
   updateEnvironment,
 }: EnvironmentManagementFormProps) {
-  // const [isError, setIsError] = useState(null);
-  // const [location, navigate] = useLocation();
   const { environment: environmentService } = useContext(ServicesContext);
 
   const defaultValues: EnvironmentDraft =
@@ -50,20 +48,16 @@ export default function EnvironmentManagementForm({
   const onSubmit: SubmitHandler<EnvironmentDraft> = async (
     environmentContent,
   ) => {
-    // console.log('submit handler invoked');
-
-    // console.log({ environmentContent });
     const safeParseResult =
       environmentDraftSchema.safeParse(environmentContent);
     if (!safeParseResult.success) {
-      // the error pretty-print the Zod parse error message
+      // the error pretty-prints the Zod parse error message
       throw new SchemaParseError(safeParseResult);
     }
 
     setIsLoading(true);
     try {
       const response = await createOrUpdate(safeParseResult.data);
-      // console.log({ response });
       if (!response.ok) {
         // todo: handle errors correctly
         return;
@@ -85,13 +79,13 @@ export default function EnvironmentManagementForm({
           <ControlledSwitch
             fieldPath="defaultEnabled"
             label="Enabled by default for new feature flags"
-            labelPosition="left"
+            labelPosition="right"
             switchId="set-default-enabled"
           />
           <ControlledSwitch
             fieldPath="pinToLists"
             label="Display a quick toggler on the feature flags list"
-            labelPosition="left"
+            labelPosition="right"
             switchId="set-pin-to-lists"
           />
         </Stack>
