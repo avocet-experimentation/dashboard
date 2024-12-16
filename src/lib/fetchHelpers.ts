@@ -20,6 +20,10 @@ export async function handleJsonResponse<T>(
   if (!response.ok) {
     return { ...response, ok: false };
   }
-  const parsed: T = await response.json();
-  return { ...response, ok: true, body: parsed };
+  try {
+    const parsed: T = await response.json();
+    return { ...response, ok: true, body: parsed };
+  } catch {
+    return { ...response, ok: false };
+  }
 }
