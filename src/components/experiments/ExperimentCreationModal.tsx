@@ -5,13 +5,13 @@ import ExperimentCreationForm from './ExperimentForm';
 
 const CREATE_EXPERIMENT_FORM_ID = 'experiment-management-form';
 
-interface FeatureFlagCreationModalProps {
+interface ExperimentCreationModalProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function ExperimentCreationModal({
   setIsLoading,
-}: FeatureFlagCreationModalProps) {
+}: ExperimentCreationModalProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -30,20 +30,5 @@ export default function ExperimentCreationModal({
         setOpen={setOpen}
       />
     </FormModal>
-    // <FormModal
-    //   triggerButtonIcon={<CirclePlus />}
-    //   formId={CREATE_FEATURE_FORM_ID}
-    //   open={open}
-    //   setOpen={setOpen}
-    //   title="Create a New Feature Flag"
-    //   confirmButtonText="Create"
-    //   triggerButtonText="Add Feature Flag"
-    // >
-    //   <ExperimentCreationForm
-    //     formId={CREATE_FEATURE_FORM_ID}
-    //     setIsLoading={setIsLoading}
-    //     setOpen={setOpen}
-    //   />
-    // </FormModal>
   );
 }

@@ -41,9 +41,7 @@ import FeatureService from '#/services/FeatureService';
 import ExperimentService from '#/services/ExperimentService';
 import NotFound from '../NotFound';
 
-import {
-  MenuContent, MenuItem, MenuRoot, MenuTrigger,
-} from '../ui/menu';
+import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../ui/menu';
 import FormModal from '../forms/FormModal';
 import LinkFeatureForm from './LinkFeatureForm';
 import {
@@ -119,7 +117,8 @@ const flagTagProperties = (
   expEnvironment: string,
   flagEnvironments: string[],
 ) => {
-  const environmentEnabled = Object.keys(flagEnvironments).includes(expEnvironment);
+  const environmentEnabled =
+    Object.keys(flagEnvironments).includes(expEnvironment);
   const icon = environmentEnabled ? <Play /> : <TriangleAlert />;
   const text = environmentEnabled ? 'Live' : 'Disabled';
   const colorPalette = environmentEnabled ? 'green' : 'red';
@@ -211,9 +210,14 @@ function ExperimentPage() {
     handleGetLinkedFeatures();
   }, [experiment]);
 
-  const handleDeleteFeature = () => {
-    // experimentService.deleteExperiment(experiment.id);
-    // navigate("/experiments");
+  const handleDeleteClick = async () => {
+    if (!experiment) return;
+    const response = await experimentService.delete(experiment.id);
+    if (response.ok) {
+      navigate('/experiments');
+    } else {
+      // todo: handle failed deletion
+    }
   };
 
   if (isLoading) return <></>;
@@ -249,7 +253,7 @@ function ExperimentPage() {
                   cursor="pointer"
                   color="fg.error"
                   _hover={{ bg: 'bg.error', color: 'fg.error' }}
-                  onClick={handleDeleteFeature}
+                  onClick={handleDeleteClick}
                 >
                   <Trash2 />
                   <Box flex="1">Delete</Box>
@@ -383,9 +387,7 @@ function ExperimentPage() {
             <Stack padding="15px" bg="white" borderRadius="5px">
               <Flex justifyContent="space-between">
                 <Heading size="lg">
-                  Linked Features (
-                  {experiment.flagIds.length}
-                  )
+                  Linked Features ({experiment.flagIds.length})
                 </Heading>
                 <FormModal
                   triggerButtonIcon={<Link />}
@@ -455,12 +457,13 @@ function ExperimentPage() {
                               {experiment.groups.map(
                                 (group: ExperimentGroup) => {
                                   const sequence = group.sequence[0];
-                                  const servedValue = experiment.definedTreatments[
-                                    sequence
-                                  ].flagStates.find(
-                                    (treatmentFeature) =>
-                                      treatmentFeature.id === feature.id,
-                                  ).value;
+                                  const servedValue =
+                                    experiment.definedTreatments[
+                                      sequence
+                                    ].flagStates.find(
+                                      (treatmentFeature) =>
+                                        treatmentFeature.id === feature.id,
+                                    ).value;
                                   return (
                                     <Table.Row key={group.id}>
                                       <Table.Cell>{group.name}</Table.Cell>

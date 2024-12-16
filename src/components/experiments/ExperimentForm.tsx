@@ -173,7 +173,7 @@ export default function ExperimentCreationForm({
         );
       }
       console.log('data', expContent);
-      const result = await expService.createExperiment(expContent);
+      const result = await expService.create(expContent);
     } catch (e) {
       console.error(e);
     } finally {
@@ -313,7 +313,8 @@ export default function ExperimentCreationForm({
           <RadioGroup
             defaultValue={expType}
             onValueChange={({ value }) =>
-              handleSwitchForm(value as 'ab' | 'switchback')}
+              handleSwitchForm(value as 'ab' | 'switchback')
+            }
           >
             <HStack gap="6">
               <Radio value="ab" cursor="pointer">
