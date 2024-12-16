@@ -32,6 +32,8 @@ interface ControlledSelectProps<T, O> {
     value: SelectValueChangeDetails<O>['value'][number],
   ) => void;
   disabled?: boolean;
+  /** Sets the width of the select. Defaults to 320px */
+  width?: string;
 }
 
 /**
@@ -48,6 +50,7 @@ export default function ControlledSelect<
   options,
   handleValueChange,
   disabled,
+  width = '320px',
 }: ControlledSelectProps<T, O>) {
   const {
     control,
@@ -61,7 +64,7 @@ export default function ControlledSelect<
       label={label}
       invalid={!!errors[fieldPath]}
       errorText={(errors[fieldPath]?.message as string) ?? undefined}
-      width="320px"
+      width={width}
     >
       <Controller
         control={control}
@@ -70,6 +73,7 @@ export default function ControlledSelect<
           <SelectRoot
             name={field.name}
             value={field.value}
+            cursor="pointer"
             collection={optionCollection}
             disabled={disabled}
             onValueChange={(e: SelectValueChangeDetails<O>) => {
@@ -83,7 +87,7 @@ export default function ControlledSelect<
             </SelectTrigger>
             <SelectContent zIndex="popover">
               {optionCollection.items.map((option) => (
-                <SelectItem item={option} key={option.label}>
+                <SelectItem item={option} key={option.label} cursor="pointer">
                   {option.label}
                 </SelectItem>
               ))}
