@@ -4,6 +4,7 @@ import {
   HypothesisField,
   NameField,
 } from '../../forms/DefinedFields';
+import ExperimentTotalTrafficSlider from './ExperimentTotalTrafficSlider';
 
 function ExperimentFormGeneralSection() {
   return (
@@ -14,6 +15,7 @@ function ExperimentFormGeneralSection() {
       />
       <DescriptionField />
       <HypothesisField />
+      <ExperimentTotalTrafficSlider />
     </Stack>
   );
 }
