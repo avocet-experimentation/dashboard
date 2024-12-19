@@ -15,7 +15,6 @@
     "@avocet/core": "file:../packages/avocet-core",
     "@chakra-ui/react": "^3.2.3",
     "@emotion/react": "^11.13.3",
-    "@avocet/core": "file:../packages/avocet-core",
     "@hookform/resolvers": "^3.9.1",
     "@vitejs/plugin-react": "^4.2.1",
     "deepcopy": "^2.1.0",
