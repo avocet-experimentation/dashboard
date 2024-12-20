@@ -10,8 +10,12 @@ import {
   Earth,
   Cable,
 } from 'lucide-react';
-import AvocetLogo from '../assets/svgs/avocet-logo.svg';
 import { Link } from 'wouter';
+import LogoBox from './LogoBox';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Avatar } from './ui/avatar';
+import { MenuRoot, MenuTrigger, MenuContent, MenuItem } from './ui/menu';
+import { Button } from './ui/button';
 
 const NavBox = chakra('div', {
   base: {
@@ -39,26 +43,9 @@ const NavText = chakra('p', {
   },
 });
 
-const LogoBox = () => {
-  return (
-    <Flex
-      borderBottom="1px solid"
-      borderColor="gray.400"
-      width="100%"
-      height="60px"
-      marginBottom="25px"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <chakra.img src={AvocetLogo} height="45px" />
-      <Text fontFamily="Pacifico" fontSize="2em">
-        avocet
-      </Text>
-    </Flex>
-  );
-};
-
 export default function Navbar() {
+  const { user, logout } = useAuth0();
+
   return (
     <Flex
       direction="column"
@@ -70,7 +57,7 @@ export default function Navbar() {
       width="90%"
       margin="auto"
     >
-      <LogoBox />
+      <LogoBox withLine={true} withTitle={true} logoSize="45px"/>
       <NavBox>
         <Icon>
           <Flag />
@@ -119,6 +106,19 @@ export default function Navbar() {
           <NavText>Connections</NavText>
         </Link>
       </NavBox>
+      <MenuRoot positioning={{ placement: "top" }}>
+        <MenuTrigger asChild marginTop="auto" marginBottom="15px">
+          <Button width="90%" height="fit-content" justifyContent="space-evenly" variant="ghost" padding="10px">
+            <Avatar name={user?.name} src={user?.picture} size="sm"/>
+            <Text>
+              {user?.email}
+            </Text>
+          </Button>
+        </MenuTrigger>
+        <MenuContent>
+          <MenuItem value="Logout" color="fg.error" _hover={{ bg: "bg.error", color: "fg.error", cursor: "pointer" }} onClick={logout}>Logout</MenuItem>
+        </MenuContent>
+      </MenuRoot>
     </Flex>
   );
 }
