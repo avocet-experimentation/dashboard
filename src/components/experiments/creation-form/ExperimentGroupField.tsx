@@ -1,6 +1,6 @@
 import { Box, createListCollection, Input, Table } from '@chakra-ui/react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
-import { Treatment } from '@avocet/core';
+import { Experiment, Treatment } from '@avocet/core';
 import {
   SelectContent,
   SelectItem,
@@ -9,12 +9,12 @@ import {
   SelectValueText,
 } from '../../ui/select';
 import { Field } from '../../ui/field';
-import { DefinedTreatments, ExperimentType } from './ExperimentForm';
+import { ExperimentType } from './ExperimentForm';
 import GroupCountButtons from './GroupCountButtons';
 
 interface Props {
   expType: ExperimentType;
-  definedTreatments: DefinedTreatments;
+  definedTreatments: Experiment['definedTreatments'];
 }
 
 const createTreatmentCollection = (definedTreatments: Treatment) => {

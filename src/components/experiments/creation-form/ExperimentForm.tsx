@@ -8,27 +8,16 @@ import ExperimentFormTreatmentSection from './ExperimentFormTreatmentSection';
 import { ALargeSmall, Users } from 'lucide-react';
 
 export type ExperimentType = 'ab' | 'switchback';
-export type DefinedTreatments = Record<string, Treatment>;
 
-const templateToObject = (template: ExperimentDraft) =>
-  Object.getOwnPropertyNames(template).reduce((acc, prop) => {
-    acc[prop] = template[prop];
-    return acc;
-  }, {});
-
-const abTemplate = ExperimentDraft.templateAB({
+const defaultAB = ExperimentDraft.templateAB({
   name: 'my-first-exp',
   environmentName: 'dev',
 });
 
-const defaultAB = templateToObject(abTemplate);
-
-const switchbackTemplate = ExperimentDraft.templateSwitchback({
+const defaultSwitchback = ExperimentDraft.templateSwitchback({
   name: 'my-first-switchback',
   environmentName: 'dev',
 });
-
-const defaultSwitchback = templateToObject(switchbackTemplate);
 
 // mutating function
 const reformatAllTrafficProportion = (expContent: ExperimentDraft): void => {
@@ -122,7 +111,6 @@ export default function ExperimentCreationForm({
         </StepsContent>
         <StepsContent index={1}>
           <ExperimentFormTreatmentSection
-            definedTreatments={definedTreatments}
             expType={expType}
             setExpType={setExpType}
             setFormValues={setFormValues}
