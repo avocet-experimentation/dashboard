@@ -9,7 +9,7 @@ import {
 import { X, Check, FilePenLine } from 'lucide-react';
 import { useState } from 'react';
 
-interface ControlledEditableProps {
+interface PageEditableProps {
   label: string;
   initialValue: string;
   submitHandler: (e: EditableValueChangeDetails) => Promise<string>;
@@ -17,17 +17,17 @@ interface ControlledEditableProps {
   disabled?: boolean;
 }
 /**
- * For managing string fields on objects.
+ * (WIP) For managing string fields on objects.
  * @param submitHandler a callback to write changes to a database,
  * returning the new value or the previous value if writing fails
  */
-export default function ControlledEditable({
+export default function PageEditable({
   label,
   initialValue,
   submitHandler,
   startInEditMode = false,
   disabled = false,
-}: ControlledEditableProps) {
+}: PageEditableProps) {
   const [value, setValue] = useState<string>(initialValue);
 
   const handleValueCommit = async (e: EditableValueChangeDetails) => {
