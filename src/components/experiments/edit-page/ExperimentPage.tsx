@@ -22,7 +22,7 @@ import { Experiment } from '@avocet/core';
 import { Button } from '../../ui/button';
 import VariationGroups from './VariationGroupsSection';
 import LinkedFeatures from './LinkedFeaturesSection';
-import ControlledEditable from '#/components/forms/ControlledEditable';
+import PageEditable from '#/components/forms/PageEditable';
 import { ExperimentDraft } from '@avocet/core';
 
 const experimentService = new ExperimentService();

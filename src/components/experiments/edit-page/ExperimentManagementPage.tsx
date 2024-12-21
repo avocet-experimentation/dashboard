@@ -19,7 +19,7 @@ import { Experiment, ExperimentDraft } from '@avocet/core';
 import VariationGroups from './VariationGroupsSection';
 import ExperimentControlButton from './ExperimentControlButton';
 import LinkedFeatures from './LinkedFeaturesSection';
-import ControlledEditable from '#/components/forms/ControlledEditable';
+import PageEditable from '#/components/forms/PageEditable';
 
 const LINK_FEATURE_FORM = 'link-feature-form';
 

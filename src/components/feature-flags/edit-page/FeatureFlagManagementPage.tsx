@@ -24,7 +24,7 @@ import {
 } from '#/components/ui/menu';
 import NotFound from '../../NotFound';
 import EnvironmentTabs from './EnvironmentTabs';
-import ControlledEditable from '../../forms/ControlledEditable';
+import PageEditable from '../../forms/PageEditable';
 import { FlagEnvironmentToggles } from './FlagEnvironmentToggles';
 import { Tooltip } from '#/components/ui/tooltip';
 
