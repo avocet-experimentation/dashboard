@@ -17,7 +17,7 @@ export default function ExperimentControlButton({
     const colorPalette = active ? 'red' : 'green';
     const onClick = active
       ? () => {}
-      : () => experimentService.startExperiment(expId);
+      : () => experimentService.start(expId);
     return { icon, text, colorPalette, onClick };
   };
 

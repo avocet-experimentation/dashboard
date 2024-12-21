@@ -8,7 +8,13 @@ import { Tag } from '#/components/ui/tag';
 import { Tooltip } from '#/components/ui/tooltip';
 import { ServicesContext } from '#/services/ServiceContext';
 import { Stack, Table, Text } from '@chakra-ui/react';
-import { Experiment, ExperimentGroup, FeatureFlag } from '@avocet/core';
+import {
+  Experiment,
+  ExperimentGroup,
+  FeatureFlag,
+  featureFlagSchema,
+  parallelAsync,
+} from '@avocet/core';
 import {
   ALargeSmall,
   Hash,
@@ -59,25 +65,38 @@ export default function LinkedFeatures({
   experiment: Experiment;
 }) {
   const [linkedFeatures, setLinkedFeatures] = useState<LinkedFeature[]>([]);
-  const { featureFlag: featureService } = useContext(ServicesContext);
+  const services = useContext(ServicesContext);
 
   useEffect(() => {
     const handleGetLinkedFeatures = async () => {
       if (experiment) {
         try {
-          const features: LinkedFeature[] = [];
-          for (const flagId of experiment.flagIds) {
-            const flag = await featureService.getFeature(flagId);
-            if (flag.ok) {
-              features.push({
-                id: flag.body.id,
-                name: flag.body.name,
-                environmentNames: flag.body.environmentNames,
-                valueType: flag.body.value.type,
-              });
-            }
-          }
-          setLinkedFeatures(features);
+          const resolve = await parallelAsync(
+            async (flagId: string) =>
+              services.featureFlag
+                .get(flagId)
+                .then((res) => (res.ok ? res.body : res)),
+            experiment.flagIds.map((id) => [id] as const),
+          );
+
+          const flags = resolve.filter(
+            (res): res is FeatureFlag =>
+              featureFlagSchema.safeParse(res).success,
+          );
+          setLinkedFlags(flags);
+
+          // for (const flagId of experiment.flagIds) {
+          //   const flag = await featureService.get(flagId);
+          //   if (flag.ok) {
+          //     features.push({
+          //       id: flag.body.id,
+          //       name: flag.body.name,
+          //       environmentNames: flag.body.environmentNames,
+          //       valueType: flag.body.value.type,
+          //     });
+          //   }
+          // }
+          // setLinkedFlags(features);
         } catch (error) {}
       }
     };

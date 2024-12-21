@@ -39,7 +39,7 @@ export function FeatureFlagProvider({
   const getFeatureFlag = async () => {
     setIsLoading(true);
     try {
-      const flagResponse = await services.featureFlag.getFeature(flagId);
+      const flagResponse = await services.featureFlag.get(flagId);
       if (!flagResponse.ok) {
         // todo: better error handling
         throw new Error(`Couldn't fetch flag data for id ${flagId}!`);

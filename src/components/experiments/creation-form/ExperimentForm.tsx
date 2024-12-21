@@ -78,11 +78,13 @@ export default function ExperimentCreationForm({
 
   const definedTreatments = formMethods.watch('definedTreatments');
 
-  const onSubmit = async (expContent: Experiment) => {
+  const onSubmit = async (expContent: ExperimentDraft) => {
     setIsLoading(true);
     // createGroupIds(expContent);
     try {
       reformatAllTrafficProportion(expContent);
+
+      // todo: remove once no longer needed
       collectFeatureIds(expContent);
       if (expType === 'switchback') {
         expContent.groups[0].sequence = Object.keys(
@@ -90,7 +92,8 @@ export default function ExperimentCreationForm({
         );
       }
       console.log('data', expContent);
-      const result = await services.experiment.createExperiment(expContent);
+      // todo: handle failing responses
+      const result = await services.experiment.create(expContent);
     } catch (e) {
       console.error(e);
     } finally {

@@ -16,7 +16,7 @@ export default function ExperimentsMain() {
   useEffect(() => {
     const handleGetAllExperiments = async () => {
       try {
-        const response = await experimentService.getAllExperiments();
+        const response = await experimentService.getAll();
         if (!response.ok) {
           throw new Error(response.statusText);
         }
