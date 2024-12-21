@@ -11,6 +11,9 @@ import { Experiment } from '@avocet/core';
 // util
 import { Link } from 'wouter';
 import { Tooltip } from '../../ui/tooltip';
+import { useContext } from 'react';
+import { ExperimentContext } from '../ExperimentContext';
+import { LoaderWrapper } from '#/components/helpers/LoaderWrapper';
 
 const statusLegend = {
   draft: {
@@ -28,43 +31,48 @@ const statusLegend = {
   },
 };
 
-const ExperimentTable = ({ experiments }: { experiments: Experiment[] }) => {
+export default function ExperimentTable() {
+  const { experiments, isLoading } = useContext(ExperimentContext);
   console.table(experiments);
   return (
-    <Table.Root className="table">
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeader>Experiment Name</Table.ColumnHeader>
-          <Table.ColumnHeader>Environment</Table.ColumnHeader>
-          <Table.ColumnHeader>Status</Table.ColumnHeader>
-          <Table.ColumnHeader>Date Created</Table.ColumnHeader>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {experiments &&
-          experiments.map((exp: Experiment) => (
-            <Table.Row key={exp.id}>
-              <Table.Cell>
-                <Link href={`/experiments/${exp.id}`}>{exp.name}</Link>
-              </Table.Cell>
-              <Table.Cell>{exp.environmentName}</Table.Cell>
-              <Table.Cell>
-                <Tooltip
-                  showArrow
-                  openDelay={50}
-                  content={statusLegend[exp.status].description}
-                >
-                  <Status colorPalette={statusLegend[exp.status].color}>
-                    {exp.status}
-                  </Status>
-                </Tooltip>
-              </Table.Cell>
-              <Table.Cell>{formatDate(exp.createdAt)}</Table.Cell>
+    <LoaderWrapper isLoading={isLoading}>
+      {experiments.length ? (
+        <Table.Root className="table">
+          <Table.Header>
+            <Table.Row>
+              <Table.ColumnHeader>Experiment Name</Table.ColumnHeader>
+              <Table.ColumnHeader>Environment</Table.ColumnHeader>
+              <Table.ColumnHeader>Status</Table.ColumnHeader>
+              <Table.ColumnHeader>Date Created</Table.ColumnHeader>
             </Table.Row>
-          ))}
-      </Table.Body>
-    </Table.Root>
+          </Table.Header>
+          <Table.Body>
+            {experiments &&
+              experiments.map((exp: Experiment) => (
+                <Table.Row key={exp.id}>
+                  <Table.Cell>
+                    <Link href={`/experiments/${exp.id}`}>{exp.name}</Link>
+                  </Table.Cell>
+                  <Table.Cell>{exp.environmentName}</Table.Cell>
+                  <Table.Cell>
+                    <Tooltip
+                      showArrow
+                      openDelay={50}
+                      content={statusLegend[exp.status].description}
+                    >
+                      <Status colorPalette={statusLegend[exp.status].color}>
+                        {exp.status}
+                      </Status>
+                    </Tooltip>
+                  </Table.Cell>
+                  <Table.Cell>{formatDate(exp.createdAt)}</Table.Cell>
+                </Table.Row>
+              ))}
+          </Table.Body>
+        </Table.Root>
+      ) : (
+        'No experiments found. Please create one.'
+      )}
+    </LoaderWrapper>
   );
-};
-
-export default ExperimentTable;
+}

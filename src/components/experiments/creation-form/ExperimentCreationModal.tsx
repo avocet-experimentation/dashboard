@@ -1,17 +1,17 @@
 import { CirclePlus } from 'lucide-react';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import ExperimentCreationForm from './ExperimentForm';
 import MultiFormModal from '../../forms/MultiFormModal';
+import { ExperimentContext } from '../ExperimentContext';
 
 const CREATE_EXPERIMENT_FORM_ID = 'experiment-management-form';
 
-interface ExperimentCreationModalProps {
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-}
+// interface ExperimentCreationModalProps {
+//   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+// }
 
-export default function ExperimentCreationModal({
-  setIsLoading,
-}: ExperimentCreationModalProps) {
+export default function ExperimentCreationModal() {
+  const { isLoading, setIsLoading } = useContext(ExperimentContext);
   const [open, setOpen] = useState(false);
 
   return (
