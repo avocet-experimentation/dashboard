@@ -44,7 +44,7 @@ export default class ExperimentService {
       return response;
     }
 
-    console.table(response.body);
+    // console.table(response.body);
     const safeParseResult = experimentSchema.array().safeParse(response.body);
     if (!safeParseResult.success) {
       throw new SchemaParseError(safeParseResult);
