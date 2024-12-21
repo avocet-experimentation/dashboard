@@ -1,38 +1,42 @@
 import { Button } from '#/components/ui/button';
-import ExperimentService from '#/services/ExperimentService';
-import { Experiment } from '@avocet/core';
+import { ServicesContext } from '#/services/ServiceContext';
 import { OctagonX, Power } from 'lucide-react';
+import { useContext } from 'react';
 
-export default function ExperimentControlButton({
-  experiment,
-  experimentService,
+export function StartExperimentButton({
+  experimentId,
 }: {
-  experiment: Experiment;
-  experimentService: ExperimentService;
+  experimentId: string;
 }) {
-  const experimentButtonProperties = (expStatus: string, expId: string) => {
-    const active = expStatus === 'active';
-    const icon = active ? <OctagonX /> : <Power />;
-    const text = active ? 'Stop Experiment' : 'Start Experiment';
-    const colorPalette = active ? 'red' : 'green';
-    const onClick = active
-      ? () => {}
-      : () => experimentService.start(expId);
-    return { icon, text, colorPalette, onClick };
-  };
+  const services = useContext(ServicesContext);
 
-  const expButtonProps = experimentButtonProperties(
-    experiment.status,
-    experiment.id,
-  );
   return (
     <Button
       variant="solid"
-      colorPalette={expButtonProps.colorPalette}
-      onClick={expButtonProps.onClick}
+      colorPalette="green"
+      onClick={() => services.experiment.start(experimentId)}
     >
-      {expButtonProps.icon}
-      {expButtonProps.text}
+      <Power />
+      Start Experiment
+    </Button>
+  );
+}
+
+export function PauseExperimentButton({
+  experimentId,
+}: {
+  experimentId: string;
+}) {
+  const services = useContext(ServicesContext);
+
+  return (
+    <Button
+      variant="solid"
+      colorPalette="red"
+      onClick={() => services.experiment.pause(experimentId)}
+    >
+      <OctagonX />
+      Stop Experiment
     </Button>
   );
 }
