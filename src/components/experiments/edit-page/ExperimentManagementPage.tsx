@@ -23,9 +23,12 @@ import PageEditable from '#/components/forms/PageEditable';
 
 const LINK_FEATURE_FORM = 'link-feature-form';
 
-export default function ExperimentPage() {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+export default function ExperimentManagementPage() {
+  const { isLoading, setIsLoading, fetchAndHandle, featureFlags, fetchFlags } =
+    useContext(ExperimentContext);
+  // const [isLoading, setIsLoading] = useState<boolean>(true);
   const [experiment, setExperiment] = useState<Experiment | null>(null);
+  const [availableFlags, setAvailableFlags] = useState<FeatureFlag[]>([]);
   const [match, params] = useRoute('/experiments/:id');
   const [location, setLocation] = useLocation();
   const services = useContext(ServicesContext);
@@ -50,6 +53,7 @@ export default function ExperimentPage() {
     };
 
     handleGetExperiment();
+    fetchFlags();
   }, []);
 
   useEffect(() => {

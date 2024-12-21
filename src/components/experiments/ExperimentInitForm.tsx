@@ -14,6 +14,7 @@ import { DescriptionField, NameField } from '#/components/forms/DefinedFields';
 import ControlledSwitch from '#/components/forms/ControlledSwitch';
 import ControlledSelect from '../forms/ControlledSelect';
 import { useLocation } from 'wouter';
+import { ExperimentContext } from './ExperimentContext';
 
 interface ExperimentInitFormProps {
   formId: string;
@@ -39,6 +40,8 @@ export default function ExperimentInitForm({
   >([]);
   const services = useContext(ServicesContext);
 
+  const { environments, fetchEnvironments } = useContext(ExperimentContext);
+
   const formMethods = useForm<Pick<Experiment, 'name' | 'environmentName'>>({
     defaultValues: {
       name: undefined,
@@ -47,30 +50,19 @@ export default function ExperimentInitForm({
   });
 
   useEffect(() => {
-    const fetchEnvironments = async () => {
-      setIsLoading(true);
-      try {
-      } finally {
-        setIsLoading(false);
-      }
-      const response = await environmentService.getMany();
-      if (!response.ok) {
-        // todo: handle error
-        console.error(response);
-      }
+    fetchEnvironments();
+  }, []);
 
-      const environments = response.body ?? [];
-
+  useEffect(() => {
+    if (environments.length) {
       setEnvironmentOptions(
         environments.map((environment) => ({
           label: environment.name,
           value: environment.name,
         })),
       );
-    };
-
-    fetchEnvironments();
-  }, []);
+    }
+  }, [environments]);
 
   const onSubmit: SubmitHandler<
     Pick<Experiment, 'name' | 'environmentName'>
@@ -92,7 +84,7 @@ export default function ExperimentInitForm({
     setIsLoading(true);
     let experimentId;
     try {
-      const response = await experimentService.create(draft);
+      const response = await services.experiment.create(draft);
       if (!response.ok) {
         // todo: handle errors correctly
         return;

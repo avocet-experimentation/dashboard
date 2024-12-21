@@ -4,14 +4,27 @@ import ExperimentGroupField from './ExperimentGroupField';
 import ExperimentTreatmentField from './ExperimentTreatmentField';
 import { useFormContext } from 'react-hook-form';
 import { ExperimentType } from './ExperimentForm';
+import { useContext, useEffect } from 'react';
+import { ExperimentContext } from '../ExperimentContext';
+import { FeatureFlagDraft } from '@avocet/core';
 
+interface ExperimentFormTreatmentSectionProps {
+  expType: ExperimentType;
+  setExpType: React.Dispatch<React.SetStateAction<ExperimentType>>;
+  setFormValues: React.Dispatch<React.SetStateAction<FeatureFlagDraft>>;
+}
 function ExperimentFormTreatmentSection({
-  definedTreatments,
   expType,
   setExpType,
   setFormValues,
-}) {
-  const { getValues } = useFormContext();
+}: ExperimentFormTreatmentSectionProps) {
+  const { fetchFlags } = useContext(ExperimentContext);
+  const { getValues, watch } = useFormContext();
+  const definedTreatments = watch('definedTreatments');
+
+  useEffect(() => {
+    fetchFlags();
+  }, []);
 
   const handleSwitchForm = (newExpType: 'ab' | 'switchback') => {
     const currentValues = getValues();
@@ -42,7 +55,7 @@ function ExperimentFormTreatmentSection({
         </RadioGroup>
       </Fieldset.Root>
       <HStack alignItems="start">
-        <ExperimentTreatmentField definedTreatments={definedTreatments} />
+        <ExperimentTreatmentField />
         <ExperimentGroupField
           expType={expType}
           definedTreatments={definedTreatments}
