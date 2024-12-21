@@ -24,12 +24,12 @@ import {
 } from 'lucide-react';
 import { useContext, useEffect, useState } from 'react';
 
-interface LinkedFeature {
-  id: string;
-  name: string;
-  environmentNames: Record<string, boolean>;
-  valueType: 'string' | 'number' | 'boolean';
-}
+// interface LinkedFeature {
+//   id: string;
+//   name: string;
+//   environmentNames: Record<string, boolean>;
+//   valueType: 'string' | 'number' | 'boolean';
+// }
 
 const flagTagProperties = (
   expEnvironment: string,
@@ -59,12 +59,12 @@ const renderValueTypeIcon = (valueType: string) => {
   }
 };
 
-export default function LinkedFeatures({
+export default function LinkedFlagsSection({
   experiment,
 }: {
   experiment: Experiment;
 }) {
-  const [linkedFeatures, setLinkedFeatures] = useState<LinkedFeature[]>([]);
+  const [linkedFlags, setLinkedFlags] = useState<FeatureFlag[]>([]);
   const services = useContext(ServicesContext);
 
   useEffect(() => {
@@ -103,26 +103,27 @@ export default function LinkedFeatures({
 
     handleGetLinkedFeatures();
   }, [experiment]);
-  if (linkedFeatures) {
+
+  if (linkedFlags) {
     return (
       <AccordionRoot variant="enclosed" multiple>
-        {linkedFeatures.map((feature: LinkedFeature) => {
-          console.log(feature.environmentNames);
+        {linkedFlags.map((flag: FeatureFlag) => {
+          console.log(flag.environmentNames);
           const statusTagProperties = flagTagProperties(
             experiment.environmentName,
-            feature.environmentNames,
+            flag.environmentNames,
           );
           return (
-            <AccordionItem key={feature.id} value={feature.name}>
-              <AccordionItemTrigger id={feature.id}>
+            <AccordionItem key={flag.id} value={flag.name}>
+              <AccordionItemTrigger id={flag.id}>
                 <Stack direction="row" gap={4}>
-                  <Text>{feature.name}</Text>
+                  <Text>{flag.name}</Text>
                   <Tag
                     size="md"
                     variant="outline"
-                    startElement={renderValueTypeIcon(feature.valueType)}
+                    startElement={renderValueTypeIcon(flag.value.type)}
                   >
-                    {feature.valueType}
+                    {flag.value.type}
                   </Tag>
                   <Tooltip
                     showArrow
@@ -163,8 +164,8 @@ export default function LinkedFeatures({
                           flagStates &&
                           flagStates.find(
                             (treatmentFeature) =>
-                              treatmentFeature.id === feature.id,
-                          ).value;
+                              treatmentFeature.id === flag.id,
+                          )?.value;
                         return (
                           servedValue && (
                             <Table.Row key={group.id}>
