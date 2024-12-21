@@ -38,7 +38,7 @@ export default class FeatureService {
       return response;
     }
 
-    console.table(response.body);
+    // console.table(response.body);
     const safeParseResult = featureFlagSchema.array().safeParse(response.body);
     if (!safeParseResult.success) {
       throw new SchemaParseError(safeParseResult);

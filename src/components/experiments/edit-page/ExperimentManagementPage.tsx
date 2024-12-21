@@ -13,7 +13,12 @@ import {
 } from '@chakra-ui/react';
 import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../../ui/menu';
 import { EllipsisVertical, Link, Trash2 } from 'lucide-react';
-import { Experiment, ExperimentDraft, FeatureFlag } from '@avocet/core';
+import {
+  Environment,
+  Experiment,
+  ExperimentDraft,
+  FeatureFlag,
+} from '@avocet/core';
 import VariationGroups from './VariationGroupsSection';
 import {
   StartExperimentButton,
@@ -25,10 +30,10 @@ import PageSelect from '#/components/forms/PageSelect';
 import { ExperimentContext } from '../ExperimentContext';
 
 export default function ExperimentManagementPage() {
-  const { isLoading, setIsLoading, fetchAndHandle, featureFlags, fetchFlags } =
-    useContext(ExperimentContext);
+  const { isLoading, setIsLoading } = useContext(ExperimentContext);
   // const [isLoading, setIsLoading] = useState<boolean>(true);
   const [experiment, setExperiment] = useState<Experiment | null>(null);
+  const [environments, setEnvironments] = useState<Environment[]>();
   const [availableFlags, setAvailableFlags] = useState<FeatureFlag[]>([]);
   const [match, params] = useRoute('/experiments/:id');
   const [location, setLocation] = useLocation();
@@ -54,16 +59,22 @@ export default function ExperimentManagementPage() {
     };
 
     handleGetExperiment();
-    fetchFlags();
+    services.environment
+      .getMany()
+      .then((response) => setEnvironments(response.body));
+
+    services.featureFlag
+      .getAll()
+      .then((response) => response.body && setAvailableFlags(response.body));
   }, []);
 
   useEffect(() => {
     if (experiment === null) return;
-    const filtered = featureFlags.filter(
+    const filtered = availableFlags.filter(
       (flag) => experiment.environmentName in flag.environmentNames,
     );
     setAvailableFlags(filtered);
-  }, [experiment, featureFlags]);
+  }, [experiment]);
 
   const handleExperimentUpdate = async (
     updates: Partial<ExperimentDraft>,
@@ -148,6 +159,25 @@ export default function ExperimentManagementPage() {
                   return success ? e.value : (experiment.hypothesis ?? '');
                 }}
               />
+              {environments && (
+                <PageSelect
+                  options={environments.map((env) => ({
+                    label: env.name,
+                    value: env.name,
+                  }))}
+                  label="Environment"
+                  selected={
+                    experiment.environmentName
+                      ? [experiment.environmentName]
+                      : []
+                  }
+                  handleValueChange={(selectedEnvIds) =>
+                    handleExperimentUpdate({
+                      environmentName: selectedEnvIds[0],
+                    })
+                  }
+                />
+              )}
             </Stack>
           </Box>
           <Box>
@@ -175,11 +205,28 @@ export default function ExperimentManagementPage() {
                   </FormModal> */}
                 </Flex>
                 <PageSelect
-                  label="select flags"
+                  width="100%"
+                  multiple={true}
+                  placeholder="select flags"
                   options={availableFlags.map((flag) => ({
                     label: flag.name,
-                    value: flag,
+                    value: flag.id,
                   }))}
+                  selected={availableFlags
+                    .filter((flag) => experiment.flagIds.includes(flag.id))
+                    .map((flag) => flag.id)}
+                  handleValueChange={(selectedFlagIds) => {
+                    console.log({ selectedFlagId: selectedFlagIds });
+                    const flag = availableFlags.find((flag) =>
+                      selectedFlagIds.includes(flag.id),
+                    );
+                    if (!flag) return;
+                    const update = ExperimentDraft.addFlag(
+                      structuredClone(experiment),
+                      flag,
+                    );
+                    handleExperimentUpdate(update);
+                  }}
                 />
                 <LinkedFlagsSection experiment={experiment} />
               </Stack>

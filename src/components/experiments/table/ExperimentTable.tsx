@@ -33,7 +33,7 @@ const statusLegend = {
 
 export default function ExperimentTable() {
   const { experiments, isLoading } = useContext(ExperimentContext);
-  console.table(experiments);
+  // console.table(experiments);
   return (
     <LoaderWrapper isLoading={isLoading}>
       {experiments.length ? (

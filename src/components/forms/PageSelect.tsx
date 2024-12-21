@@ -13,14 +13,12 @@ import {
 import { Field } from '#/components/ui/field';
 import { useState } from 'react';
 
-interface PageSelectProps<O extends { label: string; value: unknown }> {
+interface PageSelectProps<O extends { label: string; value: string }> {
   options: O[];
-  selected?: O[];
+  selected?: string[];
   label?: string;
   placeholder?: string;
-  handleValueChange?: (
-    value: SelectValueChangeDetails<O>['value'][number],
-  ) => void;
+  handleValueChange?: (value: SelectValueChangeDetails<O>['value']) => void;
   disabled?: boolean;
   multiple?: boolean;
   /** Sets the width of the select. Defaults to 320px */
@@ -31,9 +29,7 @@ interface PageSelectProps<O extends { label: string; value: unknown }> {
  * (WIP) Dropdown controlled with useState. Pass the `handleValueChange` prop
  *  to do additional work with selected values
  */
-export default function PageSelect<
-  O extends { label: string; value: unknown },
->({
+export default function PageSelect<O extends { label: string; value: string }>({
   options,
   selected,
   label,
@@ -44,10 +40,9 @@ export default function PageSelect<
   width = '320px',
 }: PageSelectProps<O>) {
   const optionCollection = createListCollection({ items: options });
-  const [selections, setSelections] = useState<any[]>(
-    selected?.map((el) => el.value) ?? [],
-  );
+  const [selections, setSelections] = useState<string[]>(selected ?? []);
 
+  console.log({ optionCollection });
   return (
     <Field label={label} width={width}>
       <SelectRoot
@@ -58,7 +53,7 @@ export default function PageSelect<
         multiple={multiple}
         onValueChange={(e: SelectValueChangeDetails<O>) => {
           setSelections(e.value);
-          handleValueChange?.(e.value[0]);
+          handleValueChange?.(e.value);
         }}
         // onInteractOutside={() => field.onBlur()}
       >

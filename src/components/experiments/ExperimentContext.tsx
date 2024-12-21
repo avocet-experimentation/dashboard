@@ -19,12 +19,12 @@ interface ExperimentContextValue {
   experiments: Experiment[];
   featureFlags: FeatureFlag[];
   selectedFlags: FeatureFlag[];
-  environments: Environment[];
+  // environments: Environment[];
   fetchAndHandle: Function;
   fetchFlags: () => Promise<void>;
   fetchAllExperiments: () => Promise<void>;
   // fetchExperiment: (experimentId: string) => Promise<unknown>;
-  fetchEnvironments: () => Promise<void>;
+  // fetchEnvironments: () => Promise<void>;
   setSelectedFlags: React.Dispatch<React.SetStateAction<FeatureFlag[]>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -34,12 +34,12 @@ const defaults = {
   experiments: [],
   featureFlags: [],
   selectedFlags: [],
-  environments: [],
+  // environments: [],
   fetchAndHandle: () => {},
   fetchFlags: async () => {},
   fetchAllExperiments: async () => {},
   // fetchExperiment: async () => {},
-  fetchEnvironments: async () => {},
+  // fetchEnvironments: async () => {},
   setSelectedFlags: () => {},
   setIsLoading: () => {},
 };
@@ -60,9 +60,9 @@ export function ExperimentProvider({ children }: { children: ReactNode }) {
   const [selectedFlags, setSelectedFlags] = useState<FeatureFlag[]>(
     defaults.selectedFlags,
   );
-  const [environments, setEnvironments] = useState<Environment[]>(
-    defaults.environments,
-  );
+  // const [environments, setEnvironments] = useState<Environment[]>(
+  //   defaults.environments,
+  // );
   const services = useContext(ServicesContext);
 
   const fetchAndHandle = async <T, R>(
@@ -76,6 +76,7 @@ export function ExperimentProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       const response = await fetcher();
+      console.log({ response });
       if (!response.ok) {
         const errorMessage =
           'errors' in response
@@ -110,11 +111,11 @@ export function ExperimentProvider({ children }: { children: ReactNode }) {
       setFeatureFlags,
     );
 
-  const fetchEnvironments = async () =>
-    fetchAndHandle(
-      services.environment.getMany.bind(services.environment),
-      setEnvironments,
-    );
+  // const fetchEnvironments = async () =>
+  //   fetchAndHandle(
+  //     services.environment.getMany.bind(services.environment),
+  //     setEnvironments,
+  //   );
 
   useEffect(() => {
     setIsLoading(true);
@@ -128,8 +129,8 @@ export function ExperimentProvider({ children }: { children: ReactNode }) {
     // fetchExperiment,
     featureFlags,
     fetchFlags,
-    environments,
-    fetchEnvironments,
+    // environments,
+    // fetchEnvironments,
     selectedFlags,
     setSelectedFlags,
     isLoading,
