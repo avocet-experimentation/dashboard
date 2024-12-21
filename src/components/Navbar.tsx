@@ -110,6 +110,14 @@ export default function Navbar() {
           <NavText>Environments</NavText>
         </Link>
       </NavBox>
+      <NavBox> 
+        <Icon>
+          <Earth />
+        </Icon>
+        <Link href="/connections" draggable={false}>
+          <NavText>Connections</NavText>
+        </Link>
+      </NavBox>
     </Flex>
   );
 }

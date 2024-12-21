@@ -8,6 +8,7 @@ import FeatureFlagManagementPage from './components/feature-flags/edit-page/Feat
 import ExperimentPage from './components/experiments/ExperimentPage';
 import EnvironmentsMainPage from './components/environments/EnvironmentsMainPage';
 import TelemetryMain from './telemetry/TelemetryMain';
+import SDKConnectionsMain from './components/sdk-connections/SDKConnectionsMain';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
             <Route path="/features/:id" component={FeatureFlagManagementPage} />
             <Route path="/environments" component={EnvironmentsMainPage} />
             <Route path="/experiments" component={ExperimentsMain} />
+            <Route path="/connections" component={SDKConnectionsMain} />
             <Route path="/experiments/:id" component={ExperimentPage} />
             <Route path="/telemetry" component={TelemetryMain} />
           </Switch>
