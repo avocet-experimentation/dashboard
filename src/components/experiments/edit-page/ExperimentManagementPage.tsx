@@ -1,5 +1,5 @@
 import { ServicesContext } from '#/services/ServiceContext';
-import { useRoute } from 'wouter';
+import { useLocation, useRoute } from 'wouter';
 import NotFound from '../../NotFound';
 import { useContext, useEffect, useState } from 'react';
 import {
@@ -15,7 +15,7 @@ import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../../ui/menu';
 import { EllipsisVertical, Link, Trash2 } from 'lucide-react';
 import FormModal from '../../forms/FormModal';
 import LinkFeatureForm from './LinkFeatureForm';
-import { Experiment, ExperimentDraft } from '@avocet/core';
+import { Experiment, ExperimentDraft, FeatureFlag } from '@avocet/core';
 import VariationGroups from './VariationGroupsSection';
 import ExperimentControlButton from './ExperimentControlButton';
 import LinkedFeatures from './LinkedFeaturesSection';
@@ -27,28 +27,18 @@ export default function ExperimentPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [match, params] = useRoute('/experiments/:id');
-  const { experiment: experimentService } = useContext(ServicesContext);
+  const [location, setLocation] = useLocation();
+  const services = useContext(ServicesContext);
 
   if (params === null) {
     throw new Error("Missing 'id' param!");
   }
 
-  const handleExperimentUpdate = async (
-    updates: Partial<ExperimentDraft>,
-  ): Promise<boolean> => {
-    const expResponse = await experimentService.updateExperiment(
-      params.id,
-      updates,
-    );
-
-    return expResponse.ok;
-  };
-
   useEffect(() => {
     const handleGetExperiment = async () => {
       if (params) {
         try {
-          const response = await experimentService.getExperiment(params.id);
+          const response = await services.experiment.get(params.id);
           if (response.ok) {
             setExperiment(response.body);
           }
@@ -62,9 +52,30 @@ export default function ExperimentPage() {
     handleGetExperiment();
   }, []);
 
-  const handleDeleteFeature = () => {
-    // experimentService.deleteExperiment(experiment.id);
-    // navigate("/experiments");
+  useEffect(() => {
+    if (experiment === null) return;
+    const filtered = featureFlags.filter(
+      (flag) => experiment.environmentName in flag.environmentNames,
+    );
+    setAvailableFlags(filtered);
+  }, [experiment, featureFlags]);
+
+  const handleExperimentUpdate = async (
+    updates: Partial<ExperimentDraft>,
+  ): Promise<boolean> => {
+    const expResponse = await services.experiment.update(params.id, updates);
+
+    return expResponse.ok;
+  };
+
+  const handleDeleteClick = async () => {
+    if (!experiment) return;
+    const response = await services.experiment.delete(experiment.id);
+    if (response.ok) {
+      setLocation('/experiments');
+    } else {
+      // todo: handle failed deletion
+    }
   };
 
   if (isLoading) return <></>;

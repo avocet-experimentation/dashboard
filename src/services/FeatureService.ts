@@ -29,7 +29,7 @@ export default class FeatureService {
     );
   }
 
-  async getAllFeatures(): Promise<ResponseTypes<FeatureFlag[]>> {
+  async getAll(): Promise<ResponseTypes<FeatureFlag[]>> {
     console.log('fetching features');
     const startTime = Date.now();
     const response = await this.fetch.get('');
@@ -54,7 +54,7 @@ export default class FeatureService {
     return parsedResponse;
   }
 
-  async getFeature(featureId: string): Promise<ResponseTypes<FeatureFlag>> {
+  async get(featureId: string): Promise<ResponseTypes<FeatureFlag>> {
     const response = await this.fetch.get(`/id/${featureId}`);
     if (!response.ok) {
       return response;
@@ -106,7 +106,7 @@ export default class FeatureService {
   }
 
   async toggleEnvironment(featureId: string, environmentName: string) {
-    const fetchResponse = await this.getFeature(featureId);
+    const fetchResponse = await this.get(featureId);
     if (!fetchResponse.ok) {
       throw new Error(`Couldn't fetch the feature flag with id ${featureId}!`);
     }

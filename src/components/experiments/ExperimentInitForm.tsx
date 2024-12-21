@@ -37,8 +37,7 @@ export default function ExperimentInitForm({
   const [environmentOptions, setEnvironmentOptions] = useState<
     { label: string; value: string }[]
   >([]);
-  const { environment: environmentService, experiment: experimentService } =
-    useContext(ServicesContext);
+  const services = useContext(ServicesContext);
 
   const formMethods = useForm<Pick<Experiment, 'name' | 'environmentName'>>({
     defaultValues: {

@@ -16,8 +16,8 @@ import {
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-} from '../../ui/select';
-import { Field } from '../../ui/field';
+} from '#/components/ui/select';
+import { Field } from '#/components/ui/field';
 import TreatmentFeatureValueType from './TreatmentFeatureValueType';
 import FeatureCountButtons from './FeatureCountButtons';
 
@@ -55,7 +55,7 @@ function ExperimentTreatmentField({ definedTreatments }) {
   useEffect(() => {
     const handleGetAllFeatures = async () => {
       try {
-        const allFeatures = await services.featureFlag.getAllFeatures();
+        const allFeatures = await services.featureFlag.getAll();
         if (allFeatures.ok) {
           setFeaturesCollection(createFeatureCollection(allFeatures.body));
         }
