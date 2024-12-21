@@ -1,18 +1,10 @@
 import { Button, Flex } from '@chakra-ui/react';
-import { Treatment } from '@avocet/core';
 import { CircleMinus, CirclePlus } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 
-type DefinedTreatments = {
-  [id: string]: Treatment;
-};
-
-export default function FeatureCountButtons({
-  definedTreatments,
-}: {
-  definedTreatments: DefinedTreatments;
-}) {
-  const { setValue } = useFormContext();
+export default function FlagCountButtons() {
+  const { setValue, watch } = useFormContext();
+  const experimentDraft = watch();
 
   return (
     <Flex
@@ -27,8 +19,11 @@ export default function FeatureCountButtons({
         background="transparent"
         _hover={{ backgroundColor: 'transparent', color: 'blue' }}
         onClick={() => {
-          Object.keys(definedTreatments).forEach((id) => {
-            const newFlagStates = [...definedTreatments[id].flagStates, {}];
+          Object.keys(experimentDraft.definedTreatments).forEach((id) => {
+            const newFlagStates = [
+              ...experimentDraft.definedTreatments[id].flagStates,
+              {},
+            ];
             setValue(`definedTreatments.${id}.flagStates`, newFlagStates);
           });
         }}
@@ -42,8 +37,9 @@ export default function FeatureCountButtons({
         background="transparent"
         _hover={{ backgroundColor: 'transparent', color: 'blue' }}
         onClick={() => {
-          Object.keys(definedTreatments).forEach((id) => {
-            const newFlagStates = definedTreatments[id].flagStates;
+          Object.keys(experimentDraft.definedTreatments).forEach((id) => {
+            const newFlagStates =
+              experimentDraft.definedTreatments[id].flagStates;
             newFlagStates.pop();
             setValue(`definedTreatments.${id}.flagStates`, newFlagStates);
           });

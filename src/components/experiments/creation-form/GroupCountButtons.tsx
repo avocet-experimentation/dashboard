@@ -6,14 +6,18 @@ import {
   UseFieldArrayRemove,
   useFormContext,
 } from 'react-hook-form';
-import { ExperimentGroup, FlagState, Treatment } from '@avocet/core';
+import {
+  Experiment,
+  ExperimentGroup,
+  FlagState,
+  Treatment,
+} from '@avocet/core';
 import { CircleEqual, CircleMinus, CirclePlus } from 'lucide-react';
-import { DefinedTreatments, ExperimentType } from './ExperimentForm';
-import deepcopy from 'deepcopy';
+import { ExperimentType } from './ExperimentForm';
 
 interface Props {
   addGroup: UseFieldArrayAppend<FieldValues, 'groups'>;
-  definedTreatments: DefinedTreatments;
+  definedTreatments: Experiment['definedTreatments'];
   expType: ExperimentType;
   groupFields: Record<'id', string>[];
   groupValues: ExperimentGroup[];

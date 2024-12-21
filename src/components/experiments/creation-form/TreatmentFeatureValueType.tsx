@@ -1,87 +1,113 @@
-import { Controller, useFormContext } from 'react-hook-form';
-import { Input, ListCollection } from '@chakra-ui/react';
-import { Treatment } from '@avocet/core';
-import { Switch } from '../../ui/switch';
-import { FeatureCollection } from './ExperimentTreatmentField';
+import { useFormContext } from 'react-hook-form';
+import { FeatureFlag, Treatment } from '@avocet/core';
+import ControlledSwitch from '#/components/forms/ControlledSwitch';
+import ControlledTextInput from '#/components/forms/ControlledTextInput';
+import { useContext } from 'react';
+import { ExperimentContext } from '../ExperimentContext';
 
 interface Props {
-  definedTreatments: { [id: string]: Treatment };
-  featuresCollection: ListCollection<FeatureCollection>;
+  // fieldPath: `definedTreatments.${string}.flagStates`;
+  selectedFlag: FeatureFlag;
+  // selectedFlagId: string;
   featureIdx: number;
-  id: string;
+  treatmentId: string;
 }
 
-function TreatmentFeatureValueType({
-  definedTreatments,
-  featuresCollection,
+export default function TreatmentFeatureValueType({
+  // fieldPath,
+  selectedFlag,
+  // selectedFlagId,
   featureIdx,
-  id,
-}: Props) {
-  const { control, register } = useFormContext();
+  treatmentId,
+}: Props): JSX.Element {
+  const { register } = useFormContext();
+  // const { featureFlags } = useContext(ExperimentContext);
+  console.log('treatmentId:', treatmentId);
+  // if (!selectedFlagId) return <></>;
 
-  return (
-    <Controller
-      name={`definedTreatments.${id}.flagStates.${featureIdx}.value`}
-      control={control}
-      render={({ field }) => {
-        const selectedFeatureId =
-          definedTreatments[id].flagStates[featureIdx].id;
-        if (selectedFeatureId) {
-          const selectedFeature = featuresCollection.items.find(
-            (featObj) => featObj.value === selectedFeatureId,
-          );
-          if (selectedFeature && selectedFeature.type === 'boolean') {
-            return (
-              <Switch
-                name={field.name}
-                checked={!!field.value}
-                // onCheckedChange={({ checked }) => {
-                //   console.log(treatmentFeatureObj.id);
-                //   field.onChange(!!checked);
-                // }}
-                onChange={(e) => {
-                  console.log(e.target);
-                  field.onChange(e.target.checked);
-                }}
-                onBlur={field.onBlur}
-              >
-                {field.value ? 'on' : 'off'}
-              </Switch>
-            );
-          }
-          if (selectedFeature && selectedFeature.type === 'string') {
-            return (
-              <Input
-                type="text"
-                placeholder="A string value"
-                {...register(
-                  `definedTreatments.${id}.flagStates.${featureIdx}.value`,
-                  {
-                    required: 'A string value is required.',
-                  },
-                )}
-              />
-            );
-          }
-          if (selectedFeature && selectedFeature.type === 'number') {
-            return (
-              <Input
-                type="number"
-                placeholder="A number value"
-                {...register(
-                  `definedTreatments.${id}.flagStates.${featureIdx}.value`,
-                  {
-                    valueAsNumber: true,
-                    required: 'A number value is required.',
-                  },
-                )}
-              />
-            );
-          }
-        }
-      }}
-    />
+  // const selectedFlag = featureFlags.find((flag) => flag.id === selectedFlagId);
+
+  // if (!selectedFlag) {
+  //   console.log({ featureFlags });
+  //   throw new Error(`No feature flag was found matching id ${selectedFlagId}`);
+  // }
+
+  const flagStateValueFieldPath: `definedTreatments.${string}` = `definedTreatments.${treatmentId}.flagStates.${featureIdx}.value`;
+
+  if (selectedFlag.value.type === 'boolean') {
+    return (
+      <ControlledSwitch
+        fieldPath={flagStateValueFieldPath}
+        label="toggle"
+        labelPosition="right"
+        switchId={`toggle-boolean-flag-state-${treatmentId}`}
+      />
+    );
+  }
+
+  if (selectedFlag.value.type === 'string') {
+    return (
+      <ControlledTextInput
+        fieldPath={flagStateValueFieldPath}
+        label={undefined}
+        registerReturn={register(flagStateValueFieldPath, {
+          required: 'A string value is required.',
+        })}
+      />
+    );
+  }
+  if (selectedFlag.value.type === 'number') {
+    return (
+      <ControlledTextInput
+        fieldPath={flagStateValueFieldPath}
+        label={undefined}
+        registerReturn={register(flagStateValueFieldPath, {
+          valueAsNumber: true,
+          required: 'A number value is required.',
+        })}
+      />
+    );
+  }
+
+  throw new TypeError(
+    `Flag type "${selectedFlag['value']['type']}" is not accounted for`,
   );
-}
 
-export default TreatmentFeatureValueType;
+  // return (
+  //   <Controller
+  //     name={`definedTreatments.${id}.flagStates.${featureIdx}.value`}
+  //     control={control}
+  //     render={({ field }) => {
+  //         if (selectedFlag && selectedFlag.type === 'string') {
+  //           return (
+  //             <Input
+  //               type="text"
+  //               placeholder="A string value"
+  //               {...register(
+  //                 `definedTreatments.${id}.flagStates.${featureIdx}.value`,
+  //                 {
+  //                   required: 'A string value is required.',
+  //                 },
+  //               )}
+  //             />
+  //           );
+  //         }
+  //         if (selectedFlag && selectedFlag.type === 'number') {
+  //           return (
+  //             <Input
+  //               type="number"
+  //               placeholder="A number value"
+  //               {...register(
+  //                 `definedTreatments.${id}.flagStates.${featureIdx}.value`,
+  //                 {
+  //                   valueAsNumber: true,
+  //                   required: 'A number value is required.',
+  //                 },
+  //               )}
+  //             />
+  //           );
+  //         }
+  //       }
+  //   />
+  // );
+}
