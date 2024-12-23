@@ -1,6 +1,6 @@
 import { CirclePlus, CircleEllipsis } from 'lucide-react';
 import { useState } from 'react';
-import { Environment, SDKConnection } from '@avocet/core';
+import { SDKConnection } from '@avocet/core';
 import FormModal from '../../forms/FormModal';
 import SDKConnectionManagementForm from './SDKConnectionManagementForm';
 
@@ -46,7 +46,7 @@ export default function SDKConnectionManagementModal({
       <SDKConnectionManagementForm
         formId={SDK_CONNECTION_MANAGEMENT_FORM_ID}
         setIsLoading={setIsLoading}
-        // setEnvironments={setEnvironments}
+        // setSDKConnections={setSDKConnections}
         updateConnection={updateSDKConnection}
         sdkConnection={sdkConnection}
         setOpen={setOpen}

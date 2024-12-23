@@ -4,12 +4,14 @@ import EnvironmentService from '#/services/EnvironmentService';
 import FeatureService from '#/services/FeatureService';
 import ExperimentService from './ExperimentService';
 import TelemetryService from './TelemetryService';
+import SDKConnectionService from './SDKConnectionService';
 
 const services = Object.seal({
   environment: new EnvironmentService(),
   featureFlag: new FeatureService(),
   experiment: new ExperimentService(),
   telemetry: new TelemetryService(),
+  connection: new SDKConnectionService(),
 });
 
 export const ServicesContext = createContext(services);
