@@ -1,4 +1,4 @@
-import { Environment } from '@avocet/core';
+import { Environment, SDKConnection } from '@avocet/core';
 import { Table, Text } from '@chakra-ui/react';
 import { useContext } from 'react';
 import { lastUpdated, formatDate } from '#/lib/timeFunctions';
@@ -7,24 +7,24 @@ import { Switch } from '../../ui/switch';
 import { Tooltip } from '../../ui/tooltip';
 import SDKConnectionManagementModal from '../management-form/SDKConnectionManagementModal';
 
-interface EnvironmentTableRowProps {
-  environment: Environment;
-  updateEnvironment: (updated: Environment) => void;
+interface SDKConnectionTableRowProps {
+  sdkConnection: SDKConnection;
+  updateSDKConnection: (updated: SDKConnection) => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function SDKConnectionTableRow({
-  environment,
-  updateEnvironment,
+export default function EnvironmentTableRow({
+  sdkConnection,
+  updateSDKConnection,
   setIsLoading,
-}: EnvironmentTableRowProps) {
-  const { environment: environmentService } = useContext(ServicesContext);
+}: SDKConnectionTableRowProps) {
+  const { sdkConnection: sdkConnectionService } = useContext(ServicesContext);
   const handleCheckedChange = (checked: boolean) => {
-    environmentService.update(environment.id, {
+    sdkConnectionService.update(sdkConnection.id, {
       defaultEnabled: checked,
     });
 
-    updateEnvironment({ ...environment, defaultEnabled: checked });
+    updateSDKConnection({ ...sdkConnection, defaultEnabled: checked }); //TODO
   };
 
   return (
@@ -32,13 +32,13 @@ export default function SDKConnectionTableRow({
       <Table.Cell color="black" textDecor="none">
         <SDKConnectionManagementModal
           setIsLoading={setIsLoading}
-          sdkConnection={environment}
-          updateSDKConnection={updateEnvironment}
+          sdkConnection={sdkConnection}
+          updateSDKConnection={updateSDKConnection}
         />
       </Table.Cell>
-      <Table.Cell key={environment.name}>
+      <Table.Cell key={sdkConnection.name}>
         <Switch
-          checked={environment.defaultEnabled}
+          checked={sdkConnection.defaultEnabled} //TODO
           onCheckedChange={(e) => handleCheckedChange(e.checked)}
         />
       </Table.Cell>
@@ -46,10 +46,10 @@ export default function SDKConnectionTableRow({
         <Tooltip
           showArrow
           openDelay={50}
-          content={formatDate(Number(environment.updatedAt))}
+          content={formatDate(Number(sdkConnection.updatedAt))}
         >
           <Text width="fit-content">
-            {lastUpdated(Number(environment.updatedAt))}
+            {lastUpdated(Number(sdkConnection.updatedAt))}
           </Text>
         </Tooltip>
       </Table.Cell>

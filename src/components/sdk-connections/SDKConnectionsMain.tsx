@@ -1,5 +1,5 @@
 import { Flex, Heading, Text } from '@chakra-ui/react';
-import { Environment, SDKConnection } from '@avocet/core';
+import { SDKConnection } from '@avocet/core';
 import { useContext, useEffect, useState } from 'react';
 import { ServicesContext } from '#/services/ServiceContext';
 import SDKConnectionTable from './table/SDKConnectionTable';
@@ -11,7 +11,7 @@ import SDKConnectionManagementModal from './management-form/SDKConnectionManagem
 export default function SDKConnectionsMain() {
   const [sdkConnections, setSDKConnections] = useState<SDKConnection[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { environment } = useContext(ServicesContext);
+  const { sdkConnection } = useContext(ServicesContext);
 
   const updateSDKConnection = (obj: SDKConnection) => {
     setSDKConnections((prevState) => {
@@ -26,7 +26,7 @@ export default function SDKConnectionsMain() {
   useEffect(() => {
     const getAllSDKConnections = async () => {
       try {
-        // const response = await environment.getMany();
+        // const response = await sdkConnection.getMany();
         const response = {};
         const allSDKConnections = response.body ?? [];
         setSDKConnections(allSDKConnections);
@@ -53,13 +53,12 @@ export default function SDKConnectionsMain() {
         />
       </Flex>
       <Text margin="15px 0">
-        Defining multiple environments allows for feature flags to behave
-        differently in each environment.
+        Defining user connections
       </Text>
       {sdkConnections.length ? (
         <SDKConnectionTable
-          environments={sdkConnections}
-          updateEnvironment={updateSDKConnection}
+          sdkConnections={sdkConnections}
+          updateSDKConnection={updateSDKConnection}
           setIsLoading={setIsLoading}
         />
       ) : (

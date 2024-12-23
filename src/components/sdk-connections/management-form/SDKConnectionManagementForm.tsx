@@ -29,7 +29,7 @@ export default function SDKConnectionManagementForm({
   sdkConnection,
   updateConnection,
 }: SDKConnectionManagementFormProps) {
-  const { environment: environmentService } = useContext(ServicesContext);
+  const { sdkConnection: environmentService } = useContext(ServicesContext);
 
   const defaultValues: SDKConnectionDraft =
     sdkConnection ?? SDKConnectionDraft.template({ name: ''  });
