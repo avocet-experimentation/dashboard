@@ -1,4 +1,4 @@
-import { Box, Text } from '@chakra-ui/react';
+import Loader from './Loader';
 
 export function LoaderWrapper({
   isLoading,
@@ -8,5 +8,5 @@ export function LoaderWrapper({
   children: React.ReactNode;
 }) {
   // eslint-disable-next-line react/jsx-no-useless-fragment
-  return <Box>{isLoading ? <Text>loading...</Text> : children}</Box>;
+  return <>{isLoading ? <Loader /> : children}</>;
 }
