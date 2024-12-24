@@ -1,6 +1,9 @@
 import { Environment } from '@avocet/core';
-import { Table } from '@chakra-ui/react';
+import { Table, Text } from '@chakra-ui/react';
 import EnvironmentTableRow from './EnvironmentTableRow';
+import { useQuery } from '@apollo/client';
+import { GET_ENVIRONMENTS } from '#/lib/graphql';
+import Loader from '#/components/helpers/Loader';
 
 export interface EnvironmentTableProps {
   environments: Environment[];
@@ -11,10 +14,17 @@ export interface EnvironmentTableProps {
  * Table listing all Environments
  */
 export default function EnvironmentTable({
-  environments,
   updateEnvironment,
   setIsLoading,
 }: EnvironmentTableProps) {
+  const { loading, error, data } = useQuery(GET_ENVIRONMENTS);
+
+  if (loading) return <Loader />;
+
+  if (error) return <Text>Error: {error.message}</Text>;
+
+  const environments = data.allEnvironments;
+
   return (
     <div>
       {environments.length && (
