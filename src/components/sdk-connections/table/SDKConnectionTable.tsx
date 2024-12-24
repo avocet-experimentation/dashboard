@@ -1,4 +1,4 @@
-import { Environment, SDKConnection } from '@avocet/core';
+import { SDKConnection } from '@avocet/core';
 import { Table } from '@chakra-ui/react';
 import SDKConnectionTableRow from './SDKConnectionTableRow';
 
@@ -22,15 +22,16 @@ export default function SDKConnectionTable({
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeader>Name</Table.ColumnHeader>
-              <Table.ColumnHeader>Enabled by Default</Table.ColumnHeader>
-              <Table.ColumnHeader>Last Updated</Table.ColumnHeader>
+              <Table.ColumnHeader>Environment</Table.ColumnHeader>
+              <Table.ColumnHeader>Allowed origins</Table.ColumnHeader>
+              <Table.ColumnHeader>Last updated</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {sdkConnections.map((env: SDKConnection) => (
+            {sdkConnections.map((sdkConnection: SDKConnection) => (
               <SDKConnectionTableRow
-                key={env.id}
-                sdkConnection={env}
+                key={sdkConnection.id}
+                sdkConnection={sdkConnection}
                 setIsLoading={setIsLoading}
                 updateSDKConnection={updateSDKConnection}
               />

@@ -1,4 +1,4 @@
-import { Environment, SDKConnection } from '@avocet/core';
+import { SDKConnection } from '@avocet/core';
 import { Table, Text } from '@chakra-ui/react';
 import { useContext } from 'react';
 import { lastUpdated, formatDate } from '#/lib/timeFunctions';
@@ -6,6 +6,7 @@ import { ServicesContext } from '#/services/ServiceContext';
 import { Switch } from '../../ui/switch';
 import { Tooltip } from '../../ui/tooltip';
 import SDKConnectionManagementModal from '../management-form/SDKConnectionManagementModal';
+import { useEnvironmentContext } from '#/lib/EnvironmentContext';
 
 interface SDKConnectionTableRowProps {
   sdkConnection: SDKConnection;
@@ -13,19 +14,19 @@ interface SDKConnectionTableRowProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function EnvironmentTableRow({
+export default function SDKConnectionTableRow({
   sdkConnection,
   updateSDKConnection,
   setIsLoading,
 }: SDKConnectionTableRowProps) {
   const { sdkConnection: sdkConnectionService } = useContext(ServicesContext);
-  const handleCheckedChange = (checked: boolean) => {
-    sdkConnectionService.update(sdkConnection.id, {
-      defaultEnabled: checked,
-    });
+  const { environments } = useEnvironmentContext();
 
-    updateSDKConnection({ ...sdkConnection, defaultEnabled: checked }); //TODO
-  };
+  const currentEnv = environments.find(
+    (env) => env.id === sdkConnection.environmentId,
+  );
+
+  if (currentEnv === undefined) return <></>;
 
   return (
     <Table.Row>
@@ -37,10 +38,12 @@ export default function EnvironmentTableRow({
         />
       </Table.Cell>
       <Table.Cell key={sdkConnection.name}>
-        <Switch
-          checked={sdkConnection.defaultEnabled} //TODO
-          onCheckedChange={(e) => handleCheckedChange(e.checked)}
-        />
+        <Text width="fit-content">{currentEnv.name}</Text>
+      </Table.Cell>
+      <Table.Cell>
+        <Text width="fit-content">
+          {sdkConnection.allowedOrigins.join('\n')}
+        </Text>
       </Table.Cell>
       <Table.Cell>
         <Tooltip

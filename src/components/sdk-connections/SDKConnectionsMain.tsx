@@ -11,7 +11,7 @@ import SDKConnectionManagementModal from './management-form/SDKConnectionManagem
 export default function SDKConnectionsMain() {
   const [sdkConnections, setSDKConnections] = useState<SDKConnection[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { sdkConnection } = useContext(ServicesContext);
+  const services = useContext(ServicesContext);
 
   const updateSDKConnection = (obj: SDKConnection) => {
     setSDKConnections((prevState) => {
@@ -26,8 +26,7 @@ export default function SDKConnectionsMain() {
   useEffect(() => {
     const getAllSDKConnections = async () => {
       try {
-        // const response = await sdkConnection.getMany();
-        const response = {};
+        const response = await services.sdkConnection.getMany();
         const allSDKConnections = response.body ?? [];
         setSDKConnections(allSDKConnections);
       } catch (error) {
@@ -52,9 +51,7 @@ export default function SDKConnectionsMain() {
           updateSDKConnection={updateSDKConnection}
         />
       </Flex>
-      <Text margin="15px 0">
-        Defining user connections
-      </Text>
+      <Text margin="15px 0">Defining user connections</Text>
       {sdkConnections.length ? (
         <SDKConnectionTable
           sdkConnections={sdkConnections}

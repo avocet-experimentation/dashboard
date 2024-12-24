@@ -48,6 +48,8 @@ export default class SDKConnectionService {
         name
         environmentId
         description
+        clientKeyHash
+        allowedOrigins
       }
     `;
 
@@ -130,14 +132,18 @@ export default class SDKConnectionService {
 
   //needs update
   async create(
-    partialEntry: SDKConnectionDraft,
+    newEntry: SDKConnectionDraft,
   ): Promise<GQLParsedResponse<SDKConnection>> {
     const mutation = /* gql */ `
-      createSDKConnection(partialEntry: ${stringifyObject(partialEntry, { singleQuotes: false })}) {
+      createSDKConnection(newEntry: ${stringifyObject(newEntry, { singleQuotes: false })}) {
         id
         name
         description
         environmentId
+        clientKeyHash
+        allowedOrigins
+        createdAt
+        updatedAt
       }
     `;
     const response = await this.gqlApi.mutate<SDKConnection>(mutation);
@@ -152,6 +158,7 @@ export default class SDKConnectionService {
     }
 
     const { createSDKConnection } = response.body.data;
+    console.log(response.body);
     const safeParseResult = sdkConnectionSchema.safeParse(createSDKConnection);
     if (!safeParseResult.success) {
       throw new SchemaParseError(safeParseResult);
