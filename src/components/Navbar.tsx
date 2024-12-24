@@ -8,6 +8,7 @@ import {
   TestTubes,
   AlignHorizontalDistributeCenter,
   Earth,
+  Cable,
 } from 'lucide-react';
 import AvocetLogo from '../assets/svgs/avocet-logo.svg';
 import { Link } from 'wouter';
@@ -110,9 +111,9 @@ export default function Navbar() {
           <NavText>Environments</NavText>
         </Link>
       </NavBox>
-      <NavBox> 
+      <NavBox>
         <Icon>
-          <Earth />
+          <Cable />
         </Icon>
         <Link href="/connections" draggable={false}>
           <NavText>Connections</NavText>
