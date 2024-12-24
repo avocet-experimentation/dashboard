@@ -1,6 +1,5 @@
 import {
   createListCollection,
-  ListCollection,
   SelectValueChangeDetails,
 } from '@chakra-ui/react';
 import {
@@ -12,9 +11,7 @@ import {
 } from '#/components/ui/select';
 import { Field } from '#/components/ui/field';
 import {
-  Control,
   Controller,
-  UseFormSetValue,
   useFormContext,
   FieldValues,
   Path,
@@ -22,11 +19,9 @@ import {
 } from 'react-hook-form';
 
 interface ControlledSelectProps<T, O> {
-  label: string;
+  label?: string;
   fieldPath: Path<T>;
   placeholder?: string;
-  // control: Control<FeatureFlagDraft, any>;
-  // setValue: UseFormSetValue<FeatureFlagDraft>;
   options: O[];
   handleValueChange?: (
     value: SelectValueChangeDetails<O>['value'][number],

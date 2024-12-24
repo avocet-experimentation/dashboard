@@ -13,7 +13,7 @@ import { ServicesContext } from '#/services/ServiceContext';
 import { Field } from '#/components/ui/field';
 import OverrideValueField from './OverrideValueField';
 
-const validateFormData = <R extends { type: OverrideRuleUnion['type'] }>(
+const validateFormData = <R extends Pick<OverrideRuleUnion, 'type'>>(
   ruleContent: R,
 ): OverrideRuleUnion => {
   const schema = getOverrideRuleSchemaFromType(ruleContent.type);

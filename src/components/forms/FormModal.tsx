@@ -50,6 +50,7 @@ export default function FormModal({
       lazyMount
       open={open}
       onOpenChange={(e) => setOpen(e.open)}
+      onEscapeKeyDown={(e) => e.preventDefault()}
       placement="center"
       motionPreset="slide-in-bottom"
       size="lg"
