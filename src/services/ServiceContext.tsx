@@ -11,7 +11,7 @@ const services = Object.seal({
   featureFlag: new FeatureService(),
   experiment: new ExperimentService(),
   telemetry: new TelemetryService(),
-  connection: new SDKConnectionService(),
+  sdkConnection: new SDKConnectionService(),
 });
 
 export const ServicesContext = createContext(services);
