@@ -108,7 +108,7 @@ export default function ExperimentInitForm({
         <Stack gap="4">
           <NameField label="Experiment Name" />
           <ControlledSelect
-            label="Select an Environment"
+            label="Environment"
             fieldPath="environmentName"
             disabled={isLoading}
             options={environmentOptions}

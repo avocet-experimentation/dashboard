@@ -1,5 +1,4 @@
-import { HStack, Text, VStack } from "@chakra-ui/react";
-import { ProgressCircleRing, ProgressCircleRoot } from "./components/ui/progress-circle";
+import { HStack, Text, VStack, Spinner } from "@chakra-ui/react";
 import LogoBox from "./components/LogoBox";
 
 
@@ -8,12 +7,9 @@ export default function LoadingPage({message}: {message: string}) {
     <VStack height="100vh" width="100vw" alignItems="center" justifyContent="center">
       <LogoBox withLine={false} withTitle={false} logoSize="100px"/>
       <HStack>
-        <ProgressCircleRoot value={null} size="sm">
-          <ProgressCircleRing cap="round" />
-        </ProgressCircleRoot>
+        <Spinner size="lg" animationDuration="0.8s" borderWidth="4px" colorPalette="avocet-bg" />
         <Text fontSize="2xl">{message}</Text> 
       </HStack>
     </VStack>
-        
   );
 }
