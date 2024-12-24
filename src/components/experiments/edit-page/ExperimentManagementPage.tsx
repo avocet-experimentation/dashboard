@@ -34,6 +34,7 @@ export default function ExperimentManagementPage() {
   // const [isLoading, setIsLoading] = useState<boolean>(true);
   const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [environments, setEnvironments] = useState<Environment[]>();
+  const [featureFlags, setFeatureFlags] = useState<FeatureFlag[]>([]);
   const [availableFlags, setAvailableFlags] = useState<FeatureFlag[]>([]);
   const [match, params] = useRoute('/experiments/:id');
   const [location, setLocation] = useLocation();
@@ -62,18 +63,24 @@ export default function ExperimentManagementPage() {
     services.environment
       .getMany()
       .then((response) => setEnvironments(response.body));
-
-    services.featureFlag
-      .getAll()
-      .then((response) => response.body && setAvailableFlags(response.body));
   }, []);
 
   useEffect(() => {
-    if (experiment === null) return;
-    const filtered = availableFlags.filter(
-      (flag) => experiment.environmentName in flag.environmentNames,
-    );
-    setAvailableFlags(filtered);
+    const fetchFlags = async () => {
+      if (experiment === null) return;
+      const response = await services.featureFlag.getAll();
+      if (!response.ok) {
+        return;
+      }
+
+      setFeatureFlags(response.body);
+      const inEnvironment = response.body.filter(
+        (flag) => experiment.environmentName in flag.environmentNames,
+      );
+      setAvailableFlags(inEnvironment);
+    };
+
+    fetchFlags();
   }, [experiment]);
 
   const handleExperimentUpdate = async (
@@ -104,7 +111,12 @@ export default function ExperimentManagementPage() {
             <Heading size="3xl">{experiment.name}</Heading>
             <HStack>
               {experiment.status === 'draft' ? (
-                <StartExperimentButton experimentId={experiment.id} />
+                <StartExperimentButton
+                  disabled={
+                    !!ExperimentDraft.isReadyToStart(experiment, featureFlags)
+                  }
+                  experimentId={experiment.id}
+                />
               ) : (
                 <PauseExperimentButton experimentId={experiment.id} />
               )}
