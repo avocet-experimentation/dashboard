@@ -5,14 +5,17 @@ import { useContext } from 'react';
 
 export function StartExperimentButton({
   experimentId,
+  disabled,
 }: {
   experimentId: string;
+  disabled: boolean;
 }) {
   const services = useContext(ServicesContext);
 
   return (
     <Button
       variant="solid"
+      disabled={disabled}
       colorPalette="green"
       onClick={() => services.experiment.start(experimentId)}
     >
