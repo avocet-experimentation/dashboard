@@ -130,10 +130,10 @@ export default class SDKConnectionService {
 
   //needs update
   async create(
-    name: string, description: string, environmentId: string
+    partialEntry: SDKConnectionDraft,
   ): Promise<GQLParsedResponse<SDKConnection>> {
     const mutation = /* gql */ `
-      createSDKConnection(name: ${name}, description: ${description}, environmentId: ${environmentId}) {
+      createSDKConnection(partialEntry: ${stringifyObject(partialEntry, { singleQuotes: false })}) {
         id
         name
         description
@@ -144,7 +144,7 @@ export default class SDKConnectionService {
     if (!response.ok) {
       const failure: GQLParsedFailureResponse<SDKConnection> = {
         ok: false,
-        body: response.body.data?.createEnvironment,
+        body: response.body.data?.createSDKConnection,
         errors: response.body.errors,
       };
 
@@ -152,13 +152,13 @@ export default class SDKConnectionService {
     }
 
     const { createSDKConnection } = response.body.data;
-    const safeParseResult = environmentSchema.safeParse(createSDKConnection);
+    const safeParseResult = sdkConnectionSchema.safeParse(createSDKConnection);
     if (!safeParseResult.success) {
       throw new SchemaParseError(safeParseResult);
     }
     const success: GQLParsedSuccessResponse<SDKConnection> = {
       ok: true,
-      body: safeParseResult.data, //TODO
+      body: safeParseResult.data,
       errors: response.body.errors,
     };
 
