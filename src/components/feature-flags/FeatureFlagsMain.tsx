@@ -1,30 +1,25 @@
 import { Flex, Heading, Text } from '@chakra-ui/react';
 import { Environment, FeatureFlag } from '@avocet/core';
-import { useEffect, useState } from 'react';
-import FeatureService from '#/services/FeatureService';
-import EnvironmentService from '#/services/EnvironmentService';
+import { useContext, useEffect, useState } from 'react';
 import FeatureFlagCreationModal from './creation-form/FeatureFlagCreationModal';
 import { LoaderWrapper } from '../helpers/LoaderWrapper';
 import FeatureFlagTable from './table/FeatureFlagTable';
-
-const featureService = new FeatureService();
-const environmentService = new EnvironmentService();
-
-const getPinned = (envs: Environment[]) => envs.filter((env) => env.pinToLists);
+import { ServicesContext } from '#/services/ServiceContext';
 
 export default function FeatureFlagsMain() {
   const [featureFlags, setFeatureFlags] = useState<FeatureFlag[]>([]);
   const [environments, setEnvironments] = useState<Environment[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const services = useContext(ServicesContext);
 
-  const getAllFeatures = async () => {
-    const featureResponse = await featureService.getAllFeatures();
-    const allFeatures = featureResponse.ok ? featureResponse.body : [];
-    setFeatureFlags(allFeatures);
+  const getAllFeatureFlags = async () => {
+    const response = await services.featureFlag.getAll();
+    const allFlags = response.ok ? response.body : [];
+    setFeatureFlags(allFlags);
   };
 
   const getAllEnvironments = async () => {
-    const response = await environmentService.getMany();
+    const response = await services.environment.getMany();
     setEnvironments(response.body ?? []);
   };
 
@@ -33,7 +28,7 @@ export default function FeatureFlagsMain() {
 
     const loadData = async () => {
       try {
-        await Promise.all([getAllFeatures(), getAllEnvironments()]);
+        await Promise.all([getAllFeatureFlags(), getAllEnvironments()]);
       } catch (e) {
         console.error(e);
       } finally {
@@ -78,7 +73,7 @@ export default function FeatureFlagsMain() {
           <FeatureFlagTable
             featureFlags={featureFlags}
             updateFlag={updateFlag}
-            pinnedEnvironments={getPinned(environments)}
+            pinnedEnvironments={environments.filter((env) => env.pinToLists)}
           />
         ) : (
           'No features found. Please create one.'

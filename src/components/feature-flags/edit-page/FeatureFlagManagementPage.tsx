@@ -24,7 +24,7 @@ import {
 } from '#/components/ui/menu';
 import NotFound from '../../NotFound';
 import EnvironmentTabs from './EnvironmentTabs';
-import ControlledEditable from '../../forms/ControlledEditable';
+import PageEditable from '../../forms/PageEditable';
 import { FlagEnvironmentToggles } from './FlagEnvironmentToggles';
 import { Tooltip } from '#/components/ui/tooltip';
 
@@ -63,7 +63,7 @@ export default function FeatureFlagManagementPage(
   const handleGetFeature = async () => {
     setIsLoading(true);
     try {
-      const flagResponse = await services.featureFlag.getFeature(params.id);
+      const flagResponse = await services.featureFlag.get(params.id);
       if (!flagResponse.ok) {
         // todo: better error handling
         throw new Error(`Couldn't fetch flag data for id ${params.id}!`);
@@ -152,7 +152,7 @@ export default function FeatureFlagManagementPage(
             <Heading size="xl" marginBottom="15px">
               Overview
             </Heading>
-            <ControlledEditable
+            <PageEditable
               label="Description"
               initialValue={featureFlag.description ?? ''}
               submitHandler={async (e: EditableValueChangeDetails) => {

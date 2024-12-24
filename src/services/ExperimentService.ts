@@ -26,9 +26,16 @@ export default class ExperimentService {
       DEFAULT_HEADERS,
       DEFAULT_REQUEST_OPTIONS,
     );
+
+    // this.get = this.get.bind(this);
+    // this.getAll = this.getAll.bind(this);
+    // this.create = this.create.bind(this);
+    // this.delete = this.delete.bind(this);
+    // this.updateExperiment = this.updateExperiment.bind(this);
+    // this.startExperiment = this.startExperiment.bind(this);
   }
 
-  async getAllExperiments(): Promise<ResponseTypes<Experiment[]>> {
+  async getAll(): Promise<ResponseTypes<Experiment[]>> {
     console.log('fetching experiments');
     const startTime = Date.now();
     const response = await this.fetch.get('');
@@ -37,7 +44,7 @@ export default class ExperimentService {
       return response;
     }
 
-    console.table(response.body);
+    // console.table(response.body);
     const safeParseResult = experimentSchema.array().safeParse(response.body);
     if (!safeParseResult.success) {
       throw new SchemaParseError(safeParseResult);
@@ -53,9 +60,7 @@ export default class ExperimentService {
     return parsedResponse;
   }
 
-  async getExperiment(
-    experimentId: string,
-  ): Promise<ResponseTypes<Experiment>> {
+  async get(experimentId: string): Promise<ResponseTypes<Experiment>> {
     const response = await this.fetch.get(`/id/${experimentId}`);
     if (!response.ok) {
       return response;
@@ -103,24 +108,39 @@ export default class ExperimentService {
     return response;
   }
 
-  async startExperiment(
+  async update(
     experimentId: string,
-  ): Promise<ResponseTypes<Experiment>> {
-    const response = await this.fetch.get(`/id/${experimentId}/start`);
-    if (!response.ok) {
-      return response;
-    }
-    console.log({ startedExperiment: response.body });
-    const safeParseResult = experimentSchema.safeParse(response.body);
-    if (!safeParseResult.success) {
-      throw new SchemaParseError(safeParseResult);
-    }
-    const parsedResponse: ParsedResponse<Experiment> = {
-      ...response,
-      ok: true,
-      body: safeParseResult.data,
+    experimentContent: Partial<ExperimentDraft>,
+  ) {
+    const updateObj = {
+      id: experimentId,
+      ...experimentContent,
     };
+    const response = await this.fetch.patch(`/id/${experimentId}`, updateObj);
+    return response;
+  }
 
-    return parsedResponse;
+  async start(experimentId: string) {
+    const response = await this.update(experimentId, {
+      status: 'active',
+    });
+
+    return response;
+  }
+
+  async pause(experimentId: string) {
+    const response = await this.update(experimentId, {
+      status: 'paused',
+    });
+
+    return response;
+  }
+
+  async end(experimentId: string) {
+    const response = await this.update(experimentId, {
+      status: 'completed',
+    });
+
+    return response;
   }
 }

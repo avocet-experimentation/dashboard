@@ -1,12 +1,12 @@
 import { Controller, useForm } from "react-hook-form";
-import { Field } from "../ui/field";
+import { Field } from "../../ui/field";
 import {
   SelectContent,
   SelectItem,
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-} from "../ui/select";
+} from "../../ui/select";
 import { chakra } from "@chakra-ui/react";
 
 const LinkFeatureForm = ({ formId, setIsLoading }) => {

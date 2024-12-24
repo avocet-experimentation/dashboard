@@ -13,9 +13,10 @@ export interface ControlledTextInputProps<
   K extends FieldPath<T> = FieldPath<T>,
 > {
   fieldPath: K;
-  label: string;
-  disabled?: boolean;
   registerReturn: UseFormRegisterReturn<K>;
+  label?: string;
+  helperText?: React.ReactNode;
+  disabled?: boolean;
 }
 
 /**
@@ -23,9 +24,10 @@ export interface ControlledTextInputProps<
  */
 export default function ControlledTextInput<T extends FieldValues>({
   fieldPath,
-  label,
-  disabled,
   registerReturn,
+  label,
+  helperText,
+  disabled,
 }: ControlledTextInputProps<T>) {
   const { control, formState } = useFormContext<T>();
 
@@ -33,6 +35,7 @@ export default function ControlledTextInput<T extends FieldValues>({
     <Field
       label={label}
       invalid={!!formState.errors[fieldPath]}
+      helperText={helperText}
       errorText={(formState.errors[fieldPath]?.message as string) ?? undefined}
     >
       <Controller
