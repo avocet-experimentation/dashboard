@@ -1,4 +1,4 @@
-import { Stack } from '@chakra-ui/react';
+import { Stack, Text } from '@chakra-ui/react';
 import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
 import {
   sdkConnectionDraftSchema,
@@ -10,6 +10,10 @@ import { useContext } from 'react';
 import { ServicesContext } from '#/services/ServiceContext';
 import { DescriptionField, NameField } from '../../forms/DefinedFields';
 import ControlledSwitch from '../../forms/ControlledSwitch';
+import { useEnvironmentContext } from '#/lib/EnvironmentContext';
+import ControlledSelect from '#/components/forms/ControlledSelect';
+import ControlledTextInput from '#/components/forms/ControlledTextInput';
+import { Field } from '#/components/ui/field';
 
 interface SDKConnectionManagementFormProps {
   formId: string;
@@ -29,27 +33,43 @@ export default function SDKConnectionManagementForm({
   sdkConnection,
   updateConnection,
 }: SDKConnectionManagementFormProps) {
-  const { sdkConnection: environmentService } = useContext(ServicesContext);
+  const services = useContext(ServicesContext);
+  const { environments } = useEnvironmentContext();
+
+  if (environments.length === 0) {
+    //TODO correctly handle no environments
+    return <></>;
+  }
 
   const defaultValues: SDKConnectionDraft =
-    sdkConnection ?? SDKConnectionDraft.template({ name: ''  });
+    sdkConnection ??
+    SDKConnectionDraft.template({
+      name: '',
+      environmentId: environments[0].id,
+    });
 
-  const formMethods = useForm<SDKConnection>({
+  const formMethods = useForm<SDKConnectionDraft>({
     defaultValues,
   });
 
-  // const createOrUpdate = async (data: SDKConnectionDraft) => {
-  //   if (sdkConnection) {
-  //     return environmentService.update(sdkConnection.id, data);
-  //   }
-  //   return environmentService.create(data);
-  // };
+  const createOrUpdate = async (data: SDKConnectionDraft) => {
+    if (sdkConnection) {
+      return services.sdkConnection.update(sdkConnection.id, data);
+    }
+    return services.sdkConnection.create(data);
+  };
 
-  const onSubmit: SubmitHandler<SDKConnectionDraft> = async (
-    formContent,
-  ) => {
-    const safeParseResult =
-      sdkConnectionDraftSchema.safeParse(formContent);
+  const onSubmit: SubmitHandler<SDKConnectionDraft> = async (formContent) => {
+    const clonedContent = structuredClone(formContent);
+    if (clonedContent.environmentId.length !== 1)
+      throw new Error('Lacks environment');
+
+    clonedContent.environmentId = clonedContent.environmentId[0];
+    clonedContent.allowedOrigins = clonedContent.allowedOrigins
+      .split(',')
+      .map((origin) => origin.trim());
+
+    const safeParseResult = sdkConnectionDraftSchema.safeParse(clonedContent);
     if (!safeParseResult.success) {
       // the error pretty-prints the Zod parse error message
       throw new SchemaParseError(safeParseResult);
@@ -76,19 +96,23 @@ export default function SDKConnectionManagementForm({
       <form id={formId} onSubmit={formMethods.handleSubmit(onSubmit)}>
         <Stack gap="4">
           <NameField disabled={!!sdkConnection} label="Connection Name" />
-          <DescriptionField /> 
-          <ControlledSwitch
-            fieldPath="defaultEnabled"
-            label="Enabled by default for new feature flags"
-            labelPosition="right"
-            switchId="set-default-enabled"
+          <DescriptionField />
+          <ControlledSelect
+            label="Environment"
+            fieldPath="environmentId"
+            options={environments.map((env) => {
+              return { label: env.name, value: env.id };
+            })}
           />
-          <ControlledSwitch
-            fieldPath="pinToLists"
-            label="Display a quick toggler on the feature flags list"
-            labelPosition="right"
-            switchId="set-pin-to-lists"
+          <ControlledTextInput
+            label="Comma-separated list of allowed origins"
+            fieldPath="allowedOrigins"
+            disabled={false}
+            registerReturn={formMethods.register('allowedOrigins')}
           />
+          <Field label="API Key">
+            <Text>{formMethods.getValues('clientKeyHash')}</Text>
+          </Field>
         </Stack>
       </form>
     </FormProvider>
