@@ -41,11 +41,11 @@ export default function ControlledSelect<
 >({
   label,
   fieldPath,
-  placeholder = 'select an option',
+  placeholder="Select an environment...",
   options,
   handleValueChange,
   disabled,
-  width = '320px',
+  width="320px",
 }: ControlledSelectProps<T, O>) {
   const {
     control,
@@ -80,7 +80,7 @@ export default function ControlledSelect<
             <SelectTrigger>
               <SelectValueText placeholder={placeholder} />
             </SelectTrigger>
-            <SelectContent zIndex="popover">
+            <SelectContent bg="avocet-bg" zIndex="popover">
               {optionCollection.items.map((option) => (
                 <SelectItem item={option} key={option.label} cursor="pointer">
                   {option.label}

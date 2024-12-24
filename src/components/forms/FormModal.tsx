@@ -55,13 +55,13 @@ export default function FormModal({
       motionPreset="slide-in-bottom"
       size="lg"
     >
-      <DialogTrigger asChild>
+      <DialogTrigger asChild color="avocet-text">
         <IconButton variant="outline" size="md" padding="15px">
           {triggerButtonIcon}
           {triggerButtonText}
         </IconButton>
       </DialogTrigger>
-      <DialogContent maxHeight="95vh" overflowY="scroll">
+      <DialogContent bg="avocet-bg" color="avocet-text" maxHeight="95vh" overflowY="scroll">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
@@ -76,7 +76,7 @@ export default function FormModal({
             {confirmButtonText}
           </Button>
           <DialogActionTrigger asChild>
-            <Button variant="plain">Cancel</Button>
+            <Button variant="ghost">Cancel</Button>
           </DialogActionTrigger>
         </DialogFooter>
         <DialogCloseTrigger />

@@ -70,15 +70,15 @@ export default function TelemetryTypeSelector() {
     <LoaderWrapper isLoading={isLoading}>
       <SelectRoot
         collection={allSpanTypes}
-        bg={'white'}
-        color={'black'}
+        bg="avocet-bg"
+        color="avocet-text"
         value={value}
         onValueChange={handleValueChange}
       >
         <SelectTrigger>
           <SelectValueText placeholder="Span type" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent bg="avocet-bg">
           {allSpanTypes.items.map((type) => (
             <SelectItem item={type} key={type.value}>
               {type.label}
