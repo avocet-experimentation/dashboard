@@ -95,7 +95,7 @@ export default function SDKConnectionManagementForm({
     <FormProvider {...formMethods}>
       <form id={formId} onSubmit={formMethods.handleSubmit(onSubmit)}>
         <Stack gap="4">
-          <NameField disabled={!!sdkConnection} label="Connection Name" />
+          <NameField label="Connection Name" />
           <DescriptionField />
           <ControlledSelect
             label="Environment"
