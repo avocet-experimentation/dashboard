@@ -1,0 +1,387 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type ClientPropDef {
+  createdAt: Float!
+  dataType: ClientPropValue!
+  description: String
+  id: ID!
+  isIdentifier: Boolean!
+  name: String!
+  updatedAt: Float!
+}
+
+input ClientPropDefDraft {
+  dataType: ClientPropValue!
+  description: String
+  isIdentifier: Boolean!
+  name: String!
+}
+
+scalar ClientPropValue
+
+type Enrollment {
+  attributes: [String]
+  proportion: Float
+}
+
+input EnrollmentInput {
+  attributes: [String]
+  proportion: Float
+}
+
+type Environment {
+  createdAt: Float!
+  defaultEnabled: Boolean!
+  id: ID!
+  name: String!
+  pinToLists: Boolean!
+  updatedAt: Float!
+}
+
+input EnvironmentDraft {
+  defaultEnabled: Boolean!
+  name: String!
+  pinToLists: Boolean!
+}
+
+scalar EnvironmentNames
+
+type Experiment {
+  createdAt: Float!
+  definedTreatments: [Treatment]!
+  dependents: [Metric]!
+  description: String
+  endTimestamp: Float
+  enrollment: Enrollment!
+  environmentName: String!
+  flagIds: [String]!
+  groups: [ExperimentGroup]!
+  hypothesis: String
+  id: ID!
+  name: String!
+  startTimestamp: Float
+  status: ExperimentStatus!
+  type: String!
+  updatedAt: Float!
+}
+
+input ExperimentDraft {
+  definedTreatments: [TreatmentInput]!
+  dependents: [MetricInput]!
+  description: String
+  endTimestamp: Float
+  enrollment: EnrollmentInput!
+  environmentName: String!
+  flagIds: [String]!
+  groups: [ExperimentGroupInput]!
+  hypothesis: String
+  name: String!
+  startTimestamp: Float
+  status: ExperimentStatus!
+  type: String!
+}
+
+type ExperimentGroup {
+  cycles: Float!
+  description: String
+  id: ID!
+  name: String!
+  proportion: Float!
+  sequence: [String]!
+}
+
+input ExperimentGroupInput {
+  cycles: Float!
+  description: String
+  id: ID!
+  name: String!
+  proportion: Float!
+  sequence: [String]!
+}
+
+type ExperimentReference implements OverrideRule {
+  description: String
+  endTimestamp: Float
+  enrollment: Enrollment!
+  environmentName: String!
+  id: String!
+  name: String!
+  startTimestamp: Float
+  status: ExperimentStatus!
+  type: OverrideRuleType!
+}
+
+enum ExperimentStatus {
+  active
+  completed
+  draft
+  paused
+}
+
+type FeatureFlag {
+  createdAt: Float!
+  description: String
+  environmentNames: EnvironmentNames
+  id: ID!
+  name: String!
+  overrideRules: [OverrideRule!]!
+  updatedAt: Float!
+  value: FlagValueDef!
+}
+
+input FeatureFlagDraft {
+  description: String
+  environmentNames: EnvironmentNames
+  name: String!
+  overrideRules: [OverrideRuleInput]!
+  value: FlagValueDef!
+}
+
+type FlagState {
+  id: ID!
+  value: String!
+}
+
+input FlagStateInput {
+  id: ID!
+  value: String!
+}
+
+scalar FlagValueDef
+
+type ForcedValue implements OverrideRule {
+  description: String
+  endTimestamp: Float
+  enrollment: Enrollment!
+  environmentName: String!
+  id: String!
+  startTimestamp: Float
+  status: ExperimentStatus!
+  type: OverrideRuleType!
+  value: String!
+}
+
+type Metric {
+  fieldDataType: String
+  fieldName: String
+}
+
+input MetricInput {
+  fieldDataType: String
+  fieldName: String
+}
+
+type Mutation {
+  createClientPropDef(newEntry: ClientPropDefDraft!): ClientPropDef!
+  createEnvironment(newEntry: EnvironmentDraft!): Environment!
+  createExperiment(newEntry: ExperimentDraft!): Experiment!
+  createFeatureFlag(newEntry: FeatureFlagDraft!): FeatureFlag!
+  createSDKConnection(newEntry: SDKConnectionDraft!): SDKConnection!
+  createUser(newEntry: UserDraft!): User!
+  deleteClientPropDef(id: ID!): ID
+  deleteEnvironment(id: ID!): Boolean
+  deleteExperiment(id: ID!): Boolean
+  deleteFeatureFlag(id: ID!): ID
+  deleteSDKConnection(id: ID!): ID
+  deleteUser(id: ID!): ID
+  updateClientPropDef(partialEntry: PartialClientPropDefWithId!): ClientPropDef
+  updateEnvironment(partialEntry: PartialEnvironmentWithId!): Environment
+  updateExperiment(partialEntry: PartialExperimentWithId!): Experiment
+  updateFeatureFlag(partialEntry: PartialFeatureFlagWithStringId!): FeatureFlag
+  updateSDKConnection(partialEntry: PartialSDKConnectionWithId!): SDKConnection
+  updateUser(partialEntry: PartialUserWithId!): User
+}
+
+interface OverrideRule {
+  description: String
+  endTimestamp: Float
+  enrollment: Enrollment!
+  environmentName: String!
+  id: String!
+  startTimestamp: Float
+  status: ExperimentStatus!
+  type: OverrideRuleType!
+}
+
+input OverrideRuleInput {
+  description: String
+  endTimestamp: Float
+  enrollment: EnrollmentInput!
+  environmentName: String!
+  id: String!
+  name: String
+  startTimestamp: Float
+  status: ExperimentStatus!
+  type: String!
+  value: String
+}
+
+enum OverrideRuleType {
+  Experiment
+  ForcedValue
+}
+
+union OverrideRuleUnion = ExperimentReference | ForcedValue
+
+input PartialClientPropDefWithId {
+  dataType: ClientPropValue
+  description: String
+  id: ID!
+  isIdentifier: Boolean
+  name: String
+}
+
+input PartialEnvironment {
+  createdAt: Float
+  defaultEnabled: Boolean
+  id: ID
+  name: String
+  pinToLists: Boolean
+  updatedAt: Float
+}
+
+input PartialEnvironmentWithId {
+  createdAt: Float
+  defaultEnabled: Boolean
+  id: ID!
+  name: String
+  pinToLists: Boolean
+  updatedAt: Float
+}
+
+input PartialExperimentWithId {
+  createdAt: Float
+  definedTreatments: [TreatmentInput]
+  dependents: [MetricInput]
+  description: String
+  endTimestamp: Float
+  enrollment: EnrollmentInput
+  environmentName: String
+  flagIds: [String]
+  groups: [ExperimentGroupInput]
+  hypothesis: String
+  id: ID!
+  name: String
+  startTimestamp: Float
+  status: ExperimentStatus
+  type: String
+  updatedAt: Float
+}
+
+input PartialFeatureFlagWithStringId {
+  createdAt: Float
+  description: String
+  environmentNames: EnvironmentNames
+  id: ID!
+  name: String
+  overrideRules: [OverrideRuleInput]
+  updatedAt: Float
+  value: FlagValueDef
+}
+
+input PartialSDKConnectionWithId {
+  allowedOrigins: [String]
+  clientKeyHash: String
+  createdAt: Float
+  description: String
+  environmentId: ID
+  id: ID!
+  name: String
+  updatedAt: Float
+}
+
+input PartialUserWithId {
+  id: ID!
+  identifier: String
+  permissions: UserPermissionsInput
+}
+
+enum PermissionLevel {
+  edit
+  full
+  none
+  view
+}
+
+type Query {
+  FeatureFlag(id: ID!): FeatureFlag
+  allClientPropDefs(limit: Int, offset: Int): [ClientPropDef!]!
+  allEnvironments(limit: Int, offset: Int): [Environment!]!
+  allExperiments(limit: Int, offset: Int): [Experiment!]!
+  allFeatureFlags(limit: Int, offset: Int): [FeatureFlag!]!
+  allSDKConnections(limit: Int, offset: Int): [SDKConnection!]!
+  allUsers(limit: Int, offset: Int): [User!]!
+  clientPropDef(id: ID!): ClientPropDef
+  environment(id: ID!): Environment
+  experiment(id: ID!): Experiment
+  findMatchingEnvironments(limit: Int, partial: PartialEnvironment): [Environment!]!
+  sdkConnection(id: ID!): SDKConnection
+  user(id: ID!): User
+}
+
+type SDKConnection {
+  allowedOrigins: [String]!
+  clientKeyHash: String!
+  createdAt: Float!
+  description: String
+  environmentId: ID!
+  id: ID!
+  name: String!
+  updatedAt: Float!
+}
+
+input SDKConnectionDraft {
+  allowedOrigins: [String]!
+  clientKeyHash: String!
+  description: String
+  environmentId: ID!
+  name: String!
+}
+
+type Treatment {
+  duration: Float!
+  flagStates: [FlagState]!
+  id: ID!
+  name: String!
+}
+
+input TreatmentInput {
+  duration: Float!
+  flagStates: [FlagStateInput]!
+  id: ID!
+  name: String!
+}
+
+type User {
+  createdAt: Float!
+  id: ID!
+  identifier: String!
+  permissions: UserPermissions!
+  updatedAt: Float!
+}
+
+input UserDraft {
+  identifier: String!
+  permissions: UserPermissionsInput!
+}
+
+type UserPermissions {
+  ClientPropDef: PermissionLevel!
+  Environment: PermissionLevel!
+  Experiment: PermissionLevel!
+  FeatureFlag: PermissionLevel!
+  SDKConnection: PermissionLevel!
+  User: PermissionLevel!
+}
+
+input UserPermissionsInput {
+  ClientPropDef: PermissionLevel!
+  Environment: PermissionLevel!
+  Experiment: PermissionLevel!
+  FeatureFlag: PermissionLevel!
+  SDKConnection: PermissionLevel!
+  User: PermissionLevel!
+}

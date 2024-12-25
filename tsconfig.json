@@ -23,8 +23,14 @@
     "noFallthroughCasesInSwitch": true,
     /* Unused variable linting handled by typescript-eslint */
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "./schema.graphql"
+      }
+    ]
   },
-  "include": ["src", "prettier.config.js"],
+  "include": ["src", "prettier.config.js", "codegen.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
