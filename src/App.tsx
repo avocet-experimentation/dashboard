@@ -12,21 +12,25 @@ import SDKConnectionsMain from './components/sdk-connections/SDKConnectionsMain'
 import LoginPage from './components/LoginPage';
 import { useAuth0 } from '@auth0/auth0-react';
 import LoadingPage from './LoadingPage';
+import UserProfile from './components/UserProfile';
 
 export default function App() {
   const { isAuthenticated, isLoading } = useAuth0();
+
+  console.log(isAuthenticated);
 
   if (isLoading) return (
     <LoadingPage message="Checking credentials..." />
   )
 
   if (isAuthenticated) return (
-    <Grid bg="whitesmoke" templateColumns="300px 1fr" templateRows="1fr" width="100vw" height="100vh" overflow="hidden">
+    <Grid bg="avocet-bg" color="avocet-text" templateColumns="300px 1fr" templateRows="1fr" width="100vw" height="100vh" overflow="hidden">
         <GridItem display="flex"  flexDir="row" justifyContent="center">
           <Navbar />
         </GridItem>
         <GridItem>  
         <Switch>
+            <Route path="/profile" component={UserProfile} />
             <Route path="/features" component={FeatureFlagsMain} />
             <Route path="/features/:id" component={FeatureFlagManagementPage} />
             <Route path="/environments" component={EnvironmentsMainPage} />

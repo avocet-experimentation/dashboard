@@ -5,10 +5,17 @@ import LogoBox from './LogoBox';
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 
-
 export default function LoginPage() {
-  const { loginWithPopup, isAuthenticated, logout } = useAuth0();
+  const { loginWithPopup, isAuthenticated , getIdTokenClaims} = useAuth0();
   const [params, navigate] = useLocation();
+
+  const handleLoginWithPopup = async () => {
+    try {
+      await loginWithPopup();
+    } catch (error) {
+      console.error('Error during login: ', error)
+    }
+  }
 
   useEffect(() => {
     console.log(isAuthenticated)
@@ -21,7 +28,7 @@ export default function LoginPage() {
     <Stack width="100vw" height="100vh" alignItems="center" justifyContent="center"> 
       <Card.Root width="300px" alignItems="center" variant="outline">
         <Card.Body gap="2.5">
-          <LogoBox withLine={true} withTitle={true} logoSize="45px"/>
+          <LogoBox withLine={true} withTitle={true} logoSize="65px"/>
           <Card.Title textAlign="center">
             Log in to Avocet
           </Card.Title>
@@ -30,7 +37,7 @@ export default function LoginPage() {
           </Card.Description>
         </Card.Body>
         <Card.Footer>
-          <Button onClick={() => loginWithPopup()}>
+          <Button onClick={handleLoginWithPopup}>
             Log in with Auth0
           </Button>
         </Card.Footer>

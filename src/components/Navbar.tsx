@@ -21,7 +21,6 @@ const NavBox = chakra('div', {
   base: {
     width: '90%',
     borderRadius: '5px',
-    color: 'black',
     height: '50px',
     display: 'flex',
     flexDirection: 'row',
@@ -36,7 +35,6 @@ const NavBox = chakra('div', {
 
 const NavText = chakra('p', {
   base: {
-    color: 'black',
     textDecoration: 'none',
     padding: '15px',
     width: '200px',
@@ -44,20 +42,22 @@ const NavText = chakra('p', {
 });
 
 export default function Navbar() {
-  const { user, logout } = useAuth0();
+  const { logout, user } = useAuth0();
 
   return (
     <Flex
+      bg="avocet-nav"
+      color="avocet-text"
       direction="column"
-      bg="white"
       alignItems="center"
-      border="1px solid black"
+      border="1px solid"
+      borderColor="avocet-border"
       borderRadius="5px"
       height="98%"
       width="90%"
       margin="auto"
     >
-      <LogoBox withLine={true} withTitle={true} logoSize="45px"/>
+      <LogoBox withLine={true} withTitle={true} logoSize="65px"/>
       <NavBox>
         <Icon>
           <Flag />
@@ -107,7 +107,7 @@ export default function Navbar() {
         </Link>
       </NavBox>
       <MenuRoot positioning={{ placement: "top" }}>
-        <MenuTrigger asChild marginTop="auto" marginBottom="15px">
+        <MenuTrigger asChild border="1px solid" borderColor="avocet-border" marginTop="auto" marginBottom="15px">
           <Button width="90%" height="fit-content" justifyContent="space-evenly" variant="ghost" padding="10px">
             <Avatar name={user?.name} src={user?.picture} size="sm"/>
             <Text>
@@ -116,7 +116,12 @@ export default function Navbar() {
           </Button>
         </MenuTrigger>
         <MenuContent>
-          <MenuItem value="Logout" color="fg.error" _hover={{ bg: "bg.error", color: "fg.error", cursor: "pointer" }} onClick={logout}>Logout</MenuItem>
+          <Link href='/profile' draggable={false}>
+            <MenuItem value="Profile">
+            Profile
+            </MenuItem>
+          </Link>
+          <MenuItem value="Logout" color="fg.error" draggable={false} _hover={{ bg: "bg.error", color: "fg.error", cursor: "pointer" }} onClick={() => logout()}>Logout</MenuItem>
         </MenuContent>
       </MenuRoot>
     </Flex>
