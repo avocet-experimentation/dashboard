@@ -32,7 +32,6 @@ export const allFlagsQuery = graphql(`
       environmentNames
       overrideRules {
         id
-        type
         description
         environmentName
         enrollment {
@@ -43,9 +42,11 @@ export const allFlagsQuery = graphql(`
         startTimestamp
         endTimestamp
         ... on ExperimentReference {
+          type
           name
         }
         ... on ForcedValue {
+          type
           value
         }
       }

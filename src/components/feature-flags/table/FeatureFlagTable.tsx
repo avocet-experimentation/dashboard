@@ -1,6 +1,11 @@
 import { Table } from '@chakra-ui/react';
-import { Environment, FeatureFlag } from '@avocet/core';
+import { Environment, FeatureFlag, featureFlagSchema } from '@avocet/core';
+import { useQuery } from '@tanstack/react-query';
+import request from 'graphql-request';
 import FeatureFlagTableRow from './FeatureFlagTableRow';
+import { allFlagsQuery } from '#/lib/flagQueries';
+import Loader from '#/components/helpers/Loader';
+import ErrorBox from '#/components/helpers/ErrorBox';
 
 export interface FeatureFlagTableProps {
   featureFlags: FeatureFlag[];
@@ -9,10 +14,36 @@ export interface FeatureFlagTableProps {
 }
 
 export default function FeatureFlagTable({
-  featureFlags,
+  // featureFlags,
   updateFlag,
   pinnedEnvironments,
 }: FeatureFlagTableProps) {
+  const { isPending, isError, error, data } = useQuery({
+    queryKey: ['getFeatureFlags'],
+    // queryFn: async () => execute(allFlagsQuery),
+    queryFn: async () =>
+      request({
+        url: import.meta.env.VITE_GRAPHQL_SERVICE_URL,
+        document: allFlagsQuery,
+        variables: {},
+      }),
+  });
+
+  if (isPending) return <Loader />;
+
+  if (isError) return <ErrorBox error={error} />;
+
+  const { allFeatureFlags } = data;
+  const featureFlags: FeatureFlag[] = allFeatureFlags;
+
+  // TODO: remove this parse after resolving OverrideRule.type narrowing
+  // const featureFlags: FeatureFlag[] = featureFlagSchema
+  //   .array()
+  //   .parse(allFeatureFlags);
+
+  console.log('Fetched Flags:');
+  console.table(allFeatureFlags); // this always logs `undefined`
+
   return (
     <Table.Root className="table">
       <Table.Header>
@@ -29,7 +60,7 @@ export default function FeatureFlagTable({
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {featureFlags.map((flag: FeatureFlag) => (
+        {featureFlags.map((flag) => (
           <FeatureFlagTableRow
             key={flag.id}
             updateFlag={updateFlag}

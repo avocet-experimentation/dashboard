@@ -29,11 +29,11 @@ export default class FeatureService {
     );
   }
 
-  async getAll(): Promise<ResponseTypes<FeatureFlag[]>> {
-    console.log('fetching features');
+  async getAllFeatures(): Promise<ResponseTypes<FeatureFlag[]>> {
+    // console.log('fetching features');
     const startTime = Date.now();
     const response = await this.fetch.get('');
-    console.log(`fetched all features in ~${Date.now() - startTime} ms`);
+    console.log(`fetched all flags in ~${Date.now() - startTime} ms`);
     if (!response.ok) {
       return response;
     }
@@ -50,7 +50,7 @@ export default class FeatureService {
       ok: true,
       body: safeParseResult.data,
     };
-    console.log(`returning all features in ~${Date.now() - startTime} ms`);
+    // console.log(`returning all features in ~${Date.now() - startTime} ms`);
     return parsedResponse;
   }
 
@@ -59,7 +59,7 @@ export default class FeatureService {
     if (!response.ok) {
       return response;
     } else {
-      console.log({ fetchedFlag: response.body });
+      // console.log({ fetchedFlag: response.body });
       const safeParseResult = featureFlagSchema.safeParse(response.body);
       if (!safeParseResult.success) {
         throw new SchemaParseError(safeParseResult);
