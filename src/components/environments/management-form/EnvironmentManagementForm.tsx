@@ -16,7 +16,7 @@ interface EnvironmentManagementFormProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   environment?: Environment;
-  updateEnvironment: (updated: Environment) => void;
+  // updateEnvironment: (updated: Environment) => void;
 }
 
 /**
@@ -27,7 +27,7 @@ export default function EnvironmentManagementForm({
   setIsLoading,
   setOpen,
   environment,
-  updateEnvironment,
+  // updateEnvironment,
 }: EnvironmentManagementFormProps) {
   const { environment: environmentService } = useContext(ServicesContext);
 
@@ -62,7 +62,7 @@ export default function EnvironmentManagementForm({
         // todo: handle errors correctly
         return;
       }
-      updateEnvironment(response.body);
+      // updateEnvironment(response.body);
     } catch (e) {
       console.error(e);
     } finally {

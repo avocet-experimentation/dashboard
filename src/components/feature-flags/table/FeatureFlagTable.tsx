@@ -34,15 +34,13 @@ export default function FeatureFlagTable({
   if (isError) return <ErrorBox error={error} />;
 
   const { allFeatureFlags } = data;
-  const featureFlags: FeatureFlag[] = allFeatureFlags;
+  const featureFlags: FeatureFlag[] = allFeatureFlags as FeatureFlag[];
 
   // TODO: remove this parse after resolving OverrideRule.type narrowing
+  // for better type safety, use Zod schema parsing instead of `as`:
   // const featureFlags: FeatureFlag[] = featureFlagSchema
   //   .array()
   //   .parse(allFeatureFlags);
-
-  console.log('Fetched Flags:');
-  console.table(allFeatureFlags); // this always logs `undefined`
 
   return (
     <Table.Root className="table">

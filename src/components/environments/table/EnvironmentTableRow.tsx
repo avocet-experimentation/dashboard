@@ -6,25 +6,28 @@ import { ServicesContext } from '#/services/ServiceContext';
 import { Switch } from '../../ui/switch';
 import { Tooltip } from '../../ui/tooltip';
 import EnvironmentManagementModal from '../management-form/EnvironmentManagementModal';
+import { useMutation } from '@tanstack/react-query';
 
 interface EnvironmentTableRowProps {
   environment: Environment;
-  updateEnvironment: (updated: Environment) => void;
+  // updateEnvironment: (updated: Environment) => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function EnvironmentTableRow({
   environment,
-  updateEnvironment,
+  // updateEnvironment,
   setIsLoading,
 }: EnvironmentTableRowProps) {
   const { environment: environmentService } = useContext(ServicesContext);
+
   const handleCheckedChange = (checked: boolean) => {
+    useMutation;
     environmentService.update(environment.id, {
       defaultEnabled: checked,
     });
 
-    updateEnvironment({ ...environment, defaultEnabled: checked });
+    // updateEnvironment({ ...environment, defaultEnabled: checked });
   };
 
   return (
@@ -33,7 +36,7 @@ export default function EnvironmentTableRow({
         <EnvironmentManagementModal
           setIsLoading={setIsLoading}
           environment={environment}
-          updateEnvironment={updateEnvironment}
+          // updateEnvironment={updateEnvironment}
         />
       </Table.Cell>
       <Table.Cell key={environment.name}>

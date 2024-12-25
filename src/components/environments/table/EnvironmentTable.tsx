@@ -8,15 +8,15 @@ import { GET_ENVIRONMENTS } from '#/lib/environmentQueries';
 import request from 'graphql-request';
 
 export interface EnvironmentTableProps {
-  environments: Environment[];
-  updateEnvironment: (updated: Environment) => void;
+  // environments: Environment[];
+  // updateEnvironment: (updated: Environment) => void;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 /**
  * Table listing all Environments
  */
 export default function EnvironmentTable({
-  updateEnvironment,
+  // updateEnvironment,
   setIsLoading,
 }: EnvironmentTableProps) {
   const { isPending, isError, error, data } = useQuery({
@@ -35,7 +35,7 @@ export default function EnvironmentTable({
 
   const environments = data.allEnvironments;
 
-  if (environments.length === 0) return <Text>No environments found.</Text>;
+  // if (environments.length === 0) return <Text>No environments found.</Text>;
 
   return (
     <div>
@@ -53,7 +53,7 @@ export default function EnvironmentTable({
               key={env.id}
               environment={env}
               setIsLoading={setIsLoading}
-              updateEnvironment={updateEnvironment}
+              // updateEnvironment={updateEnvironment}
             />
           ))}
         </Table.Body>
