@@ -1,9 +1,11 @@
 import { Environment } from '@avocet/core';
 import { Table, Text } from '@chakra-ui/react';
 import EnvironmentTableRow from './EnvironmentTableRow';
-import { useQuery } from '@apollo/client';
-import { GET_ENVIRONMENTS } from '#/lib/graphql';
+import { useQuery } from '@tanstack/react-query';
 import Loader from '#/components/helpers/Loader';
+import ErrorBox from '#/components/helpers/ErrorBox';
+import { GET_ENVIRONMENTS } from '#/lib/environmentQueries';
+import request from 'graphql-request';
 
 export interface EnvironmentTableProps {
   environments: Environment[];
@@ -17,37 +19,45 @@ export default function EnvironmentTable({
   updateEnvironment,
   setIsLoading,
 }: EnvironmentTableProps) {
-  const { loading, error, data } = useQuery(GET_ENVIRONMENTS);
+  const { isPending, isError, error, data } = useQuery({
+    queryKey: ['getEnvironments'],
+    queryFn: async () =>
+      request({
+        url: import.meta.env.VITE_GRAPHQL_SERVICE_URL,
+        document: GET_ENVIRONMENTS,
+        variables: {},
+      }),
+  });
 
-  if (loading) return <Loader />;
+  if (isPending) return <Loader />;
 
-  if (error) return <Text>Error: {error.message}</Text>;
+  if (isError) return <ErrorBox error={error} />;
 
   const environments = data.allEnvironments;
 
+  if (environments.length === 0) return <Text>No environments found.</Text>;
+
   return (
     <div>
-      {environments.length && (
-        <Table.Root className="table">
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeader>Name</Table.ColumnHeader>
-              <Table.ColumnHeader>Enabled by Default</Table.ColumnHeader>
-              <Table.ColumnHeader>Last Updated</Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {environments.map((env: Environment) => (
-              <EnvironmentTableRow
-                key={env.id}
-                environment={env}
-                setIsLoading={setIsLoading}
-                updateEnvironment={updateEnvironment}
-              />
-            ))}
-          </Table.Body>
-        </Table.Root>
-      )}
+      <Table.Root className="table">
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader>Name</Table.ColumnHeader>
+            <Table.ColumnHeader>Enabled by Default</Table.ColumnHeader>
+            <Table.ColumnHeader>Last Updated</Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {environments.map((env: Environment) => (
+            <EnvironmentTableRow
+              key={env.id}
+              environment={env}
+              setIsLoading={setIsLoading}
+              updateEnvironment={updateEnvironment}
+            />
+          ))}
+        </Table.Body>
+      </Table.Root>
     </div>
   );
 }
