@@ -60,13 +60,13 @@ export default function MultiFormModal({
       motionPreset="slide-in-bottom"
       size="xl"
     >
-      <DialogTrigger asChild>
+      <DialogTrigger asChild bg="avocet-bg" color="avocet-text">
         <IconButton variant="outline" size="md" padding="15px">
           {triggerButtonIcon}
           {triggerButtonText}
         </IconButton>
       </DialogTrigger>
-      <DialogContent maxHeight="95vh" overflowY="scroll" maxWidth="90vw">
+      <DialogContent bg="avocet-bg" color="avocet-text" maxHeight="95vh" maxWidth="90vw">
         <StepsRoot
           size="sm"
           variant="solid"
@@ -90,6 +90,7 @@ export default function MultiFormModal({
                 variant="solid"
                 type="submit"
                 form={formId}
+                size="sm"
               >
                 {confirmButtonText}
               </Button>
@@ -102,7 +103,7 @@ export default function MultiFormModal({
             )}
 
             <DialogActionTrigger asChild>
-              <Button variant="plain">Cancel</Button>
+              <Button variant="ghost">Cancel</Button>
             </DialogActionTrigger>
           </DialogFooter>
           <DialogCloseTrigger />

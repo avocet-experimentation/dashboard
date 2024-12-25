@@ -12,8 +12,8 @@ const config: SystemConfig = defineConfig({
         },
         "avocet-hover": {
           value: {
-            base: 'gray.100',
-            _dark: 'gray.100',
+            base: '#e4e4e7',
+            _dark: '#27272a',
           }
         },
         "avocet-text": {
@@ -25,7 +25,7 @@ const config: SystemConfig = defineConfig({
         "avocet-border": {
           value: {
             base: '#013856',
-            _dark: 'white',
+            _dark: 'gray',
           }
         }
       }
