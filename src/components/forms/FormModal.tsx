@@ -61,7 +61,7 @@ export default function FormModal({
           {triggerButtonText}
         </IconButton>
       </DialogTrigger>
-      <DialogContent bg="avocet-bg" color="avocet-text" maxHeight="95vh" overflowY="scroll">
+      <DialogContent bg="avocet-bg" color="avocet-text" maxHeight="95vh">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>

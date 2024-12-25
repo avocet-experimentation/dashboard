@@ -28,7 +28,7 @@ const NavBox = chakra('div', {
     fontSize: '1.15em',
     padding: '0 20px',
     _hover: {
-      bg: 'gray.100',
+      bg: 'avocet-hover',
     },
   },
 });
@@ -51,7 +51,7 @@ export default function Navbar() {
       direction="column"
       alignItems="center"
       border="1px solid"
-      borderColor="avocet-border"
+      // borderColor="avocet-border"
       borderRadius="5px"
       height="98%"
       width="90%"
