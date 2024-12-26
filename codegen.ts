@@ -18,9 +18,6 @@ const config: CodegenConfig = {
   generates: {
     './src/graphql/': {
       preset: 'client',
-      // config: {
-      //   documentMode: 'string',
-      // },
     },
     './schema.graphql': {
       plugins: ['schema-ast'],

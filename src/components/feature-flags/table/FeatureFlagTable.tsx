@@ -3,7 +3,7 @@ import { Environment, FeatureFlag, featureFlagSchema } from '@avocet/core';
 import { useQuery } from '@tanstack/react-query';
 import request from 'graphql-request';
 import FeatureFlagTableRow from './FeatureFlagTableRow';
-import { allFlagsQuery } from '#/lib/flagQueries';
+import { allFlagsQuery } from '#/lib/flag-queries';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
 

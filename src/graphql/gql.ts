@@ -17,6 +17,7 @@ const documents = {
     "\n  mutation createEnvironment($newEntry: EnvironmentDraft!) {\n    createEnvironment(newEntry: $newEntry) {\n      id\n      createdAt\n      updatedAt\n      name\n      defaultEnabled\n      pinToLists\n    }\n  }\n": types.CreateEnvironmentDocument,
     "\n  query allEnvironments($limit: Int, $offset: Int) {\n    allEnvironments(limit: $limit, offset: $offset) {\n      id\n      name\n      defaultEnabled\n      createdAt\n      updatedAt\n      pinToLists\n    }\n  }\n": types.AllEnvironmentsDocument,
     "\n  query findMatchingEnvironments($partial: PartialEnvironment!, $limit: Int) {\n    findMatchingEnvironments(partial: $partial, limit: $limit) {\n      id\n      name\n      defaultEnabled\n      createdAt\n      updatedAt\n      pinToLists\n    }\n  }\n": types.FindMatchingEnvironmentsDocument,
+    "\n  mutation updateEnvironment($partialEntry: PartialEnvironmentWithId!) {\n    updateEnvironment(partialEntry: $partialEntry) {\n      id\n      createdAt\n      updatedAt\n      name\n      defaultEnabled\n      pinToLists\n    }\n  }\n": types.UpdateEnvironmentDocument,
     "\n  query allFeatureFlags($limit: Int, $offset: Int) {\n    allFeatureFlags(limit: $limit, offset: $offset) {\n      id\n      createdAt\n      updatedAt\n      name\n      description\n      value\n      environmentNames\n      overrideRules {\n        id\n        description\n        environmentName\n        enrollment {\n          attributes\n          proportion\n        }\n        status\n        startTimestamp\n        endTimestamp\n        ... on ExperimentReference {\n          type\n          name\n        }\n        ... on ForcedValue {\n          type\n          value\n        }\n      }\n    }\n  }\n": types.AllFeatureFlagsDocument,
 };
 
@@ -46,6 +47,10 @@ export function graphql(source: "\n  query allEnvironments($limit: Int, $offset:
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query findMatchingEnvironments($partial: PartialEnvironment!, $limit: Int) {\n    findMatchingEnvironments(partial: $partial, limit: $limit) {\n      id\n      name\n      defaultEnabled\n      createdAt\n      updatedAt\n      pinToLists\n    }\n  }\n"): (typeof documents)["\n  query findMatchingEnvironments($partial: PartialEnvironment!, $limit: Int) {\n    findMatchingEnvironments(partial: $partial, limit: $limit) {\n      id\n      name\n      defaultEnabled\n      createdAt\n      updatedAt\n      pinToLists\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation updateEnvironment($partialEntry: PartialEnvironmentWithId!) {\n    updateEnvironment(partialEntry: $partialEntry) {\n      id\n      createdAt\n      updatedAt\n      name\n      defaultEnabled\n      pinToLists\n    }\n  }\n"): (typeof documents)["\n  mutation updateEnvironment($partialEntry: PartialEnvironmentWithId!) {\n    updateEnvironment(partialEntry: $partialEntry) {\n      id\n      createdAt\n      updatedAt\n      name\n      defaultEnabled\n      pinToLists\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

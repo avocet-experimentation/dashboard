@@ -4,7 +4,7 @@ import EnvironmentTableRow from './EnvironmentTableRow';
 import { useQuery } from '@tanstack/react-query';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
-import { GET_ENVIRONMENTS } from '#/lib/environmentQueries';
+import { GET_ENVIRONMENTS } from '#/lib/environment-queries';
 import request from 'graphql-request';
 
 export interface EnvironmentTableProps {

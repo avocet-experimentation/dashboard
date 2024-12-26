@@ -38,3 +38,16 @@ export const FIND_ENVIRONMENTS = graphql(`
     }
   }
 `);
+
+export const UPDATE_ENVIRONMENT = graphql(`
+  mutation updateEnvironment($partialEntry: PartialEnvironmentWithId!) {
+    updateEnvironment(partialEntry: $partialEntry) {
+      id
+      createdAt
+      updatedAt
+      name
+      defaultEnabled
+      pinToLists
+    }
+  }
+`);
