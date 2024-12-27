@@ -1,36 +1,46 @@
-import { createContext, createSystem, defaultBaseConfig, defaultConfig, defineConfig, SystemConfig, SystemContext } from "@chakra-ui/react"
+import {
+  createSystem,
+  defaultConfig,
+  defineConfig,
+  SystemConfig,
+} from '@chakra-ui/react';
 
 const config: SystemConfig = defineConfig({
   theme: {
     semanticTokens: {
       colors: {
-        "avocet-bg": {
+        'avocet-bg': {
           value: {
             base: 'whitesmoke',
             _dark: '#0c142e',
-          }
+          },
         },
-        "avocet-hover": {
+        'avocet-hover': {
           value: {
             base: '#e4e4e7',
             _dark: '#27272a',
-          }
+          },
         },
-        "avocet-text": {
+        'avocet-text': {
           value: {
             base: '#013856',
             _dark: 'white',
-          }
+          },
         },
-        "avocet-border": {
+        'avocet-border': {
           value: {
             base: '#013856',
             _dark: 'gray',
-          }
-        }
-      }
-    }
-  }  
-})
+          },
+        },
+        'avocet-table': {
+          value: {
+            _dark: '#013856',
+          },
+        },
+      },
+    },
+  },
+});
 
-export const system = createSystem(defaultConfig, config)
+export const system = createSystem(defaultConfig, config);
