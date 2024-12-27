@@ -41,11 +41,11 @@ export default function ControlledSelect<
 >({
   label,
   fieldPath,
-  placeholder="Select an environment...",
+  placeholder = 'select an option',
   options,
   handleValueChange,
   disabled,
-  width="320px",
+  width = '320px',
 }: ControlledSelectProps<T, O>) {
   const {
     control,
