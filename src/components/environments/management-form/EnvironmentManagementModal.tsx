@@ -7,18 +7,11 @@ import EnvironmentManagementForm from './EnvironmentManagementForm';
 const ENVIRONMENT_MANAGEMENT_FORM_ID = 'environment-management-form';
 
 interface EnvironmentManagementModalProps {
-  // formId: string;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   environment?: Environment;
-  // setEnvironments: React.Dispatch<React.SetStateAction<Environment[]>>;
-  // updateEnvironment: (updated: Environment) => void;
 }
 
 export default function EnvironmentManagementModal({
   environment,
-  // setEnvironments,
-  // updateEnvironment,
-  setIsLoading,
 }: EnvironmentManagementModalProps) {
   const [open, setOpen] = useState(false);
 
@@ -45,9 +38,6 @@ export default function EnvironmentManagementModal({
     >
       <EnvironmentManagementForm
         formId={ENVIRONMENT_MANAGEMENT_FORM_ID}
-        setIsLoading={setIsLoading}
-        // setEnvironments={setEnvironments}
-        // updateEnvironment={updateEnvironment}
         environment={environment}
         setOpen={setOpen}
       />

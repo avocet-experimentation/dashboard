@@ -13,10 +13,8 @@ import ControlledSwitch from '../../forms/ControlledSwitch';
 
 interface EnvironmentManagementFormProps {
   formId: string;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   environment?: Environment;
-  // updateEnvironment: (updated: Environment) => void;
 }
 
 /**
@@ -24,10 +22,8 @@ interface EnvironmentManagementFormProps {
  */
 export default function EnvironmentManagementForm({
   formId,
-  setIsLoading,
   setOpen,
   environment,
-  // updateEnvironment,
 }: EnvironmentManagementFormProps) {
   const { environment: environmentService } = useContext(ServicesContext);
 
@@ -55,7 +51,7 @@ export default function EnvironmentManagementForm({
       throw new SchemaParseError(safeParseResult);
     }
 
-    setIsLoading(true);
+    // setIsLoading(true);
     try {
       const response = await createOrUpdate(safeParseResult.data);
       if (!response.ok) {
@@ -66,7 +62,7 @@ export default function EnvironmentManagementForm({
     } catch (e) {
       console.error(e);
     } finally {
-      setIsLoading(false);
+      // setIsLoading(false);
       setOpen(false);
     }
   };
