@@ -1,15 +1,14 @@
-import { Oval } from 'react-loader-spinner';
+import { Spinner, Text, VStack } from '@chakra-ui/react';
 
-export default function Loader() {
+export default function Loader({ label='Fetching...' }: { label?: string }) {
   return (
-    <Oval
-      visible={true}
-      height="80"
-      width="80"
-      color="#4fa94d"
-      ariaLabel="oval-loading"
-      wrapperStyle={{}}
-      wrapperClass=""
-    />
+    <VStack width="100%" height="50%" justifyContent="center">
+      <Spinner
+        animationDuration="0.8s"  
+        borderWidth="4px"
+        size="lg"
+      />
+      <Text fontSize="xl">{label}</Text>
+    </VStack>
   );
 }
