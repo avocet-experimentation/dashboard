@@ -4,6 +4,22 @@ export const ADD_RULE_FORM_ID = 'add-rule-form';
 
 export const RADIAN = Math.PI / 180;
 
+export const EXP_STATUS_LEGEND = {
+  draft: {
+    color: 'yellow',
+    description: 'This experiment is still being configured.',
+  },
+  active: { color: 'green', description: 'This experiment is in progress.' },
+  paused: {
+    color: 'red',
+    description: 'This experiment is currently not running.',
+  },
+  completed: {
+    color: 'blue',
+    description: 'This experiment has reached its end.',
+  },
+};
+
 export const COLORS = [
   '#0088FE',
   '#00C49F',
