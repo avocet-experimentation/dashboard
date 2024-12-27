@@ -4,7 +4,7 @@ import { Status } from '../../ui/status';
 
 // library
 import { formatDate } from '#/lib/timeFunctions';
-import { EXP_STATUS_LEGEND } from '#/lib/constants'
+import { EXP_STATUS_LEGEND } from '#/lib/constants';
 
 // types
 import { Experiment } from '@avocet/core';
@@ -22,16 +22,15 @@ export default function ExperimentTable() {
 
   if (experimentsQuery.isPending) return <Loader />;
 
-  if (experimentsQuery.isError) return <ErrorBox error={experimentsQuery.error} />
+  if (experimentsQuery.isError)
+    return <ErrorBox error={experimentsQuery.error} />;
 
   const { allExperiments } = experimentsQuery.data;
   const experiments: Experiment[] = allExperiments as Experiment[];
 
   if (experiments.length === 0)
     return (
-      <ErrorBox 
-        error={new Error('No experiments found. Please create one.')}
-      />
+      <ErrorBox error={new Error('No experiments found. Please create one.')} />
     );
 
   return (
@@ -46,25 +45,25 @@ export default function ExperimentTable() {
       </Table.Header>
       <Table.Body>
         {experiments.map((exp: Experiment) => (
-            <Table.Row key={exp.id}>
-              <Table.Cell>
-                <Link href={`/experiments/${exp.id}`}>{exp.name}</Link>
-              </Table.Cell>
-              <Table.Cell>{exp.environmentName}</Table.Cell>
-              <Table.Cell>
-                <Tooltip
-                  showArrow
-                  openDelay={50}
-                  content={EXP_STATUS_LEGEND[exp.status].description}
-                >
-                  <Status colorPalette={EXP_STATUS_LEGEND[exp.status].color}>
-                    {exp.status}
-                  </Status>
-                </Tooltip>
-              </Table.Cell>
-              <Table.Cell>{formatDate(exp.createdAt)}</Table.Cell>
-            </Table.Row>
-          ))}
+          <Table.Row key={exp.id}>
+            <Table.Cell>
+              <Link href={`/experiments/${exp.id}`}>{exp.name}</Link>
+            </Table.Cell>
+            <Table.Cell>{exp.environmentName}</Table.Cell>
+            <Table.Cell>
+              <Tooltip
+                showArrow
+                openDelay={50}
+                content={EXP_STATUS_LEGEND[exp.status].description}
+              >
+                <Status colorPalette={EXP_STATUS_LEGEND[exp.status].color}>
+                  {exp.status}
+                </Status>
+              </Tooltip>
+            </Table.Cell>
+            <Table.Cell>{formatDate(exp.createdAt)}</Table.Cell>
+          </Table.Row>
+        ))}
       </Table.Body>
     </Table.Root>
   );

@@ -143,7 +143,7 @@ export const UPDATE_EXPERIMENT = graphql(`
   }
 `);
 
-export const DELETE_EXPERIMENT= graphql(`
+export const DELETE_EXPERIMENT = graphql(`
   mutation deleteExperiment($id: ID!) {
     deleteExperiment(id: $id)
   }
