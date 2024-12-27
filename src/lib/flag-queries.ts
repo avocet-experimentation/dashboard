@@ -1,6 +1,6 @@
 import { graphql } from '#/graphql';
 
-export const allFlagsQuery = graphql(`
+export const ALL_FEATURE_FLAGS = graphql(`
   query allFeatureFlags($limit: Int, $offset: Int) {
     allFeatureFlags(limit: $limit, offset: $offset) {
       id

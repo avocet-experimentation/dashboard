@@ -13,7 +13,7 @@ export const CREATE_ENVIRONMENT = graphql(`
   }
 `);
 
-export const GET_ENVIRONMENTS = graphql(`
+export const ALL_ENVIRONMENTS = graphql(`
   query allEnvironments($limit: Int, $offset: Int) {
     allEnvironments(limit: $limit, offset: $offset) {
       id

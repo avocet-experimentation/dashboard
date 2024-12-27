@@ -28,6 +28,9 @@ export const getRequestFunc = <
     });
 };
 
+/**
+ *  Hook to simplify react-query useQuery calls
+ */
 export function useGQLQuery<
   T,
   H extends RequestOptions['requestHeaders'],
@@ -47,7 +50,7 @@ export function useGQLQuery<
 }
 
 /**
- * (WIP) Wrapper to simplify useMutation calls
+ * (WIP) Hook to simplify react-query useMutation calls
  */
 export function useGQLMutation<
   T,
@@ -65,19 +68,6 @@ export function useGQLMutation<
   // see https://tanstack.com/query/latest/docs/framework/react/guides/mutations
   const mutationData = useMutation({
     mutationFn: getRequestFunc(mutation, variables, headers),
-
-    // async (checked: boolean) => {
-    //   return request(
-    //     import.meta.env.VITE_GRAPHQL_SERVICE_URL,
-    //     UPDATE_ENVIRONMENT,
-    //     {
-    //       partialEntry: {
-    //         id: environment.id,
-    //         defaultEnabled: checked,
-    //       },
-    //     },
-    //   );
-    // },
     onSuccess: (data, variables, context) => {
       console.log({ data });
       const updated = data.updateEnvironment;
