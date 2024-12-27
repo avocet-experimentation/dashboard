@@ -102,8 +102,8 @@ export const ALL_EXPERIMENTS = graphql(`
 `);
 
 export const UPDATE_EXPERIMENT = graphql(`
-  mutation updateFeatureFlag($partialEntry: PartialFeatureFlagWithStringId!) {
-    updateFeatureFlag(partialEntry: $partialEntry) {
+  mutation updateExperiment($partialEntry: PartialExperimentWithId!) {
+    updateExperiment(partialEntry: $partialEntry) {
       id
       name
       environmentName
