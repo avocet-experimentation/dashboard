@@ -1,19 +1,10 @@
 import { CirclePlus } from 'lucide-react';
 import { useState } from 'react';
-import { Environment } from '@avocet/core';
 import FormModal from '#/components/forms/FormModal';
 import FeatureFlagCreationForm from './FeatureFlagCreationForm';
 import { CREATE_FEATURE_FORM_ID } from '../feature-constants';
 
-interface FeatureFlagCreationModalProps {
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  environments: Environment[];
-}
-
-export default function FeatureFlagCreationModal({
-  setIsLoading,
-  environments,
-}: FeatureFlagCreationModalProps) {
+export default function FeatureFlagCreationModal() {
   const [open, setOpen] = useState(false);
 
   return (
@@ -28,8 +19,6 @@ export default function FeatureFlagCreationModal({
     >
       <FeatureFlagCreationForm
         formId={CREATE_FEATURE_FORM_ID}
-        setIsLoading={setIsLoading}
-        environments={environments}
         setOpen={setOpen}
       />
     </FormModal>

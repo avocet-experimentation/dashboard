@@ -1,37 +1,57 @@
 import { createListCollection, Flex, Stack } from '@chakra-ui/react';
-import { useContext, useState } from 'react';
 import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
 import {
-  Environment,
   FeatureFlagDraft,
   featureFlagDraftSchema,
   SchemaParseError,
 } from '@avocet/core';
 import { useLocation } from 'wouter';
-import { ServicesContext } from '#/services/ServiceContext';
 import { Field } from '#/components/ui/field';
 import FeatureFlagValueTypeField from './FeatureFlagValueTypeField';
 import FeatureFlagDefaultValueField from './FeatureFlagDefaultValueField';
 import { DescriptionField, NameField } from '#/components/forms/DefinedFields';
 import ControlledSwitch from '#/components/forms/ControlledSwitch';
 import { VALUE_TYPES_DISPLAY_LIST } from '../feature-constants';
+import {
+  CREATE_FEATURE_FLAG,
+  useGQLMutation,
+  useGQLQuery,
+} from '#/lib/graphql-queries';
+import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
+import Loader from '#/components/helpers/Loader';
+import ErrorBox from '#/components/helpers/ErrorBox';
 
 interface FeatureFlagCreationFormProps {
   formId: string;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  environments: Environment[];
 }
 
 export default function FeatureFlagCreationForm({
   formId,
-  setIsLoading,
   setOpen,
-  environments,
 }: FeatureFlagCreationFormProps) {
-  const [isError, setIsError] = useState(null);
-  const [location, navigate] = useLocation();
-  const services = useContext(ServicesContext);
+  const [, navigate] = useLocation();
+  const { isPending, isError, error, data } = useGQLQuery(
+    'allEnvironments',
+    ALL_ENVIRONMENTS,
+  );
+
+  const { mutate } = useGQLMutation({
+    mutation: CREATE_FEATURE_FLAG,
+    onSuccess: (data) => {
+      const flagId = data.createFeatureFlag?.id;
+      if (flagId) {
+        setOpen(false);
+        navigate(`/features/${flagId}`);
+      }
+    },
+  });
+
+  if (isPending) return <Loader />;
+
+  if (isError) return <ErrorBox error={error} />;
+
+  const environments = data.allEnvironments;
 
   const pinnedEnvironments = createListCollection<string>({
     items: environments.filter((env) => env.pinToLists).map((env) => env.name),
@@ -45,8 +65,6 @@ export default function FeatureFlagCreationForm({
   });
 
   const onSubmit: SubmitHandler<FeatureFlagDraft> = async (featureContent) => {
-    // console.log('submit handler invoked');
-
     try {
       // todo: remove this filtering once no longer needed
       const filteredEnvironmentNames = Object.fromEntries(
@@ -63,23 +81,9 @@ export default function FeatureFlagCreationForm({
         // the error pretty-print the Zod parse error message
         throw new SchemaParseError(safeParseResult);
       }
-
-      setIsLoading(true);
-      const response = await services.featureFlag.createFeature(
-        safeParseResult.data,
-      );
-      if (response.status === 409) {
-        const { error } = await response.json();
-        setIsError(error);
-      } else if (response.ok) {
-        const { fflagId } = response.body;
-        navigate(`/features/${fflagId}`);
-      }
+      mutate({ newEntry: safeParseResult.data });
     } catch (e) {
       console.error(e);
-    } finally {
-      setIsLoading(false);
-      setOpen(false);
     }
   };
 

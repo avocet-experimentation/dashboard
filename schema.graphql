@@ -307,7 +307,6 @@ enum PermissionLevel {
 }
 
 type Query {
-  FeatureFlag(id: ID!): FeatureFlag
   allClientPropDefs(limit: Int, offset: Int): [ClientPropDef!]!
   allEnvironments(limit: Int, offset: Int): [Environment!]!
   allExperiments(limit: Int, offset: Int): [Experiment!]!
@@ -317,6 +316,7 @@ type Query {
   clientPropDef(id: ID!): ClientPropDef
   environment(id: ID!): Environment
   experiment(id: ID!): Experiment
+  featureFlag(id: ID!): FeatureFlag
   findMatchingEnvironments(limit: Int, partial: PartialEnvironment): [Environment!]!
   sdkConnection(id: ID!): SDKConnection
   user(id: ID!): User

@@ -1,46 +1,34 @@
 import { Table } from '@chakra-ui/react';
-import { Environment, FeatureFlag, featureFlagSchema } from '@avocet/core';
-import { useQuery } from '@tanstack/react-query';
-import request from 'graphql-request';
+import { Environment, FeatureFlag } from '@avocet/core';
 import FeatureFlagTableRow from './FeatureFlagTableRow';
-import { allFlagsQuery } from '#/lib/flag-queries';
+import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
+import { ALL_FEATURE_FLAGS } from '#/lib/flag-queries';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
+import { useGQLQuery } from '#/lib/graphql-queries';
 
-export interface FeatureFlagTableProps {
-  featureFlags: FeatureFlag[];
-  updateFlag: (updated: FeatureFlag) => void;
-  pinnedEnvironments: Environment[];
-}
+export default function FeatureFlagTable() {
+  const flagsQuery = useGQLQuery('allFeatureFlags', ALL_FEATURE_FLAGS);
+  const environmentsQuery = useGQLQuery('allEnvironments', ALL_ENVIRONMENTS);
 
-export default function FeatureFlagTable({
-  // featureFlags,
-  updateFlag,
-  pinnedEnvironments,
-}: FeatureFlagTableProps) {
-  const { isPending, isError, error, data } = useQuery({
-    queryKey: ['getFeatureFlags'],
-    // queryFn: async () => execute(allFlagsQuery),
-    queryFn: async () =>
-      request({
-        url: import.meta.env.VITE_GRAPHQL_SERVICE_URL,
-        document: allFlagsQuery,
-        variables: {},
-      }),
-  });
+  if (flagsQuery.isPending) return <Loader />;
 
-  if (isPending) return <Loader />;
+  if (flagsQuery.isError) return <ErrorBox error={flagsQuery.error} />;
 
-  if (isError) return <ErrorBox error={error} />;
-
-  const { allFeatureFlags } = data;
+  const { allFeatureFlags } = flagsQuery.data;
   const featureFlags: FeatureFlag[] = allFeatureFlags as FeatureFlag[];
+  let allEnvironments: Environment[] = [];
 
-  // TODO: remove this parse after resolving OverrideRule.type narrowing
-  // for better type safety, use Zod schema parsing instead of `as`:
-  // const featureFlags: FeatureFlag[] = featureFlagSchema
-  //   .array()
-  //   .parse(allFeatureFlags);
+  if (environmentsQuery.isSuccess)
+    allEnvironments = environmentsQuery.data.allEnvironments;
+  const pinnedEnvironments = allEnvironments.filter((env) => env.pinToLists);
+
+  if (featureFlags.length === 0)
+    return (
+      <ErrorBox
+        error={new Error('No feature flags found. Please create one.')}
+      />
+    );
 
   return (
     <Table.Root className="table">
@@ -61,7 +49,6 @@ export default function FeatureFlagTable({
         {featureFlags.map((flag) => (
           <FeatureFlagTableRow
             key={flag.id}
-            updateFlag={updateFlag}
             allEnvironmentNames={pinnedEnvironments.map((env) => env.name)}
             flag={flag}
           />
