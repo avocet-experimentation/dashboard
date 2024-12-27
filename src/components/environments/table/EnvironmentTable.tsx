@@ -6,16 +6,10 @@ import ErrorBox from '#/components/helpers/ErrorBox';
 import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
 import { useGQLQuery } from '#/lib/graphql-queries';
 
-export interface EnvironmentTableProps {
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-}
 /**
  * Table listing all Environments
  */
-export default function EnvironmentTable({
-  // updateEnvironment,
-  setIsLoading,
-}: EnvironmentTableProps) {
+export default function EnvironmentTable() {
   const { isPending, isError, error, data } = useGQLQuery(
     'allEnvironments',
     ALL_ENVIRONMENTS,
@@ -39,11 +33,7 @@ export default function EnvironmentTable({
         </Table.Header>
         <Table.Body>
           {environments.map((env: Environment) => (
-            <EnvironmentTableRow
-              key={env.id}
-              environment={env}
-              setIsLoading={setIsLoading}
-            />
+            <EnvironmentTableRow key={env.id} environment={env} />
           ))}
         </Table.Body>
       </Table.Root>
