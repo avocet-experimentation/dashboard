@@ -1,7 +1,7 @@
 /* for now, links to EventTable and FlagTable only
  */
 
-import { Flex, chakra, Icon, Text } from '@chakra-ui/react';
+import { Flex, chakra, Icon } from '@chakra-ui/react';
 import {
   Flag,
   Microscope,
@@ -12,10 +12,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'wouter';
 import LogoBox from './LogoBox';
-import { useAuth0 } from '@auth0/auth0-react';
-import { Avatar } from './ui/avatar';
-import { MenuRoot, MenuTrigger, MenuContent, MenuItem } from './ui/menu';
-import { Button } from './ui/button';
+import { UserProfileMenu } from './UserProfileMenu';
 
 const NavBox = chakra('div', {
   base: {
@@ -42,8 +39,6 @@ const NavText = chakra('p', {
 });
 
 export default function Navbar() {
-  const { logout, user } = useAuth0();
-
   return (
     <Flex
       bg="avocet-nav"
@@ -57,7 +52,7 @@ export default function Navbar() {
       width="90%"
       margin="auto"
     >
-      <LogoBox withLine={true} withTitle={true} logoSize="65px"/>
+      <LogoBox withLine={true} withTitle={true} logoSize="65px" />
       <NavBox>
         <Icon>
           <Flag />
@@ -106,24 +101,7 @@ export default function Navbar() {
           <NavText>Connections</NavText>
         </Link>
       </NavBox>
-      <MenuRoot positioning={{ placement: "top" }}>
-        <MenuTrigger asChild border="1px solid" borderColor="avocet-border" marginTop="auto" marginBottom="15px">
-          <Button width="90%" height="fit-content" justifyContent="space-evenly" variant="ghost" padding="10px">
-            <Avatar name={user?.name} src={user?.picture} size="sm"/>
-            <Text>
-              {user?.email}
-            </Text>
-          </Button>
-        </MenuTrigger>
-        <MenuContent>
-          <Link href='/profile' draggable={false}>
-            <MenuItem value="Profile">
-            Profile
-            </MenuItem>
-          </Link>
-          <MenuItem value="Logout" color="fg.error" draggable={false} _hover={{ bg: "bg.error", color: "fg.error", cursor: "pointer" }} onClick={() => logout()}>Logout</MenuItem>
-        </MenuContent>
-      </MenuRoot>
+      <UserProfileMenu />
     </Flex>
   );
 }
