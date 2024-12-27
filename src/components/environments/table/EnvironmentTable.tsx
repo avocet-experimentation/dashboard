@@ -19,8 +19,6 @@ export default function EnvironmentTable() {
 
   if (isError) return <ErrorBox error={error} />;
 
-  const environments = data.allEnvironments;
-
   return (
     <div>
       <Table.Root className="table">
@@ -32,7 +30,7 @@ export default function EnvironmentTable() {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {environments.map((env: Environment) => (
+          {data.allEnvironments.map((env: Environment) => (
             <EnvironmentTableRow key={env.id} environment={env} />
           ))}
         </Table.Body>

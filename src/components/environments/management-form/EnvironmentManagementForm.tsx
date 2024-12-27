@@ -6,10 +6,13 @@ import {
   environmentDraftSchema,
   SchemaParseError,
 } from '@avocet/core';
-import { useContext } from 'react';
-import { ServicesContext } from '#/services/ServiceContext';
 import { NameField } from '../../forms/DefinedFields';
 import ControlledSwitch from '../../forms/ControlledSwitch';
+import { useGQLMutation } from '#/lib/graphql-queries';
+import {
+  CREATE_ENVIRONMENT,
+  UPDATE_ENVIRONMENT,
+} from '#/lib/environment-queries';
 
 interface EnvironmentManagementFormProps {
   formId: string;
@@ -25,7 +28,27 @@ export default function EnvironmentManagementForm({
   setOpen,
   environment,
 }: EnvironmentManagementFormProps) {
-  const { environment: environmentService } = useContext(ServicesContext);
+  const handleSubmitSuccess = () => {
+    setOpen(false);
+  };
+
+  const handleSubmitError = <E extends Error>(error: E) => {
+    console.error(error); // TODO: handle the error better
+  };
+
+  const createEnv = useGQLMutation({
+    mutation: CREATE_ENVIRONMENT,
+    cacheKey: ['allEnvironments'],
+    onSuccess: handleSubmitSuccess,
+    onError: handleSubmitError,
+  });
+
+  const updateEnv = useGQLMutation({
+    mutation: UPDATE_ENVIRONMENT,
+    cacheKey: ['allEnvironments'],
+    onSuccess: handleSubmitSuccess,
+    onError: handleSubmitError,
+  });
 
   const defaultValues: EnvironmentDraft =
     environment ?? EnvironmentDraft.template({ name: '' });
@@ -33,13 +56,6 @@ export default function EnvironmentManagementForm({
   const formMethods = useForm<Environment>({
     defaultValues,
   });
-
-  const createOrUpdate = async (data: EnvironmentDraft) => {
-    if (environment) {
-      return environmentService.update(environment.id, data);
-    }
-    return environmentService.create(data);
-  };
 
   const onSubmit: SubmitHandler<EnvironmentDraft> = async (
     environmentContent,
@@ -51,19 +67,12 @@ export default function EnvironmentManagementForm({
       throw new SchemaParseError(safeParseResult);
     }
 
-    // setIsLoading(true);
-    try {
-      const response = await createOrUpdate(safeParseResult.data);
-      if (!response.ok) {
-        // todo: handle errors correctly
-        return;
-      }
-      // updateEnvironment(response.body);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      // setIsLoading(false);
-      setOpen(false);
+    if (environment) {
+      updateEnv.mutate({
+        partialEntry: { ...safeParseResult.data, id: environment.id },
+      });
+    } else {
+      createEnv.mutate({ newEntry: safeParseResult.data });
     }
   };
 

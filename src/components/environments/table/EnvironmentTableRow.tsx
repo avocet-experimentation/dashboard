@@ -1,6 +1,5 @@
 import { Environment } from '@avocet/core';
 import { Table, Text } from '@chakra-ui/react';
-import { useState } from 'react';
 import { lastUpdated, formatDate } from '#/lib/timeFunctions';
 import { Switch } from '../../ui/switch';
 import { Tooltip } from '../../ui/tooltip';
@@ -15,13 +14,9 @@ interface EnvironmentTableRowProps {
 export default function EnvironmentTableRow({
   environment,
 }: EnvironmentTableRowProps) {
-  const [env, setEnv] = useState<Environment>(environment);
   const { mutate, isPending } = useGQLMutation({
     mutation: UPDATE_ENVIRONMENT,
-    onSuccess: (data) => {
-      const updated = data.updateEnvironment;
-      if (updated !== null) setEnv(updated);
-    },
+    cacheKey: ['allEnvironments'],
   });
 
   const handleCheckedChange = (checked: boolean) => {
@@ -31,11 +26,11 @@ export default function EnvironmentTableRow({
   return (
     <Table.Row>
       <Table.Cell color="black" textDecor="none">
-        <EnvironmentManagementModal environment={env} />
+        <EnvironmentManagementModal environment={environment} />
       </Table.Cell>
-      <Table.Cell key={env.name}>
+      <Table.Cell key={environment.name}>
         <Switch
-          checked={env.defaultEnabled}
+          checked={environment.defaultEnabled}
           onCheckedChange={(e) => handleCheckedChange(e.checked)}
           disabled={isPending}
         />
@@ -44,9 +39,11 @@ export default function EnvironmentTableRow({
         <Tooltip
           showArrow
           openDelay={50}
-          content={formatDate(Number(env.updatedAt))}
+          content={formatDate(Number(environment.updatedAt))}
         >
-          <Text width="fit-content">{lastUpdated(Number(env.updatedAt))}</Text>
+          <Text width="fit-content">
+            {lastUpdated(Number(environment.updatedAt))}
+          </Text>
         </Tooltip>
       </Table.Cell>
     </Table.Row>
