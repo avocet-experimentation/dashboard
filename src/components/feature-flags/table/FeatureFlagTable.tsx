@@ -8,8 +8,8 @@ import ErrorBox from '#/components/helpers/ErrorBox';
 import { useGQLQuery } from '#/lib/graphql-queries';
 
 export default function FeatureFlagTable() {
-  const flagsQuery = useGQLQuery('allFeatureFlags', ALL_FEATURE_FLAGS);
-  const environmentsQuery = useGQLQuery('allEnvironments', ALL_ENVIRONMENTS);
+  const flagsQuery = useGQLQuery(['allFeatureFlags'], ALL_FEATURE_FLAGS);
+  const environmentsQuery = useGQLQuery(['allEnvironments'], ALL_ENVIRONMENTS);
 
   if (flagsQuery.isPending) return <Loader />;
 

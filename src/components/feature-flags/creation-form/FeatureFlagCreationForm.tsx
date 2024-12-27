@@ -32,7 +32,7 @@ export default function FeatureFlagCreationForm({
 }: FeatureFlagCreationFormProps) {
   const [, navigate] = useLocation();
   const { isPending, isError, error, data } = useGQLQuery(
-    'allEnvironments',
+    ['allEnvironments'],
     ALL_ENVIRONMENTS,
   );
 

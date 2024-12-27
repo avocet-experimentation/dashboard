@@ -18,7 +18,7 @@ import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
 
 export default function ExperimentTable() {
-  const experimentsQuery = useGQLQuery('allExperiments', ALL_EXPERIMENTS);
+  const experimentsQuery = useGQLQuery(['allExperiments'], ALL_EXPERIMENTS);
 
   if (experimentsQuery.isPending) return <Loader />;
 

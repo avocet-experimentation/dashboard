@@ -11,7 +11,7 @@ import { useGQLQuery } from '#/lib/graphql-queries';
  */
 export default function EnvironmentTable() {
   const { isPending, isError, error, data } = useGQLQuery(
-    'allEnvironments',
+    ['allEnvironments'],
     ALL_ENVIRONMENTS,
   );
 

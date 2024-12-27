@@ -37,7 +37,7 @@ export function useGQLQuery<
   H extends RequestOptions['requestHeaders'],
   V extends RequestOptions['variables'],
 >(
-  cacheKey: string,
+  cacheKey: any[],
   query: RequestDocument | TypedDocumentNode<T, V>,
   variables?: V,
   headers?: H,
@@ -51,7 +51,7 @@ export function useGQLQuery<
   ) => void,
 ) {
   const queryData = useQuery({
-    queryKey: [cacheKey],
+    queryKey: cacheKey,
     queryFn: getRequestFunc(query, variables, headers),
   });
 
