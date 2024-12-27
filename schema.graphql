@@ -161,7 +161,7 @@ type ForcedValue implements OverrideRule {
   startTimestamp: Float
   status: ExperimentStatus!
   type: OverrideRuleType!
-  value: String!
+  value: TextPrimitive!
 }
 
 type Metric {
@@ -216,7 +216,7 @@ input OverrideRuleInput {
   startTimestamp: Float
   status: ExperimentStatus!
   type: String!
-  value: String
+  value: TextPrimitive
 }
 
 enum OverrideRuleType {
@@ -340,6 +340,8 @@ input SDKConnectionDraft {
   environmentId: ID!
   name: String!
 }
+
+scalar TextPrimitive
 
 type Treatment {
   duration: Float!

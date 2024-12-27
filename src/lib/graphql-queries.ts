@@ -12,8 +12,8 @@ export * from './flag-queries.ts';
 
 export const getRequestFunc = <
   T,
-  H extends RequestOptions['requestHeaders'],
-  V extends RequestOptions['variables'],
+  H extends RequestOptions['requestHeaders'] = RequestOptions['requestHeaders'],
+  V extends RequestOptions['variables'] = RequestOptions['variables'],
 >(
   query: RequestDocument | TypedDocumentNode<T, V>,
   variables?: V,
@@ -50,85 +50,48 @@ export function useGQLQuery<
 }
 
 /**
- * (WIP) Hook to simplify react-query useMutation calls
+ * Hook to simplify react-query useMutation calls
  */
 export function useGQLMutation<
   T,
+  A,
   H extends RequestOptions['requestHeaders'],
   V extends RequestOptions['variables'],
 >({
   mutation,
-  variables,
+  // getVariablesFunc,
   headers,
+  onSuccess,
+  onError,
+  onSettled,
 }: {
   mutation: RequestDocument | TypedDocumentNode<T, V>;
-  variables?: V;
+  // getVariablesFunc: (...args: A[]) => V;
   headers?: H;
+  onSuccess?: (data: T, variables: V, context: unknown) => void;
+  onError?: (error: Error, variables: V, context: unknown) => void;
+  onSettled?: (
+    data: unknown,
+    error: Error | null,
+    variables: V,
+    context: unknown,
+  ) => void;
 }) {
   // see https://tanstack.com/query/latest/docs/framework/react/guides/mutations
   const mutationData = useMutation({
-    mutationFn: getRequestFunc(mutation, variables, headers),
-    onSuccess: (data, variables, context) => {
-      console.log({ data });
-      const updated = data.updateEnvironment;
-      if (updated === null) return;
-      setEnv(updated);
+    mutationFn: (args: V) => {
+      // const variables = getVariablesFunc(...args);
+
+      return request({
+        url: String(import.meta.env.VITE_GRAPHQL_SERVICE_URL),
+        document: mutation,
+        variables: args,
+        requestHeaders: headers,
+      });
     },
-    onError: (error, variables, context) => {},
-    onSettled: (data, error, variables, context) => {},
+    onSuccess,
+    onError,
+    onSettled,
   });
-
   return mutationData;
-}
-
-interface UseGQLQueryParams<
-  T = any,
-  H extends RequestOptions['requestHeaders'] = RequestOptions['requestHeaders'],
-  V extends RequestOptions['variables'] = RequestOptions['variables'],
-> {
-  cacheKey: string;
-  query: RequestDocument | TypedDocumentNode<T, V>;
-  variables?: V;
-  headers?: H;
-}
-
-/**
- * (WIP) Combine many queries into one for convenience.
- *
- * todo:
- * - fix typing of outputs
- */
-function useGQLQueries<
-  T extends Array<any>,
-  TCombinedResult = QueriesResults<T>,
->(paramSets: [UseGQLQueryParams, ...UseGQLQueryParams[]]) {
-  if (paramSets.length === 0) {
-    throw new TypeError('Must pass at least one set of query arguments');
-  }
-
-  const queries: [...QueriesOptions<T>] = paramSets.map(
-    ({ cacheKey, query, variables, headers }) => ({
-      queryKey: [cacheKey],
-      queryFn: getRequestFunc(query, variables, headers),
-    }),
-  ) as [...QueriesOptions<T>];
-
-  const results = useQueries<T, TCombinedResult>({
-    queries,
-  });
-
-  const isPending = results.some((query) => query.isPending);
-  const isError = results.some((query) => query.isError);
-  const isSuccess = results.every((query) => query.isSuccess);
-  const data = results.reduce(
-    (acc, query) => (query.isSuccess ? Object.assign(acc, query.data) : acc),
-    {},
-  );
-
-  return {
-    isPending,
-    isError,
-    isSuccess,
-    data,
-  };
 }
