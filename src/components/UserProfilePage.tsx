@@ -4,7 +4,7 @@ import { Avatar } from './ui/avatar';
 import { useState } from 'react';
 import { Button } from './ui/button';
 
-export default function UserProfile() {
+export default function UserProfilePage() {
   const { user, getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState(null);
 
@@ -16,11 +16,11 @@ export default function UserProfile() {
       const token = await getAccessTokenSilently({
         authorizationParams: {
           audience: authAudience,
-        }
+        },
       });
       const response = await fetch(`${apiUrl}/admin/profile`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         credentials: 'include',
@@ -39,12 +39,17 @@ export default function UserProfile() {
     } catch (error) {
       console.error(error);
       setData(error);
-    } 
-  }
+    }
+  };
   return (
     <Stack gap={4} padding="25px" height="100vh" overflowY="scroll">
       <Heading size="3xl">Your Profile</Heading>
-      <Flex dir="row" maxWidth="300px" justifyContent="space-between" alignItems="center">
+      <Flex
+        dir="row"
+        maxWidth="300px"
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <Avatar src={user?.picture} width="100px" height="100px" />
         <Stack textAlign="left">
           <Text fontSize="2xl">{user?.name}</Text>
@@ -55,8 +60,10 @@ export default function UserProfile() {
         <Button width="500px" onClick={fetchData}>
           Fetch Data
         </Button>
-        <Text width="500px" height="200px" overflowY="scroll">{(data && (data.token || data.error)) ?? "No data"}</Text>
+        <Text width="500px" height="200px" overflowY="scroll">
+          {(data && (data.token || data.error)) ?? 'No data'}
+        </Text>
       </Stack>
     </Stack>
-  )
+  );
 }
