@@ -28,7 +28,7 @@ type Enrollment {
 }
 
 input EnrollmentInput {
-  attributes: [String]
+  attributes: [String!]
   proportion: Float
 }
 
@@ -51,14 +51,14 @@ scalar EnvironmentNames
 
 type Experiment {
   createdAt: Float!
-  definedTreatments: [Treatment]!
-  dependents: [Metric]!
+  definedTreatments: [Treatment!]!
+  dependents: [Metric!]!
   description: String
   endTimestamp: Float
   enrollment: Enrollment!
   environmentName: String!
-  flagIds: [String]!
-  groups: [ExperimentGroup]!
+  flagIds: [String!]!
+  groups: [ExperimentGroup!]!
   hypothesis: String
   id: ID!
   name: String!
@@ -69,14 +69,14 @@ type Experiment {
 }
 
 input ExperimentDraft {
-  definedTreatments: [TreatmentInput]!
-  dependents: [MetricInput]!
+  definedTreatments: [TreatmentInput!]!
+  dependents: [MetricInput!]!
   description: String
   endTimestamp: Float
   enrollment: EnrollmentInput!
   environmentName: String!
-  flagIds: [String]!
-  groups: [ExperimentGroupInput]!
+  flagIds: [String!]!
+  groups: [ExperimentGroupInput!]!
   hypothesis: String
   name: String!
   startTimestamp: Float
@@ -90,7 +90,7 @@ type ExperimentGroup {
   id: ID!
   name: String!
   proportion: Float!
-  sequence: [String]!
+  sequence: [String!]!
 }
 
 input ExperimentGroupInput {
@@ -99,7 +99,7 @@ input ExperimentGroupInput {
   id: ID!
   name: String!
   proportion: Float!
-  sequence: [String]!
+  sequence: [String!]!
 }
 
 type ExperimentReference implements OverrideRule {
@@ -136,7 +136,7 @@ input FeatureFlagDraft {
   description: String
   environmentNames: EnvironmentNames
   name: String!
-  overrideRules: [OverrideRuleInput]!
+  overrideRules: [OverrideRuleInput!]!
   value: FlagValueDef!
 }
 
@@ -190,7 +190,7 @@ type Mutation {
   updateClientPropDef(partialEntry: PartialClientPropDefWithId!): ClientPropDef
   updateEnvironment(partialEntry: PartialEnvironmentWithId!): Environment
   updateExperiment(partialEntry: PartialExperimentWithId!): Experiment
-  updateFeatureFlag(partialEntry: PartialFeatureFlagWithStringId!): FeatureFlag
+  updateFeatureFlag(partialEntry: PartialFeatureFlagWithId!): FeatureFlag
   updateSDKConnection(partialEntry: PartialSDKConnectionWithId!): SDKConnection
   updateUser(partialEntry: PartialUserWithId!): User
 }
@@ -254,14 +254,14 @@ input PartialEnvironmentWithId {
 
 input PartialExperimentWithId {
   createdAt: Float
-  definedTreatments: [TreatmentInput]
-  dependents: [MetricInput]
+  definedTreatments: [TreatmentInput!]
+  dependents: [MetricInput!]
   description: String
   endTimestamp: Float
   enrollment: EnrollmentInput
   environmentName: String
-  flagIds: [String]
-  groups: [ExperimentGroupInput]
+  flagIds: [String!]
+  groups: [ExperimentGroupInput!]
   hypothesis: String
   id: ID!
   name: String
@@ -271,19 +271,19 @@ input PartialExperimentWithId {
   updatedAt: Float
 }
 
-input PartialFeatureFlagWithStringId {
+input PartialFeatureFlagWithId {
   createdAt: Float
   description: String
   environmentNames: EnvironmentNames
   id: ID!
   name: String
-  overrideRules: [OverrideRuleInput]
+  overrideRules: [OverrideRuleInput!]
   updatedAt: Float
   value: FlagValueDef
 }
 
 input PartialSDKConnectionWithId {
-  allowedOrigins: [String]
+  allowedOrigins: [String!]
   clientKeyHash: String
   createdAt: Float
   description: String
@@ -323,7 +323,7 @@ type Query {
 }
 
 type SDKConnection {
-  allowedOrigins: [String]!
+  allowedOrigins: [String!]!
   clientKeyHash: String!
   createdAt: Float!
   description: String
@@ -334,7 +334,7 @@ type SDKConnection {
 }
 
 input SDKConnectionDraft {
-  allowedOrigins: [String]!
+  allowedOrigins: [String!]!
   clientKeyHash: String!
   description: String
   environmentId: ID!
@@ -345,14 +345,14 @@ scalar TextPrimitive
 
 type Treatment {
   duration: Float!
-  flagStates: [FlagState]!
+  flagStates: [FlagState!]!
   id: ID!
   name: String!
 }
 
 input TreatmentInput {
   duration: Float!
-  flagStates: [FlagStateInput]!
+  flagStates: [FlagStateInput!]!
   id: ID!
   name: String!
 }

@@ -45,7 +45,7 @@ export type Enrollment = {
 };
 
 export type EnrollmentInput = {
-  attributes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  attributes?: InputMaybe<Array<Scalars['String']['input']>>;
   proportion?: InputMaybe<Scalars['Float']['input']>;
 };
 
@@ -68,14 +68,14 @@ export type EnvironmentDraft = {
 export type Experiment = {
   __typename?: 'Experiment';
   createdAt: Scalars['Float']['output'];
-  definedTreatments: Array<Maybe<Treatment>>;
-  dependents: Array<Maybe<Metric>>;
+  definedTreatments: Array<Treatment>;
+  dependents: Array<Metric>;
   description: Maybe<Scalars['String']['output']>;
   endTimestamp: Maybe<Scalars['Float']['output']>;
   enrollment: Enrollment;
   environmentName: Scalars['String']['output'];
-  flagIds: Array<Maybe<Scalars['String']['output']>>;
-  groups: Array<Maybe<ExperimentGroup>>;
+  flagIds: Array<Scalars['String']['output']>;
+  groups: Array<ExperimentGroup>;
   hypothesis: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -86,14 +86,14 @@ export type Experiment = {
 };
 
 export type ExperimentDraft = {
-  definedTreatments: Array<InputMaybe<TreatmentInput>>;
-  dependents: Array<InputMaybe<MetricInput>>;
+  definedTreatments: Array<TreatmentInput>;
+  dependents: Array<MetricInput>;
   description?: InputMaybe<Scalars['String']['input']>;
   endTimestamp?: InputMaybe<Scalars['Float']['input']>;
   enrollment: EnrollmentInput;
   environmentName: Scalars['String']['input'];
-  flagIds: Array<InputMaybe<Scalars['String']['input']>>;
-  groups: Array<InputMaybe<ExperimentGroupInput>>;
+  flagIds: Array<Scalars['String']['input']>;
+  groups: Array<ExperimentGroupInput>;
   hypothesis?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   startTimestamp?: InputMaybe<Scalars['Float']['input']>;
@@ -108,7 +108,7 @@ export type ExperimentGroup = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   proportion: Scalars['Float']['output'];
-  sequence: Array<Maybe<Scalars['String']['output']>>;
+  sequence: Array<Scalars['String']['output']>;
 };
 
 export type ExperimentGroupInput = {
@@ -117,7 +117,7 @@ export type ExperimentGroupInput = {
   id: Scalars['ID']['input'];
   name: Scalars['String']['input'];
   proportion: Scalars['Float']['input'];
-  sequence: Array<InputMaybe<Scalars['String']['input']>>;
+  sequence: Array<Scalars['String']['input']>;
 };
 
 export type ExperimentReference = OverrideRule & {
@@ -157,7 +157,7 @@ export type FeatureFlagDraft = {
   description?: InputMaybe<Scalars['String']['input']>;
   environmentNames?: InputMaybe<Scalars['EnvironmentNames']['input']>;
   name: Scalars['String']['input'];
-  overrideRules: Array<InputMaybe<OverrideRuleInput>>;
+  overrideRules: Array<OverrideRuleInput>;
   value: Scalars['FlagValueDef']['input'];
 };
 
@@ -295,7 +295,7 @@ export type MutationUpdateExperimentArgs = {
 
 
 export type MutationUpdateFeatureFlagArgs = {
-  partialEntry: PartialFeatureFlagWithStringId;
+  partialEntry: PartialFeatureFlagWithId;
 };
 
 
@@ -368,14 +368,14 @@ export type PartialEnvironmentWithId = {
 
 export type PartialExperimentWithId = {
   createdAt?: InputMaybe<Scalars['Float']['input']>;
-  definedTreatments?: InputMaybe<Array<InputMaybe<TreatmentInput>>>;
-  dependents?: InputMaybe<Array<InputMaybe<MetricInput>>>;
+  definedTreatments?: InputMaybe<Array<TreatmentInput>>;
+  dependents?: InputMaybe<Array<MetricInput>>;
   description?: InputMaybe<Scalars['String']['input']>;
   endTimestamp?: InputMaybe<Scalars['Float']['input']>;
   enrollment?: InputMaybe<EnrollmentInput>;
   environmentName?: InputMaybe<Scalars['String']['input']>;
-  flagIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  groups?: InputMaybe<Array<InputMaybe<ExperimentGroupInput>>>;
+  flagIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  groups?: InputMaybe<Array<ExperimentGroupInput>>;
   hypothesis?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
@@ -385,19 +385,19 @@ export type PartialExperimentWithId = {
   updatedAt?: InputMaybe<Scalars['Float']['input']>;
 };
 
-export type PartialFeatureFlagWithStringId = {
+export type PartialFeatureFlagWithId = {
   createdAt?: InputMaybe<Scalars['Float']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   environmentNames?: InputMaybe<Scalars['EnvironmentNames']['input']>;
   id: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
-  overrideRules?: InputMaybe<Array<InputMaybe<OverrideRuleInput>>>;
+  overrideRules?: InputMaybe<Array<OverrideRuleInput>>;
   updatedAt?: InputMaybe<Scalars['Float']['input']>;
   value?: InputMaybe<Scalars['FlagValueDef']['input']>;
 };
 
 export type PartialSdkConnectionWithId = {
-  allowedOrigins?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  allowedOrigins?: InputMaybe<Array<Scalars['String']['input']>>;
   clientKeyHash?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['Float']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -512,7 +512,7 @@ export type QueryUserArgs = {
 
 export type SdkConnection = {
   __typename?: 'SDKConnection';
-  allowedOrigins: Array<Maybe<Scalars['String']['output']>>;
+  allowedOrigins: Array<Scalars['String']['output']>;
   clientKeyHash: Scalars['String']['output'];
   createdAt: Scalars['Float']['output'];
   description: Maybe<Scalars['String']['output']>;
@@ -523,7 +523,7 @@ export type SdkConnection = {
 };
 
 export type SdkConnectionDraft = {
-  allowedOrigins: Array<InputMaybe<Scalars['String']['input']>>;
+  allowedOrigins: Array<Scalars['String']['input']>;
   clientKeyHash: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   environmentId: Scalars['ID']['input'];
@@ -533,14 +533,14 @@ export type SdkConnectionDraft = {
 export type Treatment = {
   __typename?: 'Treatment';
   duration: Scalars['Float']['output'];
-  flagStates: Array<Maybe<FlagState>>;
+  flagStates: Array<FlagState>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
 };
 
 export type TreatmentInput = {
   duration: Scalars['Float']['input'];
-  flagStates: Array<InputMaybe<FlagStateInput>>;
+  flagStates: Array<FlagStateInput>;
   id: Scalars['ID']['input'];
   name: Scalars['String']['input'];
 };
@@ -613,14 +613,14 @@ export type CreateExperimentMutationVariables = Exact<{
 }>;
 
 
-export type CreateExperimentMutation = { __typename?: 'Mutation', createExperiment: { __typename?: 'Experiment', id: string, name: string, environmentName: string, status: ExperimentStatus, type: string, description: string | null, hypothesis: string | null, startTimestamp: number | null, endTimestamp: number | null, flagIds: Array<string | null>, createdAt: number, updatedAt: number, enrollment: { __typename?: 'Enrollment', attributes: Array<string | null> | null, proportion: number | null }, groups: Array<{ __typename?: 'ExperimentGroup', id: string, name: string, description: string | null, proportion: number, cycles: number, sequence: Array<string | null> } | null>, definedTreatments: Array<{ __typename?: 'Treatment', id: string, name: string, duration: number, flagStates: Array<{ __typename?: 'FlagState', id: string, value: string } | null> } | null>, dependents: Array<{ __typename?: 'Metric', fieldName: string | null, fieldDataType: string | null } | null> } };
+export type CreateExperimentMutation = { __typename?: 'Mutation', createExperiment: { __typename?: 'Experiment', id: string, name: string, environmentName: string, status: ExperimentStatus, type: string, description: string | null, hypothesis: string | null, startTimestamp: number | null, endTimestamp: number | null, flagIds: Array<string>, createdAt: number, updatedAt: number, enrollment: { __typename?: 'Enrollment', attributes: Array<string | null> | null, proportion: number | null }, groups: Array<{ __typename?: 'ExperimentGroup', id: string, name: string, description: string | null, proportion: number, cycles: number, sequence: Array<string> }>, definedTreatments: Array<{ __typename?: 'Treatment', id: string, name: string, duration: number, flagStates: Array<{ __typename?: 'FlagState', id: string, value: string }> }>, dependents: Array<{ __typename?: 'Metric', fieldName: string | null, fieldDataType: string | null }> } };
 
 export type ExperimentQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type ExperimentQuery = { __typename?: 'Query', experiment: { __typename?: 'Experiment', id: string, name: string, environmentName: string, status: ExperimentStatus, type: string, description: string | null, hypothesis: string | null, startTimestamp: number | null, endTimestamp: number | null, flagIds: Array<string | null>, createdAt: number, updatedAt: number, enrollment: { __typename?: 'Enrollment', attributes: Array<string | null> | null, proportion: number | null }, groups: Array<{ __typename?: 'ExperimentGroup', id: string, name: string, description: string | null, proportion: number, cycles: number, sequence: Array<string | null> } | null>, definedTreatments: Array<{ __typename?: 'Treatment', id: string, name: string, duration: number, flagStates: Array<{ __typename?: 'FlagState', id: string, value: string } | null> } | null>, dependents: Array<{ __typename?: 'Metric', fieldName: string | null, fieldDataType: string | null } | null> } | null };
+export type ExperimentQuery = { __typename?: 'Query', experiment: { __typename?: 'Experiment', id: string, name: string, environmentName: string, status: ExperimentStatus, type: string, description: string | null, hypothesis: string | null, startTimestamp: number | null, endTimestamp: number | null, flagIds: Array<string>, createdAt: number, updatedAt: number, enrollment: { __typename?: 'Enrollment', attributes: Array<string | null> | null, proportion: number | null }, groups: Array<{ __typename?: 'ExperimentGroup', id: string, name: string, description: string | null, proportion: number, cycles: number, sequence: Array<string> }>, definedTreatments: Array<{ __typename?: 'Treatment', id: string, name: string, duration: number, flagStates: Array<{ __typename?: 'FlagState', id: string, value: string }> }>, dependents: Array<{ __typename?: 'Metric', fieldName: string | null, fieldDataType: string | null }> } | null };
 
 export type AllExperimentsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -635,7 +635,7 @@ export type UpdateExperimentMutationVariables = Exact<{
 }>;
 
 
-export type UpdateExperimentMutation = { __typename?: 'Mutation', updateExperiment: { __typename?: 'Experiment', id: string, name: string, environmentName: string, status: ExperimentStatus, type: string, description: string | null, hypothesis: string | null, startTimestamp: number | null, endTimestamp: number | null, flagIds: Array<string | null>, enrollment: { __typename?: 'Enrollment', attributes: Array<string | null> | null, proportion: number | null }, groups: Array<{ __typename?: 'ExperimentGroup', id: string, name: string, description: string | null, proportion: number, cycles: number, sequence: Array<string | null> } | null>, definedTreatments: Array<{ __typename?: 'Treatment', id: string, name: string, duration: number, flagStates: Array<{ __typename?: 'FlagState', id: string, value: string } | null> } | null>, dependents: Array<{ __typename?: 'Metric', fieldName: string | null, fieldDataType: string | null } | null> } | null };
+export type UpdateExperimentMutation = { __typename?: 'Mutation', updateExperiment: { __typename?: 'Experiment', id: string, name: string, environmentName: string, status: ExperimentStatus, type: string, description: string | null, hypothesis: string | null, startTimestamp: number | null, endTimestamp: number | null, flagIds: Array<string>, enrollment: { __typename?: 'Enrollment', attributes: Array<string | null> | null, proportion: number | null }, groups: Array<{ __typename?: 'ExperimentGroup', id: string, name: string, description: string | null, proportion: number, cycles: number, sequence: Array<string> }>, definedTreatments: Array<{ __typename?: 'Treatment', id: string, name: string, duration: number, flagStates: Array<{ __typename?: 'FlagState', id: string, value: string }> }>, dependents: Array<{ __typename?: 'Metric', fieldName: string | null, fieldDataType: string | null }> } | null };
 
 export type DeleteExperimentMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -667,7 +667,7 @@ export type AllFeatureFlagsQueryVariables = Exact<{
 export type AllFeatureFlagsQuery = { __typename?: 'Query', allFeatureFlags: Array<{ __typename?: 'FeatureFlag', id: string, createdAt: number, updatedAt: number, name: string, description: string | null, value: any, environmentNames: any | null, overrideRules: Array<{ __typename?: 'ExperimentReference', type: OverrideRuleType, name: string, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string | null> | null, proportion: number | null } } | { __typename?: 'ForcedValue', type: OverrideRuleType, value: any, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string | null> | null, proportion: number | null } }> }> };
 
 export type UpdateFeatureFlagMutationVariables = Exact<{
-  partialEntry: PartialFeatureFlagWithStringId;
+  partialEntry: PartialFeatureFlagWithId;
 }>;
 
 
@@ -693,5 +693,5 @@ export const DeleteExperimentDocument = {"kind":"Document","definitions":[{"kind
 export const CreateFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"newEntry"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FeatureFlagDraft"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFeatureFlag"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"newEntry"},"value":{"kind":"Variable","name":{"kind":"Name","value":"newEntry"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"environmentNames"}},{"kind":"Field","name":{"kind":"Name","value":"overrideRules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"environmentName"}},{"kind":"Field","name":{"kind":"Name","value":"enrollment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"attributes"}},{"kind":"Field","name":{"kind":"Name","value":"proportion"}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"startTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"endTimestamp"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ExperimentReference"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ForcedValue"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateFeatureFlagMutation, CreateFeatureFlagMutationVariables>;
 export const FeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"featureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"featureFlag"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"environmentNames"}},{"kind":"Field","name":{"kind":"Name","value":"overrideRules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"environmentName"}},{"kind":"Field","name":{"kind":"Name","value":"enrollment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"attributes"}},{"kind":"Field","name":{"kind":"Name","value":"proportion"}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"startTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"endTimestamp"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ExperimentReference"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ForcedValue"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]}}]} as unknown as DocumentNode<FeatureFlagQuery, FeatureFlagQueryVariables>;
 export const AllFeatureFlagsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"allFeatureFlags"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"allFeatureFlags"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"environmentNames"}},{"kind":"Field","name":{"kind":"Name","value":"overrideRules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"environmentName"}},{"kind":"Field","name":{"kind":"Name","value":"enrollment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"attributes"}},{"kind":"Field","name":{"kind":"Name","value":"proportion"}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"startTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"endTimestamp"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ExperimentReference"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ForcedValue"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]}}]} as unknown as DocumentNode<AllFeatureFlagsQuery, AllFeatureFlagsQueryVariables>;
-export const UpdateFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"partialEntry"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PartialFeatureFlagWithStringId"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFeatureFlag"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"partialEntry"},"value":{"kind":"Variable","name":{"kind":"Name","value":"partialEntry"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"environmentNames"}},{"kind":"Field","name":{"kind":"Name","value":"overrideRules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"environmentName"}},{"kind":"Field","name":{"kind":"Name","value":"enrollment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"attributes"}},{"kind":"Field","name":{"kind":"Name","value":"proportion"}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"startTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"endTimestamp"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ExperimentReference"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ForcedValue"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]}}]} as unknown as DocumentNode<UpdateFeatureFlagMutation, UpdateFeatureFlagMutationVariables>;
+export const UpdateFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"partialEntry"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PartialFeatureFlagWithId"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFeatureFlag"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"partialEntry"},"value":{"kind":"Variable","name":{"kind":"Name","value":"partialEntry"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"environmentNames"}},{"kind":"Field","name":{"kind":"Name","value":"overrideRules"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"environmentName"}},{"kind":"Field","name":{"kind":"Name","value":"enrollment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"attributes"}},{"kind":"Field","name":{"kind":"Name","value":"proportion"}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"startTimestamp"}},{"kind":"Field","name":{"kind":"Name","value":"endTimestamp"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ExperimentReference"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ForcedValue"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]}}]} as unknown as DocumentNode<UpdateFeatureFlagMutation, UpdateFeatureFlagMutationVariables>;
 export const DeleteFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFeatureFlag"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteFeatureFlagMutation, DeleteFeatureFlagMutationVariables>;

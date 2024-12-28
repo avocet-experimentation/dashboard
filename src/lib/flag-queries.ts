@@ -103,7 +103,7 @@ export const ALL_FEATURE_FLAGS = graphql(`
 `);
 
 export const UPDATE_FEATURE_FLAG = graphql(`
-  mutation updateFeatureFlag($partialEntry: PartialFeatureFlagWithStringId!) {
+  mutation updateFeatureFlag($partialEntry: PartialFeatureFlagWithId!) {
     updateFeatureFlag(partialEntry: $partialEntry) {
       id
       createdAt
