@@ -1,7 +1,7 @@
 /* for now, links to EventTable and FlagTable only
  */
 
-import { Flex, chakra, Icon, Text } from '@chakra-ui/react';
+import { Flex, chakra, Icon } from '@chakra-ui/react';
 import {
   Flag,
   Microscope,
@@ -10,14 +10,14 @@ import {
   Earth,
   Cable,
 } from 'lucide-react';
-import AvocetLogo from '../assets/svgs/avocet-logo.svg';
 import { Link } from 'wouter';
+import LogoBox from './LogoBox';
+import { UserProfileMenu } from './UserProfileMenu';
 
 const NavBox = chakra('div', {
   base: {
     width: '90%',
     borderRadius: '5px',
-    color: 'black',
     height: '50px',
     display: 'flex',
     flexDirection: 'row',
@@ -25,52 +25,34 @@ const NavBox = chakra('div', {
     fontSize: '1.15em',
     padding: '0 20px',
     _hover: {
-      bg: 'gray.100',
+      bg: 'avocet-hover',
     },
   },
 });
 
 const NavText = chakra('p', {
   base: {
-    color: 'black',
     textDecoration: 'none',
     padding: '15px',
     width: '200px',
   },
 });
 
-const LogoBox = () => {
-  return (
-    <Flex
-      borderBottom="1px solid"
-      borderColor="gray.400"
-      width="100%"
-      height="60px"
-      marginBottom="25px"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <chakra.img src={AvocetLogo} height="45px" />
-      <Text fontFamily="Pacifico" fontSize="2em">
-        avocet
-      </Text>
-    </Flex>
-  );
-};
-
 export default function Navbar() {
   return (
     <Flex
+      bg="avocet-nav"
+      color="avocet-text"
       direction="column"
-      bg="white"
       alignItems="center"
-      border="1px solid black"
+      border="1px solid"
+      // borderColor="avocet-border"
       borderRadius="5px"
       height="98%"
       width="90%"
       margin="auto"
     >
-      <LogoBox />
+      <LogoBox withLine={true} withTitle={true} logoSize="65px" />
       <NavBox>
         <Icon>
           <Flag />
@@ -119,6 +101,7 @@ export default function Navbar() {
           <NavText>Connections</NavText>
         </Link>
       </NavBox>
+      <UserProfileMenu />
     </Flex>
   );
 }

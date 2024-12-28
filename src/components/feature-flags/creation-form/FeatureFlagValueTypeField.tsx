@@ -50,7 +50,7 @@ export default function FeatureFlagValueTypeField({
             <SelectTrigger>
               <SelectValueText />
             </SelectTrigger>
-            <SelectContent zIndex="popover">
+            <SelectContent bg="avocet-bg" zIndex="popover">
               {valueTypes.items.map((type) => (
                 <SelectItem item={type} key={type.value}>
                   {type.label}

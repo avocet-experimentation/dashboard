@@ -80,7 +80,7 @@ export default function ControlledSelect<
             <SelectTrigger>
               <SelectValueText placeholder={placeholder} />
             </SelectTrigger>
-            <SelectContent zIndex="popover">
+            <SelectContent bg="avocet-bg" zIndex="popover">
               {optionCollection.items.map((option) => (
                 <SelectItem item={option} key={option.label} cursor="pointer">
                   {option.label}
