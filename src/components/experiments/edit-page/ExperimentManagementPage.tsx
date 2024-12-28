@@ -28,84 +28,150 @@ import LinkedFlagsSection from './LinkedFlagsSection';
 import PageEditable from '#/components/forms/PageEditable';
 import PageSelect from '#/components/forms/PageSelect';
 import { ExperimentContext } from '../ExperimentContext';
+import {
+  ALL_FEATURE_FLAGS,
+  getRequestFunc,
+  useGQLMutation,
+  useGQLQuery,
+} from '#/lib/graphql-queries';
+import { EXPERIMENT, UPDATE_EXPERIMENT } from '#/lib/experiment-queries';
+import ErrorBox from '#/components/helpers/ErrorBox';
+import Loader from '#/components/helpers/Loader';
+import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
+import { useQuery } from '@tanstack/react-query';
+import request from 'graphql-request';
 
 export default function ExperimentManagementPage() {
-  const { isLoading, setIsLoading } = useContext(ExperimentContext);
+  // const { isLoading, setIsLoading } = useContext(ExperimentContext);
   // const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [experiment, setExperiment] = useState<Experiment | null>(null);
-  const [environments, setEnvironments] = useState<Environment[]>();
-  const [featureFlags, setFeatureFlags] = useState<FeatureFlag[]>([]);
-  const [availableFlags, setAvailableFlags] = useState<FeatureFlag[]>([]);
+  // const [environments, setEnvironments] = useState<Environment[]>();
+  // const [featureFlags, setFeatureFlags] = useState<FeatureFlag[]>([]);
+  // const [availableFlags, setAvailableFlags] = useState<FeatureFlag[]>([]);
+  // const services = useContext(ServicesContext);
+  // const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [match, params] = useRoute('/experiments/:id');
   const [location, setLocation] = useLocation();
-  const services = useContext(ServicesContext);
 
-  if (params === null) {
-    throw new Error("Missing 'id' param!");
+  // todo: encapsulate useRoute hook into separate component, which will then
+  // redirect users to this page if params.id exitsts.
+  const { isPending, isError, error, data } = useGQLQuery(
+    ['experiment', params.id],
+    EXPERIMENT,
+    { id: params.id },
+  );
+
+  const placeholderFlagData: { allFeatureFlags: FeatureFlag[] } = {
+    allFeatureFlags: [],
+  };
+
+  // const flagsQuery = useQuery({
+  //   queryKey: ['allFeatureFlags'],
+  //   queryFn: async () => {
+  //     return request({
+  //       url: String(import.meta.env.VITE_GRAPHQL_SERVICE_URL),
+  //       document: ALL_FEATURE_FLAGS,
+  //       variables: {},
+  //       requestHeaders: {},
+  //     });
+  //   },
+  const flagsQuery = useQuery({
+    queryKey: ['allFeatureFlags'],
+    queryFn: async () => {
+      return request({
+        url: String(import.meta.env.VITE_GRAPHQL_SERVICE_URL),
+        document: ALL_FEATURE_FLAGS,
+        variables: {},
+        requestHeaders: {},
+      });
+    },
+    placeholderData: placeholderFlagData,
+  });
+  const environmentsQuery = useQuery({
+    queryKey: ['allEnvironments'],
+    queryFn: async () => {
+      getRequestFunc(ALL_ENVIRONMENTS);
+    },
+  });
+
+  const { mutate } = useGQLMutation({
+    mutation: UPDATE_EXPERIMENT,
+    cacheKey: ['experiment', params.id],
+  });
+
+  if (flagsQuery.isSuccess) console.table(flagsQuery.data.allFeatureFlags);
+
+  if (isPending) return <Loader label="Loading experiment..." />;
+
+  if (isError) return <ErrorBox error={error} />;
+
+  const { experiment } = data as { experiment: Experiment | null };
+
+  if (params === null || experiment === null) {
+    // throw new Error("Missing 'id' param!");
+    return <NotFound componentName="Experiment" />;
   }
+  // useEffect(() => {
+  //   const handleGetExperiment = async () => {
+  //     if (params) {
+  //       try {
+  //         const response = await services.experiment.get(params.id);
+  //         if (response.ok) {
+  //           setExperiment(response.body);
+  //         }
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     }
+  //     setIsLoading(false);
+  //   };
 
-  useEffect(() => {
-    const handleGetExperiment = async () => {
-      if (params) {
-        try {
-          const response = await services.experiment.get(params.id);
-          if (response.ok) {
-            setExperiment(response.body);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      setIsLoading(false);
-    };
+  //   handleGetExperiment();
+  //   services.environment
+  //     .getMany()
+  //     .then((response) => setEnvironments(response.body));
+  // }, []);
 
-    handleGetExperiment();
-    services.environment
-      .getMany()
-      .then((response) => setEnvironments(response.body));
-  }, []);
+  // useEffect(() => {
+  //   const fetchFlags = async () => {
+  //     if (experiment === null) return;
+  //     const response = await services.featureFlag.getAllFeatures();
+  //     if (!response.ok) {
+  //       return;
+  //     }
 
-  useEffect(() => {
-    const fetchFlags = async () => {
-      if (experiment === null) return;
-      const response = await services.featureFlag.getAll();
-      if (!response.ok) {
-        return;
-      }
+  //     setFeatureFlags(response.body);
+  //     const inEnvironment = response.body.filter(
+  //       (flag) => experiment.environmentName in flag.environmentNames,
+  //     );
+  //     setAvailableFlags(inEnvironment);
+  //   };
 
-      setFeatureFlags(response.body);
-      const inEnvironment = response.body.filter(
-        (flag) => experiment.environmentName in flag.environmentNames,
-      );
-      setAvailableFlags(inEnvironment);
-    };
-
-    fetchFlags();
-  }, [experiment]);
+  //   fetchFlags();
+  // }, [experiment]);
 
   const handleExperimentUpdate = async (
     updates: Partial<ExperimentDraft>,
   ): Promise<boolean> => {
-    const expResponse = await services.experiment.update(params.id, updates);
+    const expResponse = mutate({ partialEntry: { id: params.id, ...updates } });
 
     return expResponse.ok;
   };
 
-  const handleDeleteClick = async () => {
-    if (!experiment) return;
-    const response = await services.experiment.delete(experiment.id);
-    if (response.ok) {
-      setLocation('/experiments');
-    } else {
-      // todo: handle failed deletion
-    }
-  };
+  // const handleDeleteClick = async () => {
+  //   if (!experiment) return;
+  //   const response = await services.experiment.delete(experiment.id);
+  //   if (response.ok) {
+  //     setLocation('/experiments');
+  //   } else {
+  //     // todo: handle failed deletion
+  //   }
+  // };
 
-  if (isLoading) return <></>;
+  // if (isLoading) return <></>;
   // todo: replace outer box with LoaderWrapper
   return (
     <Box>
-      {experiment ? (
+      {flagsQuery.isSuccess ? (
         <Stack gap={4} padding="25px" height="100vh" overflowY="scroll">
           <Flex justifyContent="space-between">
             <Heading size="3xl">{experiment.name}</Heading>
@@ -113,7 +179,11 @@ export default function ExperimentManagementPage() {
               {experiment.status === 'draft' ? (
                 <StartExperimentButton
                   disabled={
-                    !!ExperimentDraft.isReadyToStart(experiment, featureFlags)
+                    !flagsQuery.isSuccess ||
+                    !!ExperimentDraft.isReadyToStart(
+                      experiment,
+                      flagsQuery.data.allFeatureFlags as FeatureFlag[],
+                    )
                   }
                   experimentId={experiment.id}
                 />
@@ -137,7 +207,7 @@ export default function ExperimentManagementPage() {
                     cursor="pointer"
                     color="fg.error"
                     _hover={{ bg: 'bg.error', color: 'fg.error' }}
-                    onClick={handleDeleteClick}
+                    onClick={() => {}}
                   >
                     <Trash2 />
                     <Box flex="1">Delete</Box>
@@ -216,29 +286,17 @@ export default function ExperimentManagementPage() {
                     />
                   </FormModal> */}
                 </Flex>
-                <PageSelect
-                  width="100%"
-                  multiple={true}
-                  placeholder="select flags"
-                  options={availableFlags.map((flag) => ({
-                    label: flag.name,
-                    value: flag.id,
-                  }))}
-                  selected={availableFlags
-                    .filter((flag) => experiment.flagIds.includes(flag.id))
-                    .map((flag) => flag.id)}
-                  handleValueChange={(selectedFlagIds) => {
-                    console.log({ selectedFlagId: selectedFlagIds });
-                    const flag = availableFlags.find((flag) =>
-                      selectedFlagIds.includes(flag.id),
-                    );
-                    if (!flag) return;
-                    const update = ExperimentDraft.addFlag(
-                      structuredClone(experiment),
-                      flag,
-                    );
-                    handleExperimentUpdate(update);
-                  }}
+                {/* TODOS:
+                  - extract into separate component and make "available" flags a prop
+                  - create context for handleExperimentUpdate */}
+                <FlagSelect
+                  experiment={experiment}
+                  availableFlags={
+                    flagsQuery.data.allFeatureFlags.filter(
+                      (flag) =>
+                        experiment.environmentName in flag.environmentNames,
+                    ) as FeatureFlag[]
+                  }
                 />
                 <LinkedFlagsSection experiment={experiment} />
               </Stack>
@@ -249,5 +307,39 @@ export default function ExperimentManagementPage() {
         <NotFound componentName={'experiment'} />
       )}
     </Box>
+  );
+}
+
+interface FlagSelectProps {
+  experiment: Experiment;
+  availableFlags: FeatureFlag[];
+}
+
+function FlagSelect({ experiment, availableFlags }: FlagSelectProps) {
+  return (
+    <PageSelect
+      width="100%"
+      multiple={true}
+      placeholder="select flags"
+      options={availableFlags.map((flag) => ({
+        label: flag.name,
+        value: flag.id,
+      }))}
+      selected={availableFlags
+        .filter((flag) => experiment.flagIds.includes(flag.id))
+        .map((flag) => flag.id)}
+      handleValueChange={(selectedFlagIds) => {
+        console.log({ selectedFlagId: selectedFlagIds });
+        const flag = availableFlags.find((flag) =>
+          selectedFlagIds.includes(flag.id),
+        );
+        if (!flag) return;
+        const update = ExperimentDraft.addFlag(
+          structuredClone(experiment),
+          flag,
+        );
+        handleExperimentUpdate(update);
+      }}
+    />
   );
 }

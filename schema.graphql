@@ -22,6 +22,8 @@ input ClientPropDefDraft {
 
 scalar ClientPropValue
 
+scalar DefinedTreatments
+
 type Enrollment {
   attributes: [String]
   proportion: Float
@@ -51,7 +53,7 @@ scalar EnvironmentNames
 
 type Experiment {
   createdAt: Float!
-  definedTreatments: [Treatment!]!
+  definedTreatments: DefinedTreatments!
   dependents: [Metric!]!
   description: String
   endTimestamp: Float
@@ -69,7 +71,7 @@ type Experiment {
 }
 
 input ExperimentDraft {
-  definedTreatments: [TreatmentInput!]!
+  definedTreatments: DefinedTreatments!
   dependents: [MetricInput!]!
   description: String
   endTimestamp: Float
@@ -165,12 +167,14 @@ type ForcedValue implements OverrideRule {
 }
 
 type Metric {
-  fieldDataType: String
+  fieldDataType: MetricDataType
   fieldName: String
 }
 
+scalar MetricDataType
+
 input MetricInput {
-  fieldDataType: String
+  fieldDataType: MetricDataType
   fieldName: String
 }
 
@@ -254,7 +258,7 @@ input PartialEnvironmentWithId {
 
 input PartialExperimentWithId {
   createdAt: Float
-  definedTreatments: [TreatmentInput!]
+  definedTreatments: DefinedTreatments
   dependents: [MetricInput!]
   description: String
   endTimestamp: Float

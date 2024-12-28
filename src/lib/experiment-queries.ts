@@ -24,15 +24,7 @@ export const CREATE_EXPERIMENT = graphql(`
         cycles
         sequence
       }
-      definedTreatments {
-        id
-        name
-        duration
-        flagStates {
-          id
-          value
-        }
-      }
+      definedTreatments
       dependents {
         fieldName
         fieldDataType
@@ -68,15 +60,7 @@ export const EXPERIMENT = graphql(`
         cycles
         sequence
       }
-      definedTreatments {
-        id
-        name
-        duration
-        flagStates {
-          id
-          value
-        }
-      }
+      definedTreatments
       dependents {
         fieldName
         fieldDataType
@@ -125,15 +109,7 @@ export const UPDATE_EXPERIMENT = graphql(`
         cycles
         sequence
       }
-      definedTreatments {
-        id
-        name
-        duration
-        flagStates {
-          id
-          value
-        }
-      }
+      definedTreatments
       dependents {
         fieldName
         fieldDataType
