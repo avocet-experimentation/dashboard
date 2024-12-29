@@ -1,4 +1,4 @@
-import { Flex, IconButton } from '@chakra-ui/react';
+import { Box, Flex, IconButton } from '@chakra-ui/react';
 import { ReactNode, useState, cloneElement, ReactElement } from 'react';
 import {
   DialogActionTrigger,
@@ -68,7 +68,7 @@ export default function FormModal({
         <DialogBody>{childWithProps}</DialogBody>
         <DialogFooter>
           <Flex basis={'auto'} justify="flex-start">
-            {buttons}
+            {buttons && buttons.map((button, i) => <Box key={i}>{button}</Box>)}
           </Flex>
           <Button
             loading={isLoading}

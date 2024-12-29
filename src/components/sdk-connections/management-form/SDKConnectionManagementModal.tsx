@@ -40,7 +40,9 @@ export default function SDKConnectionManagementModal({
           <Button
             colorPalette="fg.error"
             onClick={(e) => {
-              console.log(stripKeysWithValues(e, undefined, null));
+              console.log(
+                stripKeysWithValues(e, [undefined, null], { maxDepth: 2 }),
+              );
               deleteSDKConnection.mutate({ id: sdkConnection.id });
             }}
           >

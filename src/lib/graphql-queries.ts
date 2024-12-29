@@ -24,7 +24,7 @@ export const getRequestFunc = <
     request({
       url: String(import.meta.env.VITE_GRAPHQL_SERVICE_URL),
       document: query,
-      variables,
+      variables: variables ?? {},
       requestHeaders: headers,
     });
 };
@@ -41,14 +41,6 @@ export function useGQLQuery<
   query: RequestDocument | TypedDocumentNode<T, V>,
   variables?: V,
   headers?: H,
-  onSuccess?: (data: T, variables: V, context: unknown) => void,
-  onError?: (error: Error, variables: V, context: unknown) => void,
-  onSettled?: (
-    data: unknown,
-    error: Error | null,
-    variables: V,
-    context: unknown,
-  ) => void,
 ) {
   const queryData = useQuery({
     queryKey: cacheKey,
