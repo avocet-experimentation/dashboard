@@ -1,20 +1,36 @@
-import { SDKConnection } from '@avocet/core';
-import { Table } from '@chakra-ui/react';
+import { Environment, SDKConnection } from '@avocet/core';
+import { Table, Text } from '@chakra-ui/react';
 import SDKConnectionTableRow from './SDKConnectionTableRow';
+import { useGQLQuery } from '#/lib/graphql-queries';
+import { ALL_SDK_CONNECTIONS } from '#/lib/sdk-connection-queries';
+import Loader from '#/components/helpers/Loader';
+import ErrorBox from '#/components/helpers/ErrorBox';
+import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
 
-export interface SDKConnectionTableProps {
-  sdkConnections: SDKConnection[];
-  updateSDKConnection: (updated: SDKConnection) => void;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-}
 /**
  * Table listing all SDKConnections
  */
-export default function SDKConnectionTable({
-  sdkConnections,
-  updateSDKConnection,
-  setIsLoading,
-}: SDKConnectionTableProps) {
+export default function SDKConnectionTable() {
+  const { isPending, isError, error, data } = useGQLQuery(
+    ['allSDKConnections'],
+    ALL_SDK_CONNECTIONS,
+  );
+
+  const environmentsQuery = useGQLQuery(['allEnvironments'], ALL_ENVIRONMENTS);
+  if (isPending) return <Loader />;
+
+  if (isError) return <ErrorBox error={error} />;
+  const sdkConnections: SDKConnection[] = data.allSDKConnections;
+
+  if (sdkConnections.length === 0)
+    return <Text>No connections found. Please create one.</Text>;
+
+  if (environmentsQuery.isError)
+    return <ErrorBox error={environmentsQuery.error} />;
+
+  const environments: Environment[] =
+    environmentsQuery.data?.allEnvironments ?? [];
+
   return (
     <div>
       {sdkConnections.length && (
@@ -32,8 +48,9 @@ export default function SDKConnectionTable({
               <SDKConnectionTableRow
                 key={sdkConnection.id}
                 sdkConnection={sdkConnection}
-                setIsLoading={setIsLoading}
-                updateSDKConnection={updateSDKConnection}
+                environment={environments.find(
+                  (env) => env.id === sdkConnection.environmentId,
+                )}
               />
             ))}
           </Table.Body>

@@ -6,21 +6,23 @@ import {
   SDKConnection,
   SDKConnectionDraft,
 } from '@avocet/core';
-import { useContext } from 'react';
-import { ServicesContext } from '#/services/ServiceContext';
 import { DescriptionField, NameField } from '../../forms/DefinedFields';
-import ControlledSwitch from '../../forms/ControlledSwitch';
-import { useEnvironmentContext } from '#/lib/EnvironmentContext';
 import ControlledSelect from '#/components/forms/ControlledSelect';
 import ControlledTextInput from '#/components/forms/ControlledTextInput';
 import { Field } from '#/components/ui/field';
+import { useGQLMutation, useGQLQuery } from '#/lib/graphql-queries';
+import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
+import Loader from '#/components/helpers/Loader';
+import ErrorBox from '#/components/helpers/ErrorBox';
+import {
+  CREATE_SDK_CONNECTION,
+  UPDATE_SDK_CONNECTION,
+} from '#/lib/sdk-connection-queries';
 
 interface SDKConnectionManagementFormProps {
   formId: string;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   sdkConnection?: SDKConnection;
-  updateConnection: (updated: SDKConnection) => void;
 }
 
 /**
@@ -28,17 +30,20 @@ interface SDKConnectionManagementFormProps {
  */
 export default function SDKConnectionManagementForm({
   formId,
-  setIsLoading,
   setOpen,
   sdkConnection,
-  updateConnection,
 }: SDKConnectionManagementFormProps) {
-  const services = useContext(ServicesContext);
-  const { environments } = useEnvironmentContext();
+  const environmentsQuery = useGQLQuery(['allEnvironments'], ALL_ENVIRONMENTS);
+
+  if (environmentsQuery.isPending) return <Loader />;
+  if (environmentsQuery.isError)
+    return <ErrorBox error={environmentsQuery.error} />;
+
+  const environments = environmentsQuery.data.allEnvironments;
 
   if (environments.length === 0) {
     //TODO correctly handle no environments
-    return <></>;
+    return <Text>No environments found. Please create one</Text>;
   }
 
   const defaultValues: SDKConnectionDraft =
@@ -52,12 +57,27 @@ export default function SDKConnectionManagementForm({
     defaultValues,
   });
 
-  const createOrUpdate = async (data: SDKConnectionDraft) => {
-    if (sdkConnection) {
-      return services.sdkConnection.update(sdkConnection.id, data);
-    }
-    return services.sdkConnection.create(data);
-  };
+  const createSDKConnection = useGQLMutation({
+    mutation: CREATE_SDK_CONNECTION,
+    cacheKey: ['allSDKConnections'],
+    onSuccess: () => {
+      setOpen(false);
+    },
+    onError: (error: Error) => {
+      console.error(error);
+    },
+  });
+
+  const updateSDKConnection = useGQLMutation({
+    mutation: UPDATE_SDK_CONNECTION,
+    cacheKey: ['allSDKConnections'],
+    onSuccess: () => {
+      setOpen(false);
+    },
+    onError: (error: Error) => {
+      console.error(error);
+    },
+  });
 
   const onSubmit: SubmitHandler<SDKConnectionDraft> = async (formContent) => {
     const clonedContent = structuredClone(formContent);
@@ -67,7 +87,7 @@ export default function SDKConnectionManagementForm({
     clonedContent.environmentId = clonedContent.environmentId[0];
     clonedContent.allowedOrigins = clonedContent.allowedOrigins
       .split(',')
-      .map((origin) => origin.trim());
+      .map((origin) => origin.trim()); //TODO
 
     const safeParseResult = sdkConnectionDraftSchema.safeParse(clonedContent);
     if (!safeParseResult.success) {
@@ -75,19 +95,12 @@ export default function SDKConnectionManagementForm({
       throw new SchemaParseError(safeParseResult);
     }
 
-    setIsLoading(true);
-    try {
-      const response = await createOrUpdate(safeParseResult.data);
-      if (!response.ok) {
-        // todo: handle errors correctly
-        return;
-      }
-      updateConnection(response.body);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
-      setOpen(false);
+    if (sdkConnection) {
+      updateSDKConnection.mutate({
+        partialEntry: { ...safeParseResult.data, id: sdkConnection.id },
+      });
+    } else {
+      createSDKConnection.mutate({ newEntry: safeParseResult.data });
     }
   };
 

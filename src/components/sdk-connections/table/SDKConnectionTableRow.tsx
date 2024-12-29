@@ -1,44 +1,33 @@
-import { SDKConnection } from '@avocet/core';
+import { Environment, SDKConnection } from '@avocet/core';
 import { Table, Text } from '@chakra-ui/react';
-import { useContext } from 'react';
 import { lastUpdated, formatDate } from '#/lib/timeFunctions';
-import { ServicesContext } from '#/services/ServiceContext';
-import { Switch } from '../../ui/switch';
 import { Tooltip } from '../../ui/tooltip';
 import SDKConnectionManagementModal from '../management-form/SDKConnectionManagementModal';
-import { useEnvironmentContext } from '#/lib/EnvironmentContext';
+import ErrorBox from '#/components/helpers/ErrorBox';
 
 interface SDKConnectionTableRowProps {
   sdkConnection: SDKConnection;
-  updateSDKConnection: (updated: SDKConnection) => void;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  environment: Environment | undefined;
 }
 
 export default function SDKConnectionTableRow({
   sdkConnection,
-  updateSDKConnection,
-  setIsLoading,
+  environment,
 }: SDKConnectionTableRowProps) {
-  const { sdkConnection: sdkConnectionService } = useContext(ServicesContext);
-  const { environments } = useEnvironmentContext();
-
-  const currentEnv = environments.find(
-    (env) => env.id === sdkConnection.environmentId,
-  );
-
-  if (currentEnv === undefined) return <></>;
+  if (environment === undefined) {
+    const envError = new Error(
+      `Environment not found for SDK Connection "${sdkConnection.name}"`,
+    );
+    return <ErrorBox error={envError} />;
+  }
 
   return (
     <Table.Row>
       <Table.Cell color="black" textDecor="none">
-        <SDKConnectionManagementModal
-          setIsLoading={setIsLoading}
-          sdkConnection={sdkConnection}
-          updateSDKConnection={updateSDKConnection}
-        />
+        <SDKConnectionManagementModal sdkConnection={sdkConnection} />
       </Table.Cell>
       <Table.Cell key={sdkConnection.name}>
-        <Text width="fit-content">{currentEnv.name}</Text>
+        <Text width="fit-content">{environment.name}</Text>
       </Table.Cell>
       <Table.Cell>
         <Text width="fit-content">

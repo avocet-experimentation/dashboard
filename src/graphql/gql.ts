@@ -28,6 +28,10 @@ const documents = {
     "\n  query allFeatureFlags($limit: Int, $offset: Int) {\n    allFeatureFlags(limit: $limit, offset: $offset) {\n      id\n      createdAt\n      updatedAt\n      name\n      description\n      value\n      environmentNames\n      overrideRules {\n        id\n        description\n        environmentName\n        enrollment {\n          attributes\n          proportion\n        }\n        status\n        startTimestamp\n        endTimestamp\n        ... on ExperimentReference {\n          type\n          name\n        }\n        ... on ForcedValue {\n          type\n          value\n        }\n      }\n    }\n  }\n": types.AllFeatureFlagsDocument,
     "\n  mutation updateFeatureFlag($partialEntry: PartialFeatureFlagWithId!) {\n    updateFeatureFlag(partialEntry: $partialEntry) {\n      id\n      createdAt\n      updatedAt\n      name\n      description\n      value\n      environmentNames\n      overrideRules {\n        id\n        description\n        environmentName\n        enrollment {\n          attributes\n          proportion\n        }\n        status\n        startTimestamp\n        endTimestamp\n        ... on ExperimentReference {\n          type\n          name\n        }\n        ... on ForcedValue {\n          type\n          value\n        }\n      }\n    }\n  }\n": types.UpdateFeatureFlagDocument,
     "\n  mutation deleteFeatureFlag($id: ID!) {\n    deleteFeatureFlag(id: $id)\n  }\n": types.DeleteFeatureFlagDocument,
+    "\n  mutation createSDKConnection($newEntry: SDKConnectionDraft!) {\n    createSDKConnection(newEntry: $newEntry) {\n      id\n      name\n      allowedOrigins\n      clientKeyHash\n      description\n      environmentId\n      updatedAt\n      createdAt\n    }\n  }\n": types.CreateSdkConnectionDocument,
+    "\n  query allSDKConnections($limit: Int, $offset: Int) {\n    allSDKConnections(limit: $limit, offset: $offset) {\n      id\n      name\n      allowedOrigins\n      clientKeyHash\n      description\n      environmentId\n      updatedAt\n      createdAt\n    }\n  }\n": types.AllSdkConnectionsDocument,
+    "\n  mutation updateSDKConnection($partialEntry: PartialSDKConnectionWithId!) {\n    updateSDKConnection(partialEntry: $partialEntry) {\n      id\n      name\n      allowedOrigins\n      clientKeyHash\n      description\n      environmentId\n      updatedAt\n      createdAt\n    }\n  }\n": types.UpdateSdkConnectionDocument,
+    "\n  mutation deleteSDKConnection($id: ID!) {\n    deleteSDKConnection(id: $id)\n  }\n": types.DeleteSdkConnectionDocument,
 };
 
 /**
@@ -100,6 +104,22 @@ export function graphql(source: "\n  mutation updateFeatureFlag($partialEntry: P
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation deleteFeatureFlag($id: ID!) {\n    deleteFeatureFlag(id: $id)\n  }\n"): (typeof documents)["\n  mutation deleteFeatureFlag($id: ID!) {\n    deleteFeatureFlag(id: $id)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation createSDKConnection($newEntry: SDKConnectionDraft!) {\n    createSDKConnection(newEntry: $newEntry) {\n      id\n      name\n      allowedOrigins\n      clientKeyHash\n      description\n      environmentId\n      updatedAt\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  mutation createSDKConnection($newEntry: SDKConnectionDraft!) {\n    createSDKConnection(newEntry: $newEntry) {\n      id\n      name\n      allowedOrigins\n      clientKeyHash\n      description\n      environmentId\n      updatedAt\n      createdAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query allSDKConnections($limit: Int, $offset: Int) {\n    allSDKConnections(limit: $limit, offset: $offset) {\n      id\n      name\n      allowedOrigins\n      clientKeyHash\n      description\n      environmentId\n      updatedAt\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  query allSDKConnections($limit: Int, $offset: Int) {\n    allSDKConnections(limit: $limit, offset: $offset) {\n      id\n      name\n      allowedOrigins\n      clientKeyHash\n      description\n      environmentId\n      updatedAt\n      createdAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation updateSDKConnection($partialEntry: PartialSDKConnectionWithId!) {\n    updateSDKConnection(partialEntry: $partialEntry) {\n      id\n      name\n      allowedOrigins\n      clientKeyHash\n      description\n      environmentId\n      updatedAt\n      createdAt\n    }\n  }\n"): (typeof documents)["\n  mutation updateSDKConnection($partialEntry: PartialSDKConnectionWithId!) {\n    updateSDKConnection(partialEntry: $partialEntry) {\n      id\n      name\n      allowedOrigins\n      clientKeyHash\n      description\n      environmentId\n      updatedAt\n      createdAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation deleteSDKConnection($id: ID!) {\n    deleteSDKConnection(id: $id)\n  }\n"): (typeof documents)["\n  mutation deleteSDKConnection($id: ID!) {\n    deleteSDKConnection(id: $id)\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
