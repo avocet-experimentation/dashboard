@@ -64,6 +64,10 @@ export default function ExperimentManagementPage() {
     allFeatureFlags: [],
   };
 
+  const placeholderEnvData: { allEnvironments: Environment[] } = {
+    allEnvironments: [],
+  };
+
   // const flagsQuery = useQuery({
   //   queryKey: ['allFeatureFlags'],
   //   queryFn: async () => {
@@ -76,21 +80,13 @@ export default function ExperimentManagementPage() {
   //   },
   const flagsQuery = useQuery({
     queryKey: ['allFeatureFlags'],
-    queryFn: async () => {
-      return request({
-        url: String(import.meta.env.VITE_GRAPHQL_SERVICE_URL),
-        document: ALL_FEATURE_FLAGS,
-        variables: {},
-        requestHeaders: {},
-      });
-    },
+    queryFn: getRequestFunc(ALL_FEATURE_FLAGS),
     placeholderData: placeholderFlagData,
   });
   const environmentsQuery = useQuery({
     queryKey: ['allEnvironments'],
-    queryFn: async () => {
-      getRequestFunc(ALL_ENVIRONMENTS);
-    },
+    queryFn: getRequestFunc(ALL_ENVIRONMENTS),
+    placeholderData: placeholderEnvData,
   });
 
   const { mutate } = useGQLMutation({
@@ -241,12 +237,14 @@ export default function ExperimentManagementPage() {
                   return success ? e.value : (experiment.hypothesis ?? '');
                 }}
               />
-              {environments && (
+              {environmentsQuery.isSuccess && (
                 <PageSelect
-                  options={environments.map((env) => ({
-                    label: env.name,
-                    value: env.name,
-                  }))}
+                  options={environmentsQuery.data.allEnvironments.map(
+                    (env) => ({
+                      label: env.name,
+                      value: env.name,
+                    }),
+                  )}
                   label="Environment"
                   selected={
                     experiment.environmentName
@@ -291,6 +289,7 @@ export default function ExperimentManagementPage() {
                   - create context for handleExperimentUpdate */}
                 <FlagSelect
                   experiment={experiment}
+                  experimentId={params.id}
                   availableFlags={
                     flagsQuery.data.allFeatureFlags.filter(
                       (flag) =>
@@ -312,10 +311,30 @@ export default function ExperimentManagementPage() {
 
 interface FlagSelectProps {
   experiment: Experiment;
+  experimentId: string;
   availableFlags: FeatureFlag[];
 }
 
-function FlagSelect({ experiment, availableFlags }: FlagSelectProps) {
+function FlagSelect({
+  experiment,
+  experimentId,
+  availableFlags,
+}: FlagSelectProps) {
+  const { mutate } = useGQLMutation({
+    mutation: UPDATE_EXPERIMENT,
+    cacheKey: ['experiment', experimentId],
+  });
+
+  const handleExperimentUpdate = async (
+    updates: Partial<ExperimentDraft>,
+  ): Promise<boolean> => {
+    const expResponse = mutate({
+      partialEntry: { id: experimentId, ...updates },
+    });
+
+    return expResponse.ok;
+  };
+
   return (
     <PageSelect
       width="100%"
