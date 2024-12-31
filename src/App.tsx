@@ -7,7 +7,7 @@ import ExperimentsMain from './components/experiments/ExperimentsMain';
 import FeatureFlagManagementPage from './components/feature-flags/edit-page/FeatureFlagManagementPage';
 import ExperimentManagementPage from './components/experiments/edit-page/ExperimentManagementPage';
 import EnvironmentsMainPage from './components/environments/EnvironmentsMainPage';
-import TelemetryMain from './telemetry/TelemetryMain';
+import TelemetryMain from './components/telemetry/TelemetryMain';
 import SDKConnectionsMain from './components/sdk-connections/SDKConnectionsMain';
 
 export default function App() {

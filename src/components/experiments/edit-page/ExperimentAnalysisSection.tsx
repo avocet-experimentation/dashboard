@@ -1,13 +1,13 @@
 import PageSelect from '#/components/forms/PageSelect';
 import { ServicesContext } from '#/services/ServiceContext';
-import TelemetryTypeSelector from '#/telemetry/TelemetryTypeSelector';
+import TelemetryTypeSelector from '#/components/telemetry/TelemetryTypeSelector';
 import { Experiment, Metric } from '@avocet/core';
 import { Box, createListCollection } from '@chakra-ui/react';
 import { useContext, useEffect, useState } from 'react';
 
 interface SpanTypeListItem {
   label: string;
-  value: string | null;
+  value: string;
 }
 
 interface ExperimentAnalysisSectionProps {
@@ -48,7 +48,7 @@ function ExperimentDependentSelector() {
       // });
 
       setAllSpanTypes([
-        { label: 'all', value: null },
+        { label: 'all', value: 'all' },
         ...response.body.map((type) => ({ label: type, value: type })),
       ]);
     }
