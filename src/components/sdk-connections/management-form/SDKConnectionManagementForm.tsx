@@ -5,12 +5,13 @@ import {
   SchemaParseError,
   SDKConnection,
   SDKConnectionDraft,
+  Environment,
 } from '@avocet/core';
 import { DescriptionField, NameField } from '../../forms/DefinedFields';
 import ControlledSelect from '#/components/forms/ControlledSelect';
 import ControlledTextInput from '#/components/forms/ControlledTextInput';
 import { Field } from '#/components/ui/field';
-import { useGQLMutation, useGQLQuery } from '#/lib/graphql-queries';
+import { gqlRequest } from '#/lib/graphql-queries';
 import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
@@ -18,6 +19,8 @@ import {
   CREATE_SDK_CONNECTION,
   UPDATE_SDK_CONNECTION,
 } from '#/lib/sdk-connection-queries';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { PartialSdkConnectionWithId } from '#/graphql/graphql';
 
 interface SDKConnectionManagementFormProps {
   formId: string;
@@ -27,24 +30,28 @@ interface SDKConnectionManagementFormProps {
 
 /**
  * Create an sdk connection or update an existing one, if passed as an argument
+ *
+ * TODO:
+ * - Revise allowed origins to be displayed as a set of boxes in a vertical list
+ * - delete button on origin rows
+ * - text box to add origins via submit button/enter key
  */
 export default function SDKConnectionManagementForm({
   formId,
   setOpen,
   sdkConnection,
 }: SDKConnectionManagementFormProps) {
-  const environmentsQuery = useGQLQuery(['allEnvironments'], ALL_ENVIRONMENTS);
+  const environmentsQuery = useQuery({
+    queryKey: ['allEnvironments'],
+    queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
+    placeholderData: { allEnvironments: [] } as {
+      allEnvironments: Environment[];
+    },
+  });
 
-  if (environmentsQuery.isPending) return <Loader />;
-  if (environmentsQuery.isError)
-    return <ErrorBox error={environmentsQuery.error} />;
-
-  const environments = environmentsQuery.data.allEnvironments;
-
-  if (environments.length === 0) {
-    //TODO correctly handle no environments
-    return <Text>No environments found. Please create one</Text>;
-  }
+  // TODO: fix type inference on placeholderData so .data can't be `undefined`
+  const environments: Environment[] =
+    environmentsQuery.data?.allEnvironments ?? [];
 
   const defaultValues: SDKConnectionDraft =
     sdkConnection ??
@@ -57,9 +64,10 @@ export default function SDKConnectionManagementForm({
     defaultValues,
   });
 
-  const createSDKConnection = useGQLMutation({
-    mutation: CREATE_SDK_CONNECTION,
-    cacheKey: ['allSDKConnections'],
+  const createSDKConnection = useMutation({
+    mutationKey: ['allSDKConnections'],
+    mutationFn: async (newEntry: SDKConnectionDraft) =>
+      gqlRequest(CREATE_SDK_CONNECTION, { newEntry }),
     onSuccess: () => {
       setOpen(false);
     },
@@ -68,9 +76,10 @@ export default function SDKConnectionManagementForm({
     },
   });
 
-  const updateSDKConnection = useGQLMutation({
-    mutation: UPDATE_SDK_CONNECTION,
-    cacheKey: ['allSDKConnections'],
+  const updateSDKConnection = useMutation({
+    mutationKey: ['allSDKConnections'],
+    mutationFn: async (partialEntry: PartialSdkConnectionWithId) =>
+      gqlRequest(UPDATE_SDK_CONNECTION, { partialEntry }),
     onSuccess: () => {
       setOpen(false);
     },
@@ -78,6 +87,15 @@ export default function SDKConnectionManagementForm({
       console.error(error);
     },
   });
+
+  if (environmentsQuery.isPending) return <Loader />;
+  if (environmentsQuery.isError)
+    return <ErrorBox error={environmentsQuery.error} />;
+
+  if (environments.length === 0) {
+    //TODO correctly handle no environments
+    return <Text>No environments found. Please create one</Text>;
+  }
 
   const onSubmit: SubmitHandler<SDKConnectionDraft> = async (formContent) => {
     const clonedContent = structuredClone(formContent);
@@ -97,10 +115,11 @@ export default function SDKConnectionManagementForm({
 
     if (sdkConnection) {
       updateSDKConnection.mutate({
-        partialEntry: { ...safeParseResult.data, id: sdkConnection.id },
+        ...safeParseResult.data,
+        id: sdkConnection.id,
       });
     } else {
-      createSDKConnection.mutate({ newEntry: safeParseResult.data });
+      createSDKConnection.mutate(safeParseResult.data);
     }
   };
 

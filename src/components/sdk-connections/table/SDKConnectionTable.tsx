@@ -1,22 +1,26 @@
 import { Environment, SDKConnection } from '@avocet/core';
 import { Table, Text } from '@chakra-ui/react';
 import SDKConnectionTableRow from './SDKConnectionTableRow';
-import { useGQLQuery } from '#/lib/graphql-queries';
 import { ALL_SDK_CONNECTIONS } from '#/lib/sdk-connection-queries';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
 import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
+import { useQuery } from '@tanstack/react-query';
+import { gqlRequest } from '#/lib/graphql-queries';
 
 /**
  * Table listing all SDKConnections
  */
 export default function SDKConnectionTable() {
-  const { isPending, isError, error, data } = useGQLQuery(
-    ['allSDKConnections'],
-    ALL_SDK_CONNECTIONS,
-  );
+  const { isPending, isError, error, data } = useQuery({
+    queryKey: ['allSDKConnections'],
+    queryFn: async () => gqlRequest(ALL_SDK_CONNECTIONS, {}),
+  });
 
-  const environmentsQuery = useGQLQuery(['allEnvironments'], ALL_ENVIRONMENTS);
+  const environmentsQuery = useQuery({
+    queryKey: ['allEnvironments'],
+    queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
+  });
   if (isPending) return <Loader />;
 
   if (isError) return <ErrorBox error={error} />;

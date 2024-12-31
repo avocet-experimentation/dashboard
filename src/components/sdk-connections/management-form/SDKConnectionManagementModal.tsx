@@ -1,12 +1,13 @@
 import { CirclePlus, CircleEllipsis, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { SDKConnection, stripKeysWithValues } from '@avocet/core';
+import { SDKConnection } from '@avocet/core';
 import FormModal from '../../forms/FormModal';
 import SDKConnectionManagementForm from './SDKConnectionManagementForm';
 import { Button } from '#/components/ui/button';
 import { Box } from '@chakra-ui/react';
 import { DELETE_SDK_CONNECTION } from '#/lib/sdk-connection-queries';
-import { useGQLMutation } from '#/lib/graphql-queries';
+import { gqlRequest } from '#/lib/graphql-queries';
+import { useMutation } from '@tanstack/react-query';
 
 const SDK_CONNECTION_MANAGEMENT_FORM_ID = 'sdk-connection-management-form';
 
@@ -19,9 +20,9 @@ export default function SDKConnectionManagementModal({
 }: SDKConnectionManagementModalProps) {
   const [open, setOpen] = useState(false);
 
-  const deleteSDKConnection = useGQLMutation({
-    mutation: DELETE_SDK_CONNECTION,
-    cacheKey: ['allSDKConnections'],
+  const deleteSDKConnection = useMutation({
+    mutationFn: async (id: string) => gqlRequest(DELETE_SDK_CONNECTION, { id }),
+    mutationKey: ['allSDKConnections'],
     onSuccess: () => {
       setOpen(false);
     },
@@ -40,10 +41,7 @@ export default function SDKConnectionManagementModal({
           <Button
             colorPalette="fg.error"
             onClick={(e) => {
-              console.log(
-                stripKeysWithValues(e, [undefined, null], { maxDepth: 2 }),
-              );
-              deleteSDKConnection.mutate({ id: sdkConnection.id });
+              deleteSDKConnection.mutate(sdkConnection.id);
             }}
           >
             <Trash2 />
