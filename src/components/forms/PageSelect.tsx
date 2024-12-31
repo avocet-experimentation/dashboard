@@ -1,6 +1,5 @@
 import {
   createListCollection,
-  ListCollection,
   SelectValueChangeDetails,
 } from '@chakra-ui/react';
 import {
@@ -11,48 +10,44 @@ import {
   SelectValueText,
 } from '#/components/ui/select';
 import { Field } from '#/components/ui/field';
-import { useState } from 'react';
 
 interface PageSelectProps<O extends { label: string; value: string }> {
   options: O[];
   selected?: string[];
   label?: string;
   placeholder?: string;
+  /** Typically a mutation function */
   handleValueChange?: (value: SelectValueChangeDetails<O>['value']) => void;
   disabled?: boolean;
   multiple?: boolean;
-  /** Sets the width of the select. Defaults to 320px */
+  /** Sets the width of the select. Defaults to 100%*/
   width?: string;
 }
 
 /**
- * (WIP) Dropdown controlled with useState. Pass the `handleValueChange` prop
- *  to do additional work with selected values
+ * (WIP) Dropdown to be used with react-query fetching in the parent component.
  */
 export default function PageSelect<O extends { label: string; value: string }>({
   options,
-  selected,
+  selected = [],
   label,
   placeholder = 'select an option',
   handleValueChange,
   disabled,
   multiple,
-  width = '320px',
+  width = '100%',
 }: PageSelectProps<O>) {
   const optionCollection = createListCollection({ items: options });
-  const [selections, setSelections] = useState<string[]>(selected ?? []);
 
-  console.log({ optionCollection });
   return (
     <Field label={label} width={width}>
       <SelectRoot
-        value={selections}
+        value={selected}
         cursor="pointer"
         collection={optionCollection}
-        disabled={disabled}
+        disabled={disabled || !options}
         multiple={multiple}
         onValueChange={(e: SelectValueChangeDetails<O>) => {
-          setSelections(e.value);
           handleValueChange?.(e.value);
         }}
         // onInteractOutside={() => field.onBlur()}
@@ -62,7 +57,7 @@ export default function PageSelect<O extends { label: string; value: string }>({
         </SelectTrigger>
         <SelectContent zIndex="popover">
           {optionCollection.items.map((option) => (
-            <SelectItem item={option} key={option.label} cursor="pointer">
+            <SelectItem item={option} key={option.value} cursor="pointer">
               {option.label}
             </SelectItem>
           ))}
