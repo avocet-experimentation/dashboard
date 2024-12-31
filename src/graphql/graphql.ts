@@ -19,6 +19,7 @@ export type Scalars = {
   EnvironmentNames: { input: any; output: any; }
   FlagValueDef: { input: any; output: any; }
   MetricDataType: { input: any; output: any; }
+  OverrideRuleType: { input: any; output: any; }
   TextPrimitive: { input: any; output: any; }
 };
 
@@ -132,7 +133,7 @@ export type ExperimentReference = OverrideRule & {
   name: Scalars['String']['output'];
   startTimestamp: Maybe<Scalars['Float']['output']>;
   status: ExperimentStatus;
-  type: OverrideRuleType;
+  type: Scalars['OverrideRuleType']['output'];
 };
 
 export const ExperimentStatus = {
@@ -188,7 +189,7 @@ export type ForcedValue = OverrideRule & {
   id: Scalars['String']['output'];
   startTimestamp: Maybe<Scalars['Float']['output']>;
   status: ExperimentStatus;
-  type: OverrideRuleType;
+  type: Scalars['OverrideRuleType']['output'];
   value: Scalars['TextPrimitive']['output'];
 };
 
@@ -323,7 +324,7 @@ export type OverrideRule = {
   id: Scalars['String']['output'];
   startTimestamp: Maybe<Scalars['Float']['output']>;
   status: ExperimentStatus;
-  type: OverrideRuleType;
+  type: Scalars['OverrideRuleType']['output'];
 };
 
 export type OverrideRuleInput = {
@@ -339,12 +340,6 @@ export type OverrideRuleInput = {
   value?: InputMaybe<Scalars['TextPrimitive']['input']>;
 };
 
-export const OverrideRuleType = {
-  Experiment: 'Experiment',
-  ForcedValue: 'ForcedValue'
-} as const;
-
-export type OverrideRuleType = typeof OverrideRuleType[keyof typeof OverrideRuleType];
 export type OverrideRuleUnion = ExperimentReference | ForcedValue;
 
 export type PartialClientPropDefWithId = {
@@ -656,14 +651,14 @@ export type CreateFeatureFlagMutationVariables = Exact<{
 }>;
 
 
-export type CreateFeatureFlagMutation = { __typename?: 'Mutation', createFeatureFlag: { __typename?: 'FeatureFlag', id: string, createdAt: number, updatedAt: number, name: string, description: string | null, value: any, environmentNames: any | null, overrideRules: Array<{ __typename?: 'ExperimentReference', type: OverrideRuleType, name: string, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } } | { __typename?: 'ForcedValue', type: OverrideRuleType, value: any, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } }> } };
+export type CreateFeatureFlagMutation = { __typename?: 'Mutation', createFeatureFlag: { __typename?: 'FeatureFlag', id: string, createdAt: number, updatedAt: number, name: string, description: string | null, value: any, environmentNames: any | null, overrideRules: Array<{ __typename?: 'ExperimentReference', type: any, name: string, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } } | { __typename?: 'ForcedValue', type: any, value: any, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } }> } };
 
 export type FeatureFlagQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type FeatureFlagQuery = { __typename?: 'Query', featureFlag: { __typename?: 'FeatureFlag', id: string, createdAt: number, updatedAt: number, name: string, description: string | null, value: any, environmentNames: any | null, overrideRules: Array<{ __typename?: 'ExperimentReference', type: OverrideRuleType, name: string, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } } | { __typename?: 'ForcedValue', type: OverrideRuleType, value: any, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } }> } | null };
+export type FeatureFlagQuery = { __typename?: 'Query', featureFlag: { __typename?: 'FeatureFlag', id: string, createdAt: number, updatedAt: number, name: string, description: string | null, value: any, environmentNames: any | null, overrideRules: Array<{ __typename?: 'ExperimentReference', type: any, name: string, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } } | { __typename?: 'ForcedValue', type: any, value: any, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } }> } | null };
 
 export type AllFeatureFlagsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -671,14 +666,14 @@ export type AllFeatureFlagsQueryVariables = Exact<{
 }>;
 
 
-export type AllFeatureFlagsQuery = { __typename?: 'Query', allFeatureFlags: Array<{ __typename?: 'FeatureFlag', id: string, createdAt: number, updatedAt: number, name: string, description: string | null, value: any, environmentNames: any | null, overrideRules: Array<{ __typename?: 'ExperimentReference', type: OverrideRuleType, name: string, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } } | { __typename?: 'ForcedValue', type: OverrideRuleType, value: any, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } }> }> };
+export type AllFeatureFlagsQuery = { __typename?: 'Query', allFeatureFlags: Array<{ __typename?: 'FeatureFlag', id: string, createdAt: number, updatedAt: number, name: string, description: string | null, value: any, environmentNames: any | null, overrideRules: Array<{ __typename?: 'ExperimentReference', type: any, name: string, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } } | { __typename?: 'ForcedValue', type: any, value: any, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } }> }> };
 
 export type UpdateFeatureFlagMutationVariables = Exact<{
   partialEntry: PartialFeatureFlagWithId;
 }>;
 
 
-export type UpdateFeatureFlagMutation = { __typename?: 'Mutation', updateFeatureFlag: { __typename?: 'FeatureFlag', id: string, createdAt: number, updatedAt: number, name: string, description: string | null, value: any, environmentNames: any | null, overrideRules: Array<{ __typename?: 'ExperimentReference', type: OverrideRuleType, name: string, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } } | { __typename?: 'ForcedValue', type: OverrideRuleType, value: any, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } }> } | null };
+export type UpdateFeatureFlagMutation = { __typename?: 'Mutation', updateFeatureFlag: { __typename?: 'FeatureFlag', id: string, createdAt: number, updatedAt: number, name: string, description: string | null, value: any, environmentNames: any | null, overrideRules: Array<{ __typename?: 'ExperimentReference', type: any, name: string, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } } | { __typename?: 'ForcedValue', type: any, value: any, id: string, description: string | null, environmentName: string, status: ExperimentStatus, startTimestamp: number | null, endTimestamp: number | null, enrollment: { __typename?: 'Enrollment', attributes: Array<string>, proportion: number } }> } | null };
 
 export type DeleteFeatureFlagMutationVariables = Exact<{
   id: Scalars['ID']['input'];

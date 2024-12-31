@@ -227,10 +227,7 @@ input OverrideRuleInput {
   value: TextPrimitive
 }
 
-enum OverrideRuleType {
-  Experiment
-  ForcedValue
-}
+scalar OverrideRuleType
 
 union OverrideRuleUnion = ExperimentReference | ForcedValue
 
