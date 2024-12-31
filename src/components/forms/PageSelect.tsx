@@ -1,10 +1,12 @@
 import {
+  Box,
   createListCollection,
   SelectValueChangeDetails,
 } from '@chakra-ui/react';
 import {
   SelectContent,
   SelectItem,
+  SelectLabel,
   SelectRoot,
   SelectTrigger,
   SelectValueText,
@@ -25,7 +27,9 @@ interface PageSelectProps<O extends { label: string; value: string }> {
 }
 
 /**
- * (WIP) Dropdown to be used with react-query fetching in the parent component.
+ * Dropdown to be used with react-query fetching in the parent component.
+ * TODO:
+ * - fix styling cutting off bottom of some characters in placeholder text
  */
 export default function PageSelect<O extends { label: string; value: string }>({
   options,
@@ -40,7 +44,7 @@ export default function PageSelect<O extends { label: string; value: string }>({
   const optionCollection = createListCollection({ items: options });
 
   return (
-    <Field label={label} width={width}>
+    <Box width={width}>
       <SelectRoot
         value={selected}
         cursor="pointer"
@@ -50,8 +54,10 @@ export default function PageSelect<O extends { label: string; value: string }>({
         onValueChange={(e: SelectValueChangeDetails<O>) => {
           handleValueChange?.(e.value);
         }}
+        // size={'md'}
         // onInteractOutside={() => field.onBlur()}
       >
+        <SelectLabel>{label}</SelectLabel>
         <SelectTrigger>
           <SelectValueText placeholder={placeholder} />
         </SelectTrigger>
@@ -63,6 +69,6 @@ export default function PageSelect<O extends { label: string; value: string }>({
           ))}
         </SelectContent>
       </SelectRoot>
-    </Field>
+    </Box>
   );
 }
