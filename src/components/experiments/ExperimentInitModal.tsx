@@ -2,7 +2,7 @@ import { CirclePlus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
 import { CREATE_EXPERIMENT } from '#/lib/experiment-queries';
-import { getRequestFunc } from '#/lib/graphql-queries';
+import { gqlRequest } from '#/lib/graphql-queries';
 import {
   ExperimentDraft,
   Experiment,
@@ -38,24 +38,23 @@ export default function ExperimentInitModal() {
 }
 
 /**
- * Create an environment or update an existing one, if passed as an argument
+ * Create a new Experiment, requiring only the minimum fields
  */
 function ExperimentInitForm({
   setOpen,
 }: {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const [location, navigate] = useLocation();
+  const [_, navigate] = useLocation();
   const environmentsQuery = useQuery({
     queryKey: ['allEnvironments'],
-    queryFn: async () => getRequestFunc(ALL_ENVIRONMENTS, {})(),
-    select: (data) => data.allEnvironments,
+    queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
   });
 
   const createExperiment = useMutation({
     mutationKey: ['allExperiments'],
     mutationFn: async (newEntry: ExperimentDraft) =>
-      getRequestFunc(CREATE_EXPERIMENT, { newEntry })(),
+      gqlRequest(CREATE_EXPERIMENT, { newEntry }),
     onSuccess: (data) => {
       setOpen(false);
       navigate(`/experiments/${data.createExperiment.id}`);
@@ -70,7 +69,7 @@ function ExperimentInitForm({
   });
 
   const envCollection = useMemo(() => {
-    const environments = environmentsQuery.data;
+    const environments = environmentsQuery.data?.allEnvironments;
     if (!environments) return [];
     return environments.map((environment) => ({
       label: environment.name,
@@ -81,9 +80,6 @@ function ExperimentInitForm({
   const onSubmit: SubmitHandler<
     Pick<Experiment, 'name' | 'environmentName'>
   > = async (formContent: Pick<Experiment, 'name' | 'environmentName'>) => {
-    console.log('submit handler invoked');
-    console.log({ formContent });
-
     const draft = ExperimentDraft.template({
       ...formContent,
       environmentName: formContent.environmentName[0],
@@ -91,7 +87,6 @@ function ExperimentInitForm({
 
     const safeParseResult = experimentDraftSchema.safeParse(draft);
     if (!safeParseResult.success) {
-      // the error pretty-print the Zod parse error message
       throw new SchemaParseError(safeParseResult);
     }
 

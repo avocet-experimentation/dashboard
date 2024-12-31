@@ -3,6 +3,9 @@ import request, { RequestOptions, Variables } from 'graphql-request';
 import { TypedDocumentNode } from 'msw/core/graphql';
 
 export * from './flag-queries.ts';
+export * from './experiment-queries.ts';
+export * from './environment-queries.ts';
+export * from './sdk-connection-queries.ts';
 
 /**
  * Get a query or mutation function to pass into react-query

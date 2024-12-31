@@ -9,7 +9,8 @@ import { lastUpdated, formatDate } from '#/lib/timeFunctions';
 // local components
 import { Switch } from '#/components/ui/switch';
 import { Tooltip } from '#/components/ui/tooltip';
-import { UPDATE_FEATURE_FLAG, useGQLMutation } from '#/lib/graphql-queries';
+import { UPDATE_FEATURE_FLAG, gqlRequest } from '#/lib/graphql-queries';
+import { useMutation } from '@tanstack/react-query';
 
 interface FeatureFlagTableRowProps {
   allEnvironmentNames: string[];
@@ -21,15 +22,18 @@ export default function FeatureFlagTableRow({
   flag,
 }: FeatureFlagTableRowProps) {
   const [featureFlag, setFeatureFlag] = useState<FeatureFlag>(flag);
-  const { mutate, isSuccess } = useGQLMutation({
-    mutation: UPDATE_FEATURE_FLAG,
+  const { mutate } = useMutation({
+    mutationKey: ['allFeatureFlags'],
+    mutationFn: async (partialEntry: Partial<FeatureFlag>) =>
+      gqlRequest(UPDATE_FEATURE_FLAG, {
+        partialEntry: { ...partialEntry, id: flag.id },
+      }),
     onSuccess: (data) => {
       const updated = data.updateFeatureFlag;
       if (updated !== null) setFeatureFlag(featureFlagSchema.parse(updated));
     },
   });
 
-  // todo: replace toggle invocations with enable/disable
   const handleCheckedChange = async (envName: string, checked: boolean) => {
     try {
       const updatedFlag = structuredClone(featureFlag);
@@ -39,10 +43,7 @@ export default function FeatureFlagTableRow({
         FeatureFlagDraft.disableEnvironment(updatedFlag, envName);
       }
       mutate({
-        partialEntry: {
-          id: featureFlag.id,
-          environmentNames: updatedFlag.environmentNames,
-        },
+        environmentNames: updatedFlag.environmentNames,
       });
     } catch (e) {
       console.error(e);

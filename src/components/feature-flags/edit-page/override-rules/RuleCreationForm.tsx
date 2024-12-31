@@ -11,6 +11,7 @@ import {
   RadioCardRoot,
 } from '#/components/ui/radio-card';
 import ForcedValueInitForm from './ForcedValueInitForm';
+import ExperimentInitModal from '#/components/experiments/ExperimentInitModal';
 
 interface RuleTypeSelectorProps {
   setRuleType: React.Dispatch<React.SetStateAction<OverrideRuleUnion['type']>>;
@@ -46,7 +47,6 @@ function RuleTypeSelector({ setRuleType }: RuleTypeSelectorProps) {
 
 interface RuleFormProps {
   formId: string;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   featureFlagId: string;
   valueType: FlagValueTypeDef;
   environmentName: string;
@@ -64,7 +64,6 @@ interface RuleFormProps {
  */
 export default function RuleCreationForm({
   formId,
-  setIsLoading,
   featureFlagId,
   valueType,
   environmentName,
@@ -81,11 +80,11 @@ export default function RuleCreationForm({
           valueType={valueType}
           envName={environmentName}
           formId={formId}
-          featureFlagId={featureFlagId}
-          setIsLoading={setIsLoading}
+          flagId={featureFlagId}
           setOpen={setOpen}
         />
       )}
+      {ruleType === 'Experiment' && <ExperimentInitModal />}
     </Flex>
   );
 }
