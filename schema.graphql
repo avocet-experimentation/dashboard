@@ -25,13 +25,13 @@ scalar ClientPropValue
 scalar DefinedTreatments
 
 type Enrollment {
-  attributes: [String]
-  proportion: Float
+  attributes: [String!]!
+  proportion: Float!
 }
 
 input EnrollmentInput {
-  attributes: [String!]
-  proportion: Float
+  attributes: [String!]!
+  proportion: Float!
 }
 
 type Environment {
@@ -66,7 +66,7 @@ type Experiment {
   name: String!
   startTimestamp: Float
   status: ExperimentStatus!
-  type: String!
+  type: ExperimentType!
   updatedAt: Float!
 }
 
@@ -123,6 +123,10 @@ enum ExperimentStatus {
   paused
 }
 
+enum ExperimentType {
+  Experiment
+}
+
 type FeatureFlag {
   createdAt: Float!
   description: String
@@ -167,15 +171,15 @@ type ForcedValue implements OverrideRule {
 }
 
 type Metric {
-  fieldDataType: MetricDataType
-  fieldName: String
+  fieldDataType: MetricDataType!
+  fieldName: String!
 }
 
 scalar MetricDataType
 
 input MetricInput {
-  fieldDataType: MetricDataType
-  fieldName: String
+  fieldDataType: MetricDataType!
+  fieldName: String!
 }
 
 type Mutation {
