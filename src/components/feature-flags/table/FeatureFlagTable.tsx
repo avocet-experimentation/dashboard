@@ -5,18 +5,25 @@ import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
 import { ALL_FEATURE_FLAGS } from '#/lib/flag-queries';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
-import { useGQLQuery } from '#/lib/graphql-queries';
+import { gqlRequest } from '#/lib/graphql-queries';
+import { useQuery } from '@tanstack/react-query';
 
 export default function FeatureFlagTable() {
-  const flagsQuery = useGQLQuery(['allFeatureFlags'], ALL_FEATURE_FLAGS);
-  const environmentsQuery = useGQLQuery(['allEnvironments'], ALL_ENVIRONMENTS);
+  const flagsQuery = useQuery({
+    queryKey: ['allFeatureFlags'],
+    queryFn: async () => gqlRequest(ALL_FEATURE_FLAGS, {}),
+  });
+  const environmentsQuery = useQuery({
+    queryKey: ['allEnvironments'],
+    queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
+  });
 
   if (flagsQuery.isPending) return <Loader />;
 
   if (flagsQuery.isError) return <ErrorBox error={flagsQuery.error} />;
 
   const { allFeatureFlags } = flagsQuery.data;
-  const featureFlags: FeatureFlag[] = allFeatureFlags as FeatureFlag[];
+  const featureFlags: FeatureFlag[] = allFeatureFlags;
   let allEnvironments: Environment[] = [];
 
   if (environmentsQuery.isSuccess)

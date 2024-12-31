@@ -12,14 +12,11 @@ import FeatureFlagDefaultValueField from './FeatureFlagDefaultValueField';
 import { DescriptionField, NameField } from '#/components/forms/DefinedFields';
 import ControlledSwitch from '#/components/forms/ControlledSwitch';
 import { VALUE_TYPES_DISPLAY_LIST } from '../feature-constants';
-import {
-  CREATE_FEATURE_FLAG,
-  useGQLMutation,
-  useGQLQuery,
-} from '#/lib/graphql-queries';
+import { CREATE_FEATURE_FLAG, gqlRequest } from '#/lib/graphql-queries';
 import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 interface FeatureFlagCreationFormProps {
   formId: string;
@@ -31,13 +28,14 @@ export default function FeatureFlagCreationForm({
   setOpen,
 }: FeatureFlagCreationFormProps) {
   const [, navigate] = useLocation();
-  const { isPending, isError, error, data } = useGQLQuery(
-    ['allEnvironments'],
-    ALL_ENVIRONMENTS,
-  );
+  const { isPending, isError, error, data } = useQuery({
+    queryKey: ['allEnvironments'],
+    queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
+  });
 
-  const { mutate } = useGQLMutation({
-    mutation: CREATE_FEATURE_FLAG,
+  const { mutate } = useMutation({
+    mutationFn: async (newEntry: FeatureFlagDraft) =>
+      gqlRequest(CREATE_FEATURE_FLAG, { newEntry }),
     onSuccess: (data) => {
       const flagId = data.createFeatureFlag?.id;
       if (flagId) {
@@ -81,7 +79,7 @@ export default function FeatureFlagCreationForm({
         // the error pretty-print the Zod parse error message
         throw new SchemaParseError(safeParseResult);
       }
-      mutate({ newEntry: safeParseResult.data });
+      mutate(safeParseResult.data);
     } catch (e) {
       console.error(e);
     }

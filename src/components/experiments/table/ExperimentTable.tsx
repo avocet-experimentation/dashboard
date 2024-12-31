@@ -6,19 +6,20 @@ import { Status } from '../../ui/status';
 import { formatDate } from '#/lib/timeFunctions';
 import { EXP_STATUS_LEGEND } from '#/lib/constants';
 
-// types
-import { Experiment } from '@avocet/core';
-
 // util
 import { Link } from 'wouter';
 import { Tooltip } from '../../ui/tooltip';
-import { useGQLQuery } from '#/lib/graphql-queries';
 import { ALL_EXPERIMENTS } from '#/lib/experiment-queries';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
+import { useQuery } from '@tanstack/react-query';
+import { gqlRequest } from '#/lib/graphql-queries';
 
 export default function ExperimentTable() {
-  const experimentsQuery = useGQLQuery(['allExperiments'], ALL_EXPERIMENTS);
+  const experimentsQuery = useQuery({
+    queryKey: ['allExperiments'],
+    queryFn: async () => gqlRequest(ALL_EXPERIMENTS, {}),
+  });
 
   if (experimentsQuery.isPending) return <Loader />;
 
@@ -26,9 +27,8 @@ export default function ExperimentTable() {
     return <ErrorBox error={experimentsQuery.error} />;
 
   const { allExperiments } = experimentsQuery.data;
-  const experiments: Experiment[] = allExperiments as Experiment[];
 
-  if (experiments.length === 0)
+  if (allExperiments.length === 0)
     return (
       <ErrorBox error={new Error('No experiments found. Please create one.')} />
     );
@@ -44,7 +44,7 @@ export default function ExperimentTable() {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {experiments.map((exp: Experiment) => (
+        {allExperiments.map((exp) => (
           <Table.Row key={exp.id}>
             <Table.Cell>
               <Link href={`/experiments/${exp.id}`}>{exp.name}</Link>

@@ -9,12 +9,9 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { useContext, useEffect, useState } from 'react';
-import { Environment, FeatureFlag, FeatureFlagDraft } from '@avocet/core';
+import { Environment, FeatureFlagDraft, featureFlagSchema } from '@avocet/core';
 import { CircleHelp, EllipsisVertical, Trash2 } from 'lucide-react';
 import { useLocation, useRoute } from 'wouter';
-import deepcopy from 'deepcopy';
-import { ServicesContext } from '#/services/ServiceContext';
 import { VALUE_FONT } from '#/lib/constants';
 import {
   MenuContent,
@@ -27,6 +24,17 @@ import EnvironmentTabs from './EnvironmentTabs';
 import PageEditable from '../../forms/PageEditable';
 import { FlagEnvironmentToggles } from './FlagEnvironmentToggles';
 import { Tooltip } from '#/components/ui/tooltip';
+import {
+  DELETE_FEATURE_FLAG,
+  FEATURE_FLAG,
+  gqlRequest,
+  UPDATE_FEATURE_FLAG,
+} from '#/lib/graphql-queries';
+import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
+import Loader from '#/components/helpers/Loader';
+import ErrorBox from '#/components/helpers/ErrorBox';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { PartialFeatureFlagWithId } from '#/graphql/graphql';
 
 interface FeatureFlagManagementPageProps {
   // environments: Environment[];
@@ -37,93 +45,73 @@ export default function FeatureFlagManagementPage(
     // environments,
   }: FeatureFlagManagementPageProps,
 ) {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [featureFlag, setFeatureFlag] = useState<FeatureFlag>();
-  const [environments, setEnvironments] = useState<Environment[]>();
-  const [match, params] = useRoute('/features/:id');
-  const [location, navigate] = useLocation();
-  const services = useContext(ServicesContext);
+  const [, params] = useRoute('/features/:id');
+  const [, navigate] = useLocation();
 
-  // todo: consider passing a prop in instead of using route params
   if (params === null) {
     throw new Error("Missing 'id' param!");
   }
 
-  const handleFlagUpdate = async (
-    updates: Partial<FeatureFlagDraft>,
-  ): Promise<boolean> => {
-    const flagResponse = await services.featureFlag.updateFeature(
-      params.id,
-      updates,
-    );
+  const { isPending, isError, error, data } = useQuery({
+    queryKey: ['featureFlag', { id: params.id }],
+    queryFn: async () => gqlRequest(FEATURE_FLAG, { id: params.id }),
+    select: (data) => data.featureFlag,
+  });
 
-    return flagResponse.ok;
-  };
+  const environmentsQuery = useQuery({
+    queryKey: ['allEnvironments'],
+    queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
+    select: (data) => data.allEnvironments,
+    placeholderData: { allEnvironments: [] } as {
+      allEnvironments: Environment[];
+    },
+  });
 
-  const handleGetFeature = async () => {
-    setIsLoading(true);
-    try {
-      const flagResponse = await services.featureFlag.get(params.id);
-      if (!flagResponse.ok) {
-        // todo: better error handling
-        throw new Error(`Couldn't fetch flag data for id ${params.id}!`);
-      }
+  const { mutate } = useMutation({
+    mutationKey: ['allFeatureFlags'],
+    mutationFn: (partialEntry: PartialFeatureFlagWithId) =>
+      gqlRequest(UPDATE_FEATURE_FLAG, { partialEntry }),
+    onError: (error) => {
+      throw error; // TODO: handle failed updates better
+    },
+  });
 
-      const envResponse = await services.environment.getMany();
-      // todo: better error handling
-      if (!envResponse.ok) throw new Error("Couldn't load environments!");
-
-      setFeatureFlag(flagResponse.body);
-      setEnvironments(envResponse.body);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    handleGetFeature();
-    // return () => handleGetFeature();
-  }, []);
-
-  const handleDeleteFeature = () => {
-    if (featureFlag) {
-      services.featureFlag.deleteFeature(featureFlag.id);
+  const deleteMutation = useMutation({
+    mutationKey: ['allFeatureFlags'],
+    mutationFn: async (id: string) => gqlRequest(DELETE_FEATURE_FLAG, { id }),
+    onSuccess: () => {
       navigate('/features');
-    }
-  };
+    },
+  });
+
+  if (isPending) return <Loader />;
+  if (isError) return <ErrorBox error={error} />;
+  if (data === null) return <NotFound componentName="feature" />;
+
+  const featureFlag = featureFlagSchema.parse(data);
+  const environments = environmentsQuery.data;
 
   const handleEnvToggleChange = async (envName: string, checked: boolean) => {
     if (!featureFlag) {
       throw new Error('Feature flag was not set on state');
     }
-    try {
-      const response = await services.featureFlag.toggleEnvironment(
-        params.id,
-        envName,
-      );
-      if (!response.ok) {
-        throw new Error(`Failed to update record for flag ${params.id}`);
-      }
 
-      setFeatureFlag((prevState) => {
-        if (!prevState)
-          throw new Error(
-            'Attempted to update flag before it was set on state!',
-          );
-        const updatedFlag = deepcopy(prevState);
-        FeatureFlagDraft.toggleEnvironment(updatedFlag, envName);
-        return updatedFlag;
-      });
-    } catch (e) {
-      console.error(e);
+    const updatedFlag = structuredClone(featureFlag);
+    if (checked) {
+      FeatureFlagDraft.enableEnvironment(updatedFlag, envName);
+    } else {
+      FeatureFlagDraft.disableEnvironment(updatedFlag, envName);
     }
+
+    mutate({
+      id: featureFlag.id,
+      environmentNames: updatedFlag.environmentNames,
+    });
   };
 
   return (
     <>
-      {!isLoading && featureFlag ? (
+      {featureFlag && (
         <Stack gap={4} padding="25px" height="100vh" overflowY="scroll">
           <Flex justifyContent="space-between">
             <Heading size="3xl">{featureFlag.name}</Heading>
@@ -140,7 +128,7 @@ export default function FeatureFlagManagementPage(
                   cursor="pointer"
                   color="fg.error"
                   _hover={{ bg: 'bg.error', color: 'fg.error' }}
-                  onClick={handleDeleteFeature}
+                  onClick={() => deleteMutation.mutate(featureFlag.id)}
                 >
                   <Trash2 />
                   <Box flex="1">Delete</Box>
@@ -156,10 +144,7 @@ export default function FeatureFlagManagementPage(
               label="Description"
               initialValue={featureFlag.description ?? ''}
               submitHandler={async (e: EditableValueChangeDetails) => {
-                const success = await handleFlagUpdate({
-                  description: e.value,
-                });
-                return success ? e.value : (featureFlag.description ?? '');
+                mutate({ id: featureFlag.id, description: e.value });
               }}
             />
           </Box>
@@ -209,8 +194,6 @@ export default function FeatureFlagManagementPage(
             </Stack>
           </Box>
         </Stack>
-      ) : (
-        <NotFound componentName="feature" />
       )}
     </>
   );

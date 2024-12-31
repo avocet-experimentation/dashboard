@@ -5,7 +5,8 @@ import { Switch } from '../../ui/switch';
 import { Tooltip } from '../../ui/tooltip';
 import EnvironmentManagementModal from '../management-form/EnvironmentManagementModal';
 import { UPDATE_ENVIRONMENT } from '#/lib/environment-queries';
-import { useGQLMutation } from '#/lib/graphql-queries';
+import { gqlRequest } from '#/lib/graphql-queries';
+import { useMutation } from '@tanstack/react-query';
 
 interface EnvironmentTableRowProps {
   environment: Environment;
@@ -14,14 +15,13 @@ interface EnvironmentTableRowProps {
 export default function EnvironmentTableRow({
   environment,
 }: EnvironmentTableRowProps) {
-  const { mutate, isPending } = useGQLMutation({
-    mutation: UPDATE_ENVIRONMENT,
-    cacheKey: ['allEnvironments'],
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (updates: Partial<Omit<Environment, 'id'>>) =>
+      gqlRequest(UPDATE_ENVIRONMENT, {
+        partialEntry: { id: environment.id, ...updates },
+      }),
+    mutationKey: ['allEnvironments'],
   });
-
-  const handleCheckedChange = (checked: boolean) => {
-    mutate({ partialEntry: { id: environment.id, defaultEnabled: checked } });
-  };
 
   return (
     <Table.Row>
@@ -31,7 +31,7 @@ export default function EnvironmentTableRow({
       <Table.Cell key={environment.name}>
         <Switch
           checked={environment.defaultEnabled}
-          onCheckedChange={(e) => handleCheckedChange(e.checked)}
+          onCheckedChange={(e) => mutate({ defaultEnabled: e.checked })}
           disabled={isPending}
         />
       </Table.Cell>

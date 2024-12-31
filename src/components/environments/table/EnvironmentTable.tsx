@@ -4,16 +4,17 @@ import EnvironmentTableRow from './EnvironmentTableRow';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
 import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
-import { useGQLQuery } from '#/lib/graphql-queries';
+import { useQuery } from '@tanstack/react-query';
+import { gqlRequest } from '#/lib/graphql-queries';
 
 /**
  * Table listing all Environments
  */
 export default function EnvironmentTable() {
-  const { isPending, isError, error, data } = useGQLQuery(
-    ['allEnvironments'],
-    ALL_ENVIRONMENTS,
-  );
+  const { isPending, isError, error, data } = useQuery({
+    queryKey: ['allEnvironments'],
+    queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
+  });
 
   if (isPending) return <Loader />;
 
