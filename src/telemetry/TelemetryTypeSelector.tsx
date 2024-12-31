@@ -1,8 +1,6 @@
-import { useState, useEffect, useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import {
-  Button,
   SelectValueChangeDetails,
-  Stack,
   createListCollection,
 } from '@chakra-ui/react';
 import {
@@ -13,13 +11,9 @@ import {
   SelectValueText,
 } from '#/components/ui/select';
 import { TelemetryContext } from './TelemetryContext';
-import { LoaderWrapper } from '#/components/helpers/LoaderWrapper';
-
-// interface TelemetryTypeSelectorProps {
-//   selectedType: string | null;
-//   setSelectedType: React.Dispatch<React.SetStateAction<string | null>>;
-//   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-// }
+import { useQuery } from '@tanstack/react-query';
+import Loader from '#/components/helpers/Loader';
+import ErrorBox from '#/components/helpers/ErrorBox';
 
 interface SpanTypeListItem {
   label: string;
@@ -27,65 +21,51 @@ interface SpanTypeListItem {
 }
 
 export default function TelemetryTypeSelector() {
-  const [allSpanTypes, setAllSpanTypes] = useState(
-    createListCollection<SpanTypeListItem>({ items: [] }),
-  );
-  const [value, setValue] = useState<string[]>([]);
-  const {
-    telemetryService,
-    selectedType,
-    setSelectedType,
-    isLoading,
-    setIsLoading,
-  } = useContext(TelemetryContext);
+  const { telemetryService, selectedType, setSelectedType } =
+    useContext(TelemetryContext);
 
-  const fetchSpanTypes = async () => {
-    const response = await telemetryService.getAllSpanTypes();
-    if (response.ok) {
-      const spanTypeCollection = createListCollection<SpanTypeListItem>({
-        items: [
-          { label: 'all', value: null },
-          ...response.body.map((type) => ({ label: type, value: type })),
-        ],
-      });
+  const { isPending, isError, error, data } = useQuery({
+    queryKey: ['allTelemetry'],
+    queryFn: async () => telemetryService.getAllSpanTypes(),
+  });
 
-      setAllSpanTypes(spanTypeCollection);
-    }
-  };
+  const allSpanTypes = useMemo(() => {
+    const items =
+      data && data.body
+        ? [
+            { label: 'all', value: null },
+            ...data.body.map((type) => ({ label: type, value: type })),
+          ]
+        : [];
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetchSpanTypes().finally(() => setIsLoading(false));
+    return createListCollection<SpanTypeListItem>({
+      items,
+    });
+  }, [data]);
 
-    return () => setIsLoading(false);
-  }, []);
-
-  const handleValueChange = (e: SelectValueChangeDetails<SpanTypeListItem>) => {
-    console.log({ selection: e.value });
-    setValue(e.value);
-    setSelectedType(e.value[0]);
-  };
+  if (isPending) return <Loader />;
+  if (isError) return <ErrorBox error={error} />;
 
   return (
-    <LoaderWrapper isLoading={isLoading}>
-      <SelectRoot
-        collection={allSpanTypes}
-        bg={'white'}
-        color={'black'}
-        value={value}
-        onValueChange={handleValueChange}
-      >
-        <SelectTrigger>
-          <SelectValueText placeholder="Span type" />
-        </SelectTrigger>
-        <SelectContent>
-          {allSpanTypes.items.map((type) => (
-            <SelectItem item={type} key={type.value}>
-              {type.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </SelectRoot>
-    </LoaderWrapper>
+    <SelectRoot
+      collection={allSpanTypes}
+      bg={'white'}
+      color={'black'}
+      value={selectedType ? [selectedType] : undefined}
+      onValueChange={(e: SelectValueChangeDetails<SpanTypeListItem>) => {
+        setSelectedType(e.value[0]);
+      }}
+    >
+      <SelectTrigger>
+        <SelectValueText placeholder="Filter by attribute..." />
+      </SelectTrigger>
+      <SelectContent>
+        {allSpanTypes.items.map((type) => (
+          <SelectItem item={type} key={type.value}>
+            {type.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </SelectRoot>
   );
 }
