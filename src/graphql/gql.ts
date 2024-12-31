@@ -23,6 +23,9 @@ const documents = {
     "\n  query allExperiments($limit: Int, $offset: Int) {\n    allExperiments(limit: $limit, offset: $offset) {\n      id\n      createdAt\n      updatedAt\n      name\n      environmentName\n      status\n    }\n  }\n": types.AllExperimentsDocument,
     "\n  mutation updateExperiment($partialEntry: PartialExperimentWithId!) {\n    updateExperiment(partialEntry: $partialEntry) {\n      id\n      name\n      environmentName\n      status\n      type\n      description\n      hypothesis\n      startTimestamp\n      endTimestamp\n      enrollment {\n        attributes\n        proportion\n      }\n      groups {\n        id\n        name\n        description\n        proportion\n        cycles\n        sequence\n      }\n      definedTreatments\n      dependents {\n        fieldName\n        fieldDataType\n      }\n      flagIds\n    }\n  }\n": types.UpdateExperimentDocument,
     "\n  mutation deleteExperiment($id: ID!) {\n    deleteExperiment(id: $id)\n  }\n": types.DeleteExperimentDocument,
+    "\n  mutation startExperiment($id: ID!) {\n    startExperiment(id: $id)\n  }\n": types.StartExperimentDocument,
+    "\n  mutation pauseExperiment($id: ID!) {\n    pauseExperiment(id: $id)\n  }\n": types.PauseExperimentDocument,
+    "\n  mutation completeExperiment($id: ID!) {\n    completeExperiment(id: $id)\n  }\n": types.CompleteExperimentDocument,
     "\n  mutation createFeatureFlag($newEntry: FeatureFlagDraft!) {\n    createFeatureFlag(newEntry: $newEntry) {\n      id\n      createdAt\n      updatedAt\n      name\n      description\n      value\n      environmentNames\n      overrideRules {\n        id\n        description\n        environmentName\n        enrollment {\n          attributes\n          proportion\n        }\n        status\n        startTimestamp\n        endTimestamp\n        ... on ExperimentReference {\n          type\n          name\n        }\n        ... on ForcedValue {\n          type\n          value\n        }\n      }\n    }\n  }\n": types.CreateFeatureFlagDocument,
     "\n  query featureFlag($id: ID!) {\n    featureFlag(id: $id) {\n      id\n      createdAt\n      updatedAt\n      name\n      description\n      value\n      environmentNames\n      overrideRules {\n        id\n        description\n        environmentName\n        enrollment {\n          attributes\n          proportion\n        }\n        status\n        startTimestamp\n        endTimestamp\n        ... on ExperimentReference {\n          type\n          name\n        }\n        ... on ForcedValue {\n          type\n          value\n        }\n      }\n    }\n  }\n": types.FeatureFlagDocument,
     "\n  query allFeatureFlags($limit: Int, $offset: Int) {\n    allFeatureFlags(limit: $limit, offset: $offset) {\n      id\n      createdAt\n      updatedAt\n      name\n      description\n      value\n      environmentNames\n      overrideRules {\n        id\n        description\n        environmentName\n        enrollment {\n          attributes\n          proportion\n        }\n        status\n        startTimestamp\n        endTimestamp\n        ... on ExperimentReference {\n          type\n          name\n        }\n        ... on ForcedValue {\n          type\n          value\n        }\n      }\n    }\n  }\n": types.AllFeatureFlagsDocument,
@@ -84,6 +87,18 @@ export function graphql(source: "\n  mutation updateExperiment($partialEntry: Pa
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation deleteExperiment($id: ID!) {\n    deleteExperiment(id: $id)\n  }\n"): (typeof documents)["\n  mutation deleteExperiment($id: ID!) {\n    deleteExperiment(id: $id)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation startExperiment($id: ID!) {\n    startExperiment(id: $id)\n  }\n"): (typeof documents)["\n  mutation startExperiment($id: ID!) {\n    startExperiment(id: $id)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation pauseExperiment($id: ID!) {\n    pauseExperiment(id: $id)\n  }\n"): (typeof documents)["\n  mutation pauseExperiment($id: ID!) {\n    pauseExperiment(id: $id)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation completeExperiment($id: ID!) {\n    completeExperiment(id: $id)\n  }\n"): (typeof documents)["\n  mutation completeExperiment($id: ID!) {\n    completeExperiment(id: $id)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

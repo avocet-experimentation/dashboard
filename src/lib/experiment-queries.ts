@@ -124,3 +124,21 @@ export const DELETE_EXPERIMENT = graphql(`
     deleteExperiment(id: $id)
   }
 `);
+
+export const START_EXPERIMENT = graphql(`
+  mutation startExperiment($id: ID!) {
+    startExperiment(id: $id)
+  }
+`);
+
+export const PAUSE_EXPERIMENT = graphql(`
+  mutation pauseExperiment($id: ID!) {
+    pauseExperiment(id: $id)
+  }
+`);
+
+export const COMPLETE_EXPERIMENT = graphql(`
+  mutation completeExperiment($id: ID!) {
+    completeExperiment(id: $id)
+  }
+`);

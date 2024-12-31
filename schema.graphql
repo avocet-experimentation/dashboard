@@ -183,6 +183,7 @@ input MetricInput {
 }
 
 type Mutation {
+  completeExperiment(id: ID!): Boolean
   createClientPropDef(newEntry: ClientPropDefDraft!): ClientPropDef!
   createEnvironment(newEntry: EnvironmentDraft!): Environment!
   createExperiment(newEntry: ExperimentDraft!): Experiment!
@@ -191,10 +192,12 @@ type Mutation {
   createUser(newEntry: UserDraft!): User!
   deleteClientPropDef(id: ID!): ID
   deleteEnvironment(id: ID!): Boolean
-  deleteExperiment(id: ID!): Boolean
+  deleteExperiment(id: ID!): ID
   deleteFeatureFlag(id: ID!): ID
   deleteSDKConnection(id: ID!): ID
   deleteUser(id: ID!): ID
+  pauseExperiment(id: ID!): Boolean
+  startExperiment(id: ID!): Boolean
   updateClientPropDef(partialEntry: PartialClientPropDefWithId!): ClientPropDef
   updateEnvironment(partialEntry: PartialEnvironmentWithId!): Environment
   updateExperiment(partialEntry: PartialExperimentWithId!): Experiment
