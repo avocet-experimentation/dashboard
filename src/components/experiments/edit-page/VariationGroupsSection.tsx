@@ -9,7 +9,7 @@ import {
 import GroupPieChart from './GroupPieChart';
 import { UPDATE_EXPERIMENT } from '#/lib/experiment-queries';
 import { useMutation } from '@tanstack/react-query';
-import { getRequestFunc } from '#/lib/graphql-queries';
+import { gqlRequest } from '#/lib/graphql-queries';
 import { toastError, toastSuccess } from '#/components/ui/toaster';
 import GroupTabsView from './GroupTabsView';
 
@@ -21,19 +21,19 @@ const createTreatmentCollection = (definedTreatments: Treatment) => {
   return createListCollection({ items });
 };
 
-export default function GroupTables({
+export default function VariationGroupsSection({
   experiment,
 }: {
   experiment: Experiment;
 }) {
   const { mutate } = useMutation({
     mutationFn: async (groups: ExperimentGroup[]) => {
-      getRequestFunc(UPDATE_EXPERIMENT, {
+      gqlRequest(UPDATE_EXPERIMENT, {
         partialEntry: {
           groups: groups,
           id: experiment.id,
         },
-      })();
+      });
     },
     mutationKey: ['experiment', experiment.id],
     onSuccess: () => {
@@ -50,7 +50,7 @@ export default function GroupTables({
 
   return (
     <Stack padding="15px" bg="white" borderRadius="5px">
-      <Heading size="lg">Variation Groups ({experiment.groups.length})</Heading>
+      <Heading size="lg">User Groups ({experiment.groups.length})</Heading>
       <Grid templateColumns="1fr 2fr" gap={6}>
         <GridItem>
           <GroupPieChart experiment={experiment} />

@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom/client';
 import { ChakraUIProvider } from './components/ui/provider';
 import App from './App';
 // import './assets/stylesheets/index.css';
-import { ServicesProvider } from './services/ServiceContext';
-import { EnvironmentProvider } from './lib/EnvironmentContext';
 import {
   MutationCache,
   QueryClient,

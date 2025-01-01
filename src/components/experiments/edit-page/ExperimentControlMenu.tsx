@@ -6,7 +6,7 @@ import {
 } from '#/components/ui/menu';
 import { toastError, toastSuccess } from '#/components/ui/toaster';
 import { DELETE_EXPERIMENT } from '#/lib/experiment-queries';
-import { getRequestFunc } from '#/lib/graphql-queries';
+import { gqlRequest } from '#/lib/graphql-queries';
 import { Box, IconButton } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
 import { EllipsisVertical, Trash2 } from 'lucide-react';
@@ -21,8 +21,7 @@ export default function ExperimentControlMenu({
 }) {
   const deleteExperiment = useMutation({
     mutationKey: ['experiment', experimentId],
-    mutationFn: async () =>
-      getRequestFunc(DELETE_EXPERIMENT, { id: experimentId })(),
+    mutationFn: async () => gqlRequest(DELETE_EXPERIMENT, { id: experimentId }),
     onSuccess: () => {
       navigate('/experiments');
       toastSuccess('Experiment deleted successfully.');

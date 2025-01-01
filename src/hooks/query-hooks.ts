@@ -1,4 +1,4 @@
-import { CreateExperimentMutation, Experiment } from '#/graphql/graphql';
+import { CreateExperimentMutation } from '#/graphql/graphql';
 import {
   ALL_FEATURE_FLAGS,
   CREATE_EXPERIMENT,
