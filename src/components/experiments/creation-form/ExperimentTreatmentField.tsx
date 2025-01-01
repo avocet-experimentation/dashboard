@@ -16,7 +16,7 @@ export default function ExperimentTreatmentField() {
   const allFlagsQuery = useAllFeatureFlags();
 
   const flagOptions =
-    allFlagsQuery.data?.allFeatureFlags.map((flag) => ({
+    allFlagsQuery.data?.map((flag) => ({
       label: flag.name,
       value: flag.id,
     })) ?? [];
@@ -54,7 +54,7 @@ function TreatmentRow({
   const allFlagsQuery = useAllFeatureFlags();
   const [selectedFlag, setSelectedFlag] = useState<FeatureFlag>();
 
-  const featureFlags = allFlagsQuery.data?.allFeatureFlags ?? [];
+  const featureFlags = allFlagsQuery.data ?? [];
   const flagStatePath = `definedTreatments.${treatmentId}.flagStates.${featureIdx}`;
 
   return (
