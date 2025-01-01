@@ -10,9 +10,9 @@ import { X, Check, FilePenLine } from 'lucide-react';
 import { useState } from 'react';
 
 interface PageEditableProps {
-  label: string;
+  label?: string;
   initialValue: string;
-  submitHandler: (e: EditableValueChangeDetails) => Promise<void>;
+  submitHandler: (e: EditableValueChangeDetails) => void;
   startInEditMode?: boolean;
   disabled?: boolean;
 }
@@ -43,7 +43,7 @@ export default function PageEditable({
     >
       <Stack padding="15px" bg="white" borderRadius="5px" width="full">
         <HStack gap={2.5}>
-          <Heading size="lg">{label}</Heading>
+          {label && <Heading size="lg">{label}</Heading>}
           <Editable.Control>
             <Editable.EditTrigger asChild>
               <IconButton variant="ghost" size="xs">
