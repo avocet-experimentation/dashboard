@@ -137,7 +137,7 @@ function FlagStateTable({ experiment, flag }: FlagStateTableProps) {
             return (
               <Table.Row key={treatment.id}>
                 <Table.Cell>{treatment.name}</Table.Cell>
-                <Table.Cell>{flagState.value}</Table.Cell>
+                <Table.Cell>{String(flagState.value)}</Table.Cell>
               </Table.Row>
             );
           })}
