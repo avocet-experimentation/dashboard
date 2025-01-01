@@ -1,37 +1,20 @@
 import { useFormContext } from 'react-hook-form';
-import { FeatureFlag, Treatment } from '@avocet/core';
+import { FeatureFlag } from '@avocet/core';
 import ControlledSwitch from '#/components/forms/ControlledSwitch';
 import ControlledTextInput from '#/components/forms/ControlledTextInput';
-import { useContext } from 'react';
-import { ExperimentContext } from '../ExperimentContext';
 
 interface Props {
-  // fieldPath: `definedTreatments.${string}.flagStates`;
   selectedFlag: FeatureFlag;
-  // selectedFlagId: string;
   featureIdx: number;
   treatmentId: string;
 }
 
 export default function TreatmentFeatureValueType({
-  // fieldPath,
   selectedFlag,
-  // selectedFlagId,
   featureIdx,
   treatmentId,
 }: Props): JSX.Element {
   const { register } = useFormContext();
-  // const { featureFlags } = useContext(ExperimentContext);
-  console.log('treatmentId:', treatmentId);
-  // if (!selectedFlagId) return <></>;
-
-  // const selectedFlag = featureFlags.find((flag) => flag.id === selectedFlagId);
-
-  // if (!selectedFlag) {
-  //   console.log({ featureFlags });
-  //   throw new Error(`No feature flag was found matching id ${selectedFlagId}`);
-  // }
-
   const flagStateValueFieldPath: `definedTreatments.${string}` = `definedTreatments.${treatmentId}.flagStates.${featureIdx}.value`;
 
   if (selectedFlag.value.type === 'boolean') {

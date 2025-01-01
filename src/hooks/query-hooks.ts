@@ -1,11 +1,17 @@
+import { CreateExperimentMutation, Experiment } from '#/graphql/graphql';
 import {
   ALL_FEATURE_FLAGS,
+  CREATE_EXPERIMENT,
   FEATURE_FLAG,
   gqlRequest,
 } from '#/lib/graphql-queries';
 import TelemetryService from '#/services/TelemetryService';
-import { FeatureFlag } from '@avocet/core';
-import { useQuery } from '@tanstack/react-query';
+import { ExperimentDraft, FeatureFlag } from '@avocet/core';
+import {
+  UseMutationOptions,
+  useMutation,
+  useQuery,
+} from '@tanstack/react-query';
 
 export const useAllFeatureFlags = () =>
   useQuery({
@@ -33,3 +39,16 @@ export const useAllTelemetry = () => {
     },
   });
 };
+
+export const useCreateExperiment = (
+  options?: Omit<
+    UseMutationOptions<CreateExperimentMutation, Error, ExperimentDraft>,
+    'mutationKey' | 'mutationFn'
+  >,
+) =>
+  useMutation({
+    ...options,
+    mutationKey: ['allExperiments'],
+    mutationFn: async (newEntry: ExperimentDraft) =>
+      gqlRequest(CREATE_EXPERIMENT, { newEntry }),
+  });
