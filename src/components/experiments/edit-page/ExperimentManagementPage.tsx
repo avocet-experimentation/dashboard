@@ -12,7 +12,6 @@ import {
 import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../../ui/menu';
 import { EllipsisVertical, Trash2 } from 'lucide-react';
 import { Environment, Experiment, ExperimentDraft } from '@avocet/core';
-import VariationGroups from './VariationGroupsSection';
 import {
   StartExperimentButton,
   PauseExperimentButton,
@@ -34,6 +33,9 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Tooltip } from '#/components/ui/tooltip';
 import { Status } from '#/components/ui/status';
 import { EXP_STATUS_LEGEND } from '#/lib/constants';
+import DefinedTreatments from './DefinedTreatments';
+import GroupTables from './VariationGroupsSection';
+import VariationGroupsSection from './VariationGroupsSection';
 
 export default function ExperimentManagementPage() {
   const [_match, params] = useRoute('/experiments/:id');
@@ -100,105 +102,104 @@ function ExperimentManagementFields({
   });
 
   return (
-    <Box>
-      <Stack gap={4} padding="25px" height="100vh" overflowY="scroll">
-        <Flex justifyContent="space-between">
-          <Heading size="3xl">{experiment.name}</Heading>
-          <HStack>
-            <Tooltip
-              showArrow
-              openDelay={50}
-              content={EXP_STATUS_LEGEND[experiment.status].description}
-            >
-              <Status colorPalette={EXP_STATUS_LEGEND[experiment.status].color}>
-                {experiment.status}
-              </Status>
-            </Tooltip>
-            {
-              // TODO: show "Resume" label instead of "Start" for paused experiments
-              (experiment.status === 'draft' ||
-                experiment.status === 'paused') && (
-                <StartExperimentButton experiment={experiment} />
-              )
+    <Stack gap={4} padding="25px" height="100vh" overflowY="scroll">
+      <Flex justifyContent="space-between">
+        <Heading size="3xl">{experiment.name}</Heading>
+        <HStack>
+          <Tooltip
+            showArrow
+            openDelay={50}
+            content={EXP_STATUS_LEGEND[experiment.status].description}
+          >
+            <Status colorPalette={EXP_STATUS_LEGEND[experiment.status].color}>
+              {experiment.status}
+            </Status>
+          </Tooltip>
+          {
+            // TODO: show "Resume" label instead of "Start" for paused experiments
+            (experiment.status === 'draft' ||
+              experiment.status === 'paused') && (
+              <StartExperimentButton experiment={experiment} />
+            )
+          }
+          {experiment.status === 'active' && (
+            <>
+              <PauseExperimentButton experiment={experiment} />
+              <CompleteExperimentButton experiment={experiment} />
+            </>
+          )}
+          <MenuRoot>
+            <MenuTrigger asChild>
+              <IconButton size="md">
+                <EllipsisVertical color="black" />
+              </IconButton>
+            </MenuTrigger>
+            <MenuContent>
+              <MenuItem
+                value="delete"
+                valueText="Delete"
+                cursor="pointer"
+                color="fg.error"
+                _hover={{ bg: 'bg.error', color: 'fg.error' }}
+                onClick={() => {
+                  deleteExperiment.mutate();
+                  // TODO: if no experiment matches the id, show a not found popup flash error after navigating back to /experiments
+                  setLocation('/experiments');
+                }}
+              >
+                <Trash2 />
+                <Box flex="1">Delete</Box>
+              </MenuItem>
+            </MenuContent>
+          </MenuRoot>
+        </HStack>
+      </Flex>
+      <Box>
+        <Heading size="xl" marginBottom="15px">
+          Overview
+        </Heading>
+        <Stack gap={4}>
+          <PageEditable
+            label="Description"
+            initialValue={experiment.description ?? ''}
+            submitHandler={async (e: EditableValueChangeDetails) => {
+              mutate({ description: e.value });
+            }}
+          />
+          <PageEditable
+            label="Hypothesis"
+            initialValue={experiment.hypothesis ?? ''}
+            submitHandler={async (e: EditableValueChangeDetails) => {
+              mutate({ hypothesis: e.value });
+            }}
+          />
+          <PageSelect
+            options={
+              environmentsQuery.data?.allEnvironments.map((env) => ({
+                label: env.name,
+                value: env.name,
+              })) ?? []
             }
-            {experiment.status === 'active' && (
-              <>
-                <PauseExperimentButton experiment={experiment} />
-                <CompleteExperimentButton experiment={experiment} />
-              </>
-            )}
-            <MenuRoot>
-              <MenuTrigger asChild>
-                <IconButton size="md">
-                  <EllipsisVertical color="black" />
-                </IconButton>
-              </MenuTrigger>
-              <MenuContent>
-                <MenuItem
-                  value="delete"
-                  valueText="Delete"
-                  cursor="pointer"
-                  color="fg.error"
-                  _hover={{ bg: 'bg.error', color: 'fg.error' }}
-                  onClick={() => {
-                    deleteExperiment.mutate();
-                    // TODO: if no experiment matches the id, show a not found popup flash error after navigating back to /experiments
-                    setLocation('/experiments');
-                  }}
-                >
-                  <Trash2 />
-                  <Box flex="1">Delete</Box>
-                </MenuItem>
-              </MenuContent>
-            </MenuRoot>
-          </HStack>
-        </Flex>
-        <Box>
-          <Heading size="xl" marginBottom="15px">
-            Overview
-          </Heading>
-          <Stack gap={4}>
-            <PageEditable
-              label="Description"
-              initialValue={experiment.description ?? ''}
-              submitHandler={async (e: EditableValueChangeDetails) => {
-                mutate({ description: e.value });
-              }}
-            />
-            <PageEditable
-              label="Hypothesis"
-              initialValue={experiment.hypothesis ?? ''}
-              submitHandler={async (e: EditableValueChangeDetails) => {
-                mutate({ hypothesis: e.value });
-              }}
-            />
-            <PageSelect
-              options={
-                environmentsQuery.data?.allEnvironments.map((env) => ({
-                  label: env.name,
-                  value: env.name,
-                })) ?? []
-              }
-              label="Environment"
-              selected={
-                experiment.environmentName ? [experiment.environmentName] : []
-              }
-              handleValueChange={(selectedEnvIds) =>
-                mutate({ environmentName: selectedEnvIds[0] })
-              }
-            />
-          </Stack>
-        </Box>
-        <Box>
-          <Heading size="xl" marginBottom="15px">
-            Implementation
-          </Heading>
-          <Stack gap={4}>
-            <VariationGroups experiment={experiment} />
-            <LinkedFlagsSection experiment={experiment} />
-          </Stack>
-        </Box>
-      </Stack>
-    </Box>
+            label="Environment"
+            selected={
+              experiment.environmentName ? [experiment.environmentName] : []
+            }
+            handleValueChange={(selectedEnvIds) =>
+              mutate({ environmentName: selectedEnvIds[0] })
+            }
+          />
+        </Stack>
+      </Box>
+      <Box>
+        <Heading size="xl" marginBottom="15px">
+          Implementation
+        </Heading>
+        <Stack gap={4}>
+          <LinkedFlagsSection experiment={experiment} />
+          <DefinedTreatments experiment={experiment} />
+          <VariationGroupsSection experiment={experiment} />
+        </Stack>
+      </Box>
+    </Stack>
   );
 }
