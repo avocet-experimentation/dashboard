@@ -21,22 +21,17 @@ export default function FeatureFlagTableRow({
   allEnvironmentNames,
   flag,
 }: FeatureFlagTableRowProps) {
-  const [featureFlag, setFeatureFlag] = useState<FeatureFlag>(flag);
   const { mutate } = useMutation({
     mutationKey: ['allFeatureFlags'],
     mutationFn: async (partialEntry: Partial<FeatureFlag>) =>
       gqlRequest(UPDATE_FEATURE_FLAG, {
         partialEntry: { ...partialEntry, id: flag.id },
       }),
-    onSuccess: (data) => {
-      const updated = data.updateFeatureFlag;
-      if (updated !== null) setFeatureFlag(featureFlagSchema.parse(updated));
-    },
   });
 
   const handleCheckedChange = async (envName: string, checked: boolean) => {
     try {
-      const updatedFlag = structuredClone(featureFlag);
+      const updatedFlag = structuredClone(flag);
       if (checked) {
         FeatureFlagDraft.enableEnvironment(updatedFlag, envName);
       } else {
@@ -50,39 +45,41 @@ export default function FeatureFlagTableRow({
     }
   };
 
+  const { type, initial } = flag.value;
+  const displayedInitialValue =
+    type === 'string' ? `"${initial}"` : String(initial);
+
   return (
-    <Table.Row key={featureFlag.id}>
+    <Table.Row key={flag.id}>
       <Table.Cell color="black" textDecor="none">
-        <Link href={`/features/${featureFlag.id}`}>{featureFlag.name}</Link>
+        <Link href={`/features/${flag.id}`}>{flag.name}</Link>
       </Table.Cell>
-      {allEnvironmentNames.map((envName: string) => (
-        <Table.Cell key={envName}>
-          <Switch
-            checked={!!featureFlag.environmentNames[envName]}
-            onCheckedChange={(e) => handleCheckedChange(envName, e.checked)}
-          />
-        </Table.Cell>
-      ))}
       <Table.Cell>
-        <Tooltip showArrow openDelay={50} content={featureFlag.value.type}>
+        <Tooltip showArrow openDelay={50} content={flag.value.type}>
           <Text
             width="fit-content"
             fontFamily="'Lucida Console', 'Courier New', monospace"
           >
-            {String(featureFlag.value.initial)}
+            {displayedInitialValue}
           </Text>
         </Tooltip>
       </Table.Cell>
+      {allEnvironmentNames.map((envName: string) => (
+        <Table.Cell key={envName}>
+          <Switch
+            checked={!!flag.environmentNames[envName]}
+            onCheckedChange={(e) => handleCheckedChange(envName, e.checked)}
+          />
+        </Table.Cell>
+      ))}
       <Table.Cell>{}</Table.Cell>
       <Table.Cell>
         <Tooltip
           showArrow
           openDelay={50}
-          content={formatDate(Number(featureFlag.updatedAt))}
+          content={formatDate(Number(flag.updatedAt))}
         >
-          <Text width="fit-content">
-            {lastUpdated(Number(featureFlag.updatedAt))}
-          </Text>
+          <Text width="fit-content">{lastUpdated(Number(flag.updatedAt))}</Text>
         </Tooltip>
       </Table.Cell>
     </Table.Row>

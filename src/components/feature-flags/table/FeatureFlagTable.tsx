@@ -37,13 +37,13 @@ export default function FeatureFlagTable() {
     <Table.Root className="table">
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeader>Feature Name</Table.ColumnHeader>
+          <Table.ColumnHeader>Name</Table.ColumnHeader>
+          <Table.ColumnHeader>Default Value</Table.ColumnHeader>
           {pinnedEnvironments.map((env) => (
             <Table.ColumnHeader key={`${env.name}-header`}>
               {env.name.charAt(0).toUpperCase() + env.name.slice(1)}
             </Table.ColumnHeader>
           ))}
-          <Table.ColumnHeader>Default Value</Table.ColumnHeader>
           <Table.ColumnHeader>Override Rules</Table.ColumnHeader>
           <Table.ColumnHeader>Last Updated</Table.ColumnHeader>
         </Table.Row>
