@@ -171,12 +171,12 @@ function FlagManagementFields({ flag }: FlagManagementFieldsProps) {
 
           <Heading size="lg" margin="15px 0 0 0">
             <HStack gap={2.5}>
-              Rules{' '}
+              Rules
               <Tooltip
                 showArrow
                 openDelay={50}
                 content={
-                  'Only enabled environments will only be shown. Enable an environment to view and edit its rules.'
+                  'Enable the flag in an environment to view and edit rules for it.'
                 }
               >
                 <Icon size="md">
