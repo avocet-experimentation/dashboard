@@ -94,5 +94,5 @@ export interface CardProps {
 }
 
 function Card({ id, text, index, moveCard }: CardProps) {
-  const 
+  // TODO: create drag and drop functionality
 }
