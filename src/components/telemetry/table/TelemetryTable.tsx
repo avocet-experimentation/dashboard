@@ -1,13 +1,20 @@
 import { TransformedSpan } from '@avocet/core';
 import { Table } from '@chakra-ui/react';
 import TelemetryTableRow from './TelemetryTableRow';
-import { useContext, useState } from 'react';
-import { TelemetryContext } from '../TelemetryContext';
+import { useAllTelemetry } from '#/hooks/query-hooks';
+import Loader from '#/components/helpers/Loader';
+import ErrorBox from '#/components/helpers/ErrorBox';
 
-// export interface TelemetryTableProps {
-//   spans: TransformedSpan[];
-//   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-// }
+const allHeaders: (keyof TransformedSpan)[] = [
+  'name',
+  'attributes',
+  'traceId',
+  'spanId',
+  'parentSpanId',
+  'startTimeUnixNano',
+  'endTimeUnixNano',
+  'kind',
+];
 
 /**
  * Table listing all telemetry data
@@ -17,18 +24,11 @@ import { TelemetryContext } from '../TelemetryContext';
  * - allow sorting by column values?
  */
 export default function TelemetryTable() {
-  const { spans, setIsLoading } = useContext(TelemetryContext);
+  const { isPending, isError, error, data: spans } = useAllTelemetry();
 
-  const allHeaders: (keyof TransformedSpan)[] = [
-    'name',
-    'attributes',
-    'traceId',
-    'spanId',
-    'parentSpanId',
-    'startTimeUnixNano',
-    'endTimeUnixNano',
-    'kind',
-  ];
+  if (isPending) return <Loader label="fetching telemetry data..." />;
+  if (isError) return <ErrorBox error={error} />;
+  if (!spans) return <ErrorBox error={new Error('No telemetry data found.')} />;
 
   return (
     <div>
@@ -47,7 +47,6 @@ export default function TelemetryTable() {
                 key={span.spanId}
                 span={span}
                 allHeaders={allHeaders}
-                setIsLoading={setIsLoading}
               />
             ))}
           </Table.Body>

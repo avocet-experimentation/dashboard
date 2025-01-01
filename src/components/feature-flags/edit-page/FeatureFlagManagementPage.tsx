@@ -33,7 +33,8 @@ import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { FeatureFlagProvider, useFlagQuery } from './FeatureFlagContext';
+import { FeatureFlagProvider } from './FeatureFlagContext';
+import { useFeatureFlag } from '#/hooks/query-hooks';
 
 export default function FeatureFlagManagementPage() {
   const [, params] = useRoute('/features/:id');
@@ -46,7 +47,7 @@ export default function FeatureFlagManagementPage() {
     throw new Error(`id "${params?.id}" is not a string!`);
   }
 
-  const { isPending, isError, error, data } = useFlagQuery(params.id);
+  const { isPending, isError, error, data } = useFeatureFlag(params.id);
 
   if (isPending) return <Loader label="Loading feature flag..." />;
   if (isError) return <ErrorBox error={error} />;

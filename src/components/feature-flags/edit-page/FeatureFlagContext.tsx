@@ -1,12 +1,4 @@
 import { createContext, ReactNode, useContext } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { FEATURE_FLAG, gqlRequest } from '#/lib/graphql-queries';
-
-export const useFlagQuery = (flagId: string) =>
-  useQuery({
-    queryKey: ['featureFlag', flagId],
-    queryFn: async () => gqlRequest(FEATURE_FLAG, { id: flagId }),
-  });
 
 /**
  * Provides access to a given feature flag and helper functions
@@ -21,7 +13,7 @@ export function FeatureFlagProvider({
   children: ReactNode;
 }) {
   return (
-    <FeatureFlagContext.Provider value={{ flagId, useFlagQuery }}>
+    <FeatureFlagContext.Provider value={{ flagId }}>
       {children}
     </FeatureFlagContext.Provider>
   );
