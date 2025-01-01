@@ -1,4 +1,4 @@
-import { Flex, Grid, GridItem } from '@chakra-ui/react';
+import { Grid, GridItem } from '@chakra-ui/react';
 import { Route, Switch } from 'wouter';
 import Navbar from './components/Navbar';
 
@@ -9,6 +9,7 @@ import ExperimentManagementPage from './components/experiments/edit-page/Experim
 import EnvironmentsMainPage from './components/environments/EnvironmentsMainPage';
 import TelemetryMain from './components/telemetry/TelemetryMain';
 import SDKConnectionsMain from './components/sdk-connections/SDKConnectionsMain';
+import { Toaster } from './components/ui/toaster';
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/connections" component={SDKConnectionsMain} />
         </Switch>
       </GridItem>
+      <Toaster />
     </Grid>
   );
 }
