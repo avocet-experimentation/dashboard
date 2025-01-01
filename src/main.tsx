@@ -12,9 +12,11 @@ import {
 const queryClient = new QueryClient({
   mutationCache: new MutationCache({
     onSuccess: (_data, _variables, _context, mutation) => {
-      console.warn(`Invalidating key ${mutation.options.mutationKey}`);
+      const key = mutation.options.mutationKey;
+      if (!key) return;
+      console.warn(`Invalidating key ${key}`);
       queryClient.invalidateQueries({
-        queryKey: mutation.options.mutationKey,
+        queryKey: key,
       });
     },
   }),
