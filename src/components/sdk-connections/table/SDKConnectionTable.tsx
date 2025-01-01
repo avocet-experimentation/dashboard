@@ -21,19 +21,18 @@ export default function SDKConnectionTable() {
     queryKey: ['allEnvironments'],
     queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
   });
-  if (isPending) return <Loader />;
 
+  if (isPending) return <Loader />;
   if (isError) return <ErrorBox error={error} />;
-  const sdkConnections: SDKConnection[] = data.allSDKConnections;
+
+  const sdkConnections: SDKConnection[] = data;
+  const environments: Environment[] = environmentsQuery.data ?? [];
 
   if (sdkConnections.length === 0)
     return <Text>No connections found. Please create one.</Text>;
 
   if (environmentsQuery.isError)
     return <ErrorBox error={environmentsQuery.error} />;
-
-  const environments: Environment[] =
-    environmentsQuery.data?.allEnvironments ?? [];
 
   return (
     <div>

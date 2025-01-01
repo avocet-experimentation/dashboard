@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import {
+  Experiment,
   ExperimentDraft,
   SchemaParseError,
   experimentDraftSchema,
@@ -9,7 +10,9 @@ import { StepsContent, StepsItem, StepsList } from '../../ui/steps';
 import ExperimentFormGeneralSection from './ExperimentFormGeneralSection';
 import ExperimentFormTreatmentSection from './ExperimentFormTreatmentSection';
 import { ALargeSmall, Users } from 'lucide-react';
-import { useCreateExperiment } from '#/hooks/query-hooks';
+import { useMutation } from '@tanstack/react-query';
+import { CREATE_EXPERIMENT, gqlRequest } from '#/lib/graphql-queries';
+import { useLocation } from 'wouter';
 
 export type ExperimentType = 'ab' | 'switchback';
 
@@ -61,14 +64,21 @@ export default function ExperimentCreationForm({
   formId,
   setOpen,
 }: ExperimentCreationFormProps) {
+  const [location, setLocation] = useLocation();
   const [expType, setExpType] = useState<'ab' | 'switchback'>('ab');
   const [formValues, setFormValues] = useState({
     ab: defaultAB,
     switchback: defaultSwitchback,
   });
 
-  const createExperiment = useCreateExperiment({
-    onSuccess: () => setOpen(false),
+  const createExperiment = useMutation({
+    mutationKey: ['allExperiments'],
+    mutationFn: async (newEntry: ExperimentDraft) =>
+      gqlRequest(CREATE_EXPERIMENT, { newEntry }),
+    onSuccess: (data: Experiment) => {
+      setOpen(false);
+      setLocation(`/experiments/${data.id}`);
+    },
   });
 
   const formMethods = useForm<ExperimentDraft>({

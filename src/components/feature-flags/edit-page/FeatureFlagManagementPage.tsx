@@ -52,15 +52,13 @@ export default function FeatureFlagManagementPage() {
   if (isPending) return <Loader label="Loading feature flag..." />;
   if (isError) return <ErrorBox error={error} />;
 
-  const { featureFlag } = data;
-
-  if (featureFlag === null) {
+  if (!data) {
     return <NotFound componentName="Feature Flag" />;
   }
 
   return (
     <FeatureFlagProvider flagId={params.id}>
-      <FlagManagementFields flag={featureFlag} />
+      <FlagManagementFields flag={data} />
     </FeatureFlagProvider>
   );
 }
@@ -75,13 +73,11 @@ function FlagManagementFields({ flag }: FlagManagementFieldsProps) {
   const environmentsQuery = useQuery({
     queryKey: ['allEnvironments'],
     queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
-    placeholderData: { allEnvironments: [] } as {
-      allEnvironments: Environment[];
-    },
+    placeholderData: [] as Environment[],
   });
 
   const { mutate } = useMutation({
-    mutationKey: ['allFeatureFlags'],
+    mutationKey: ['featureFlag', flag.id],
     mutationFn: (partialEntry: Partial<FeatureFlagDraft>) =>
       gqlRequest(UPDATE_FEATURE_FLAG, {
         partialEntry: { ...partialEntry, id: flag.id },
@@ -99,7 +95,7 @@ function FlagManagementFields({ flag }: FlagManagementFieldsProps) {
     },
   });
 
-  const environments = environmentsQuery.data?.allEnvironments;
+  const environments: Environment[] = environmentsQuery.data ?? [];
 
   const handleEnvToggleChange = async (envName: string, checked: boolean) => {
     const updatedFlag = structuredClone(flag);

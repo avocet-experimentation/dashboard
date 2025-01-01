@@ -16,19 +16,16 @@ import { useQuery } from '@tanstack/react-query';
 import { gqlRequest } from '#/lib/graphql-queries';
 
 export default function ExperimentTable() {
-  const experimentsQuery = useQuery({
+  const { isPending, isError, error, data } = useQuery({
     queryKey: ['allExperiments'],
     queryFn: async () => gqlRequest(ALL_EXPERIMENTS, {}),
   });
 
-  if (experimentsQuery.isPending) return <Loader />;
+  if (isPending) return <Loader />;
 
-  if (experimentsQuery.isError)
-    return <ErrorBox error={experimentsQuery.error} />;
+  if (isError || !data) return <ErrorBox error={error} />;
 
-  const { allExperiments } = experimentsQuery.data;
-
-  if (allExperiments.length === 0)
+  if (data.length === 0)
     return (
       <ErrorBox error={new Error('No experiments found. Please create one.')} />
     );
@@ -44,7 +41,7 @@ export default function ExperimentTable() {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {allExperiments.map((exp) => (
+        {data.map((exp) => (
           <Table.Row key={exp.id}>
             <Table.Cell>
               <Link href={`/experiments/${exp.id}`}>{exp.name}</Link>

@@ -1,14 +1,9 @@
 import { Switch } from '#/components/ui/switch';
-import { toaster, toastError, toastSuccess } from '#/components/ui/toaster';
+import { toastError, toastSuccess } from '#/components/ui/toaster';
 import { UPDATE_EXPERIMENT } from '#/lib/experiment-queries';
 import { ALL_FEATURE_FLAGS } from '#/lib/flag-queries';
 import { getRequestFunc } from '#/lib/graphql-queries';
-import {
-  Experiment,
-  ExperimentDraft,
-  FeatureFlag,
-  Treatment,
-} from '@avocet/core';
+import { Experiment, FeatureFlag, Treatment } from '@avocet/core';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   Box,
@@ -33,9 +28,7 @@ export default function DefinedTreatments({
   const flagsQuery = useQuery({
     queryKey: ['allFeatureFlags'],
     queryFn: async () => getRequestFunc(ALL_FEATURE_FLAGS, {})(),
-    placeholderData: { allFeatureFlags: [] } as {
-      allFeatureFlags: FeatureFlag[];
-    },
+    placeholderData: [] as FeatureFlag[],
   });
 
   const { mutate } = useMutation({
@@ -57,9 +50,7 @@ export default function DefinedTreatments({
   });
 
   const getFlagDetails = (id: string) => {
-    const flag = flagsQuery.data?.allFeatureFlags.find(
-      (flag) => flag.id === id,
-    );
+    const flag = flagsQuery.data?.find((flag) => flag.id === id);
     return { name: flag?.name, type: flag?.value.type };
   };
 

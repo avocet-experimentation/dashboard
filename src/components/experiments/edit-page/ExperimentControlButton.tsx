@@ -10,7 +10,7 @@ import {
   getRequestFunc,
   gqlRequest,
 } from '#/lib/graphql-queries';
-import { Experiment, ExperimentDraft, FeatureFlag } from '@avocet/core';
+import { Experiment, ExperimentDraft } from '@avocet/core';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { OctagonX, Power } from 'lucide-react';
 import { useMemo } from 'react';
@@ -22,8 +22,7 @@ export function StartExperimentButton({
 }) {
   const { isPending, isError, error, data } = useQuery({
     queryKey: ['allFeatureFlags'],
-    queryFn: async () => gqlRequest(ALL_FEATURE_FLAGS, {}),
-    select: (data) => data.allFeatureFlags,
+    queryFn: getRequestFunc(ALL_FEATURE_FLAGS, {}),
   });
 
   if (isError) return <ErrorBox error={error} />;
@@ -34,9 +33,7 @@ export function StartExperimentButton({
   });
 
   const disabled = useMemo(
-    () =>
-      isPending ||
-      !ExperimentDraft.isReadyToStart(experiment, data as FeatureFlag[]),
+    () => isPending || !ExperimentDraft.isReadyToStart(experiment, data),
     [experiment, data],
   );
 
@@ -59,7 +56,7 @@ export function PauseExperimentButton({
   experiment: Experiment;
 }) {
   const { mutate } = useMutation({
-    mutationFn: getRequestFunc(PAUSE_EXPERIMENT, { id: experiment.id }),
+    mutationFn: async () => gqlRequest(PAUSE_EXPERIMENT, { id: experiment.id }),
     mutationKey: ['experiment', experiment.id],
   });
 
@@ -77,7 +74,8 @@ export function CompleteExperimentButton({
   experiment: Experiment;
 }) {
   const { mutate } = useMutation({
-    mutationFn: getRequestFunc(COMPLETE_EXPERIMENT, { id: experiment.id }),
+    mutationFn: async () =>
+      gqlRequest(COMPLETE_EXPERIMENT, { id: experiment.id }),
     mutationKey: ['experiment', experiment.id],
   });
 

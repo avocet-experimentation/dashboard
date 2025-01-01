@@ -18,9 +18,6 @@ export default function LinkedFlagsSection({
   const { isPending, isError, error, data } = useQuery({
     queryKey: ['allFeatureFlags'],
     queryFn: getRequestFunc(ALL_FEATURE_FLAGS, {}),
-    placeholderData: { allFeatureFlags: [] } as {
-      allFeatureFlags: FeatureFlag[];
-    },
   });
 
   const expFlagIds = useMemo(() => new Set(experiment.flagIds), [experiment]);
@@ -28,7 +25,7 @@ export default function LinkedFlagsSection({
   if (isPending) return <Loader label="Loading experiment..." />;
   if (isError) return <ErrorBox error={error} />;
 
-  const linkedFlags = data.allFeatureFlags.filter((flag) =>
+  const linkedFlags = data.filter((flag) =>
     expFlagIds.has(flag.id),
   ) as FeatureFlag[];
 
@@ -65,9 +62,7 @@ function FlagSelect({ experiment }: FlagSelectProps) {
   const flagsQuery = useQuery({
     queryKey: ['allFeatureFlags'],
     queryFn: async () => getRequestFunc(ALL_FEATURE_FLAGS, {})(),
-    placeholderData: { allFeatureFlags: [] } as {
-      allFeatureFlags: FeatureFlag[];
-    },
+    placeholderData: [] as FeatureFlag[],
   });
 
   const { mutate } = useMutation({
@@ -80,10 +75,7 @@ function FlagSelect({ experiment }: FlagSelectProps) {
 
   const expFlagIds = useMemo(() => new Set(experiment.flagIds), [experiment]);
   const availableFlags = useMemo(
-    () =>
-      flagsQuery.data?.allFeatureFlags.filter(
-        (flag) => !expFlagIds.has(flag.id),
-      ),
+    () => flagsQuery.data?.filter((flag) => !expFlagIds.has(flag.id)),
     [flagsQuery.data, expFlagIds],
   );
 
@@ -97,7 +89,6 @@ function FlagSelect({ experiment }: FlagSelectProps) {
   );
 
   if (flagsQuery.isPending) return <Loader label="loading flags..." />;
-
   if (flagsQuery.isError) return <ErrorBox error={flagsQuery.error} />;
 
   if (!availableFlags || availableFlags.length === 0) {

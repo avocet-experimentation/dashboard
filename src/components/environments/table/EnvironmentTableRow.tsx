@@ -4,9 +4,7 @@ import { lastUpdated, formatDate } from '#/lib/timeFunctions';
 import { Switch } from '../../ui/switch';
 import { Tooltip } from '../../ui/tooltip';
 import EnvironmentManagementModal from '../management-form/EnvironmentManagementModal';
-import { UPDATE_ENVIRONMENT } from '#/lib/environment-queries';
-import { gqlRequest } from '#/lib/graphql-queries';
-import { useMutation } from '@tanstack/react-query';
+import { useUpdateEnvironment } from '#/hooks/update-hooks';
 
 interface EnvironmentTableRowProps {
   environment: Environment;
@@ -14,14 +12,10 @@ interface EnvironmentTableRowProps {
 
 export default function EnvironmentTableRow({
   environment,
-}: EnvironmentTableRowProps) {
-  const { mutate, isPending } = useMutation({
-    mutationFn: async (updates: Partial<Omit<Environment, 'id'>>) =>
-      gqlRequest(UPDATE_ENVIRONMENT, {
-        partialEntry: { id: environment.id, ...updates },
-      }),
-    mutationKey: ['allEnvironments'],
-  });
+}: {
+  environment: Environment;
+}) {
+  const { mutate, isPending } = useUpdateEnvironment(environment.id);
 
   return (
     <Table.Row>

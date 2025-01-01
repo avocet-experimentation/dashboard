@@ -11,13 +11,17 @@ interface ExperimentAnalysisSectionProps {
 
 /**
  * (WIP) For setting the variable of interest and viewing data
+ * todo:
+ * - adding dependents via type selector dropdown or plain text
+ * - (for dev reasons) show averages per treatment per group in realtime
+ * - install inference package
  */
 export default function ExperimentAnalysisSection({
   experiment,
 }: ExperimentAnalysisSectionProps) {
-  const [depVars, setDepVars] = useState<Metric[]>(experiment.dependents);
+  // const [depVars, setDepVars] = useState<Metric[]>(experiment.dependents);
   console.log('dependent variables:');
-  console.table(depVars);
+  console.table(experiment.dependents);
 
   return (
     <Box>

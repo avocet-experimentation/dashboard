@@ -44,14 +44,9 @@ export default function SDKConnectionManagementForm({
   const environmentsQuery = useQuery({
     queryKey: ['allEnvironments'],
     queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
-    placeholderData: { allEnvironments: [] } as {
-      allEnvironments: Environment[];
-    },
   });
 
-  // TODO: fix type inference on placeholderData so .data can't be `undefined`
-  const environments: Environment[] =
-    environmentsQuery.data?.allEnvironments ?? [];
+  const environments: Environment[] = environmentsQuery.data ?? [];
 
   const defaultValues: SDKConnectionDraft =
     sdkConnection ??
@@ -94,7 +89,7 @@ export default function SDKConnectionManagementForm({
 
   if (environments.length === 0) {
     //TODO correctly handle no environments
-    return <Text>No environments found. Please create one</Text>;
+    return <Text>No environments found. Please create one.</Text>;
   }
 
   const onSubmit: SubmitHandler<SDKConnectionDraft> = async (formContent) => {

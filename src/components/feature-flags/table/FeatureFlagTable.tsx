@@ -19,15 +19,11 @@ export default function FeatureFlagTable() {
   });
 
   if (flagsQuery.isPending) return <Loader />;
-
   if (flagsQuery.isError) return <ErrorBox error={flagsQuery.error} />;
 
-  const { allFeatureFlags } = flagsQuery.data;
-  const featureFlags: FeatureFlag[] = allFeatureFlags;
-  let allEnvironments: Environment[] = [];
+  const featureFlags: FeatureFlag[] = flagsQuery.data;
+  const allEnvironments: Environment[] = environmentsQuery.data ?? [];
 
-  if (environmentsQuery.isSuccess)
-    allEnvironments = environmentsQuery.data.allEnvironments;
   const pinnedEnvironments = allEnvironments.filter((env) => env.pinToLists);
 
   if (featureFlags.length === 0)

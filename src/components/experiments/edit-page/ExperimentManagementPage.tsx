@@ -47,16 +47,12 @@ export default function ExperimentManagementPage() {
   });
 
   if (isPending) return <Loader label="Loading experiment..." />;
-
   if (isError) return <ErrorBox error={error} />;
-
-  const { experiment } = data;
-
-  if (experiment === null) {
+  if (data === null) {
     return <NotFound componentName="Experiment" />;
   }
 
-  return <ExperimentManagementFields experiment={experiment} />;
+  return <ExperimentManagementFields experiment={data} />;
 }
 
 /**
@@ -75,9 +71,7 @@ function ExperimentManagementFields({
   const environmentsQuery = useQuery({
     queryKey: ['allEnvironments'],
     queryFn: getRequestFunc(ALL_ENVIRONMENTS, {}),
-    placeholderData: { allEnvironments: [] } as {
-      allEnvironments: Environment[];
-    },
+    placeholderData: [] as Environment[],
   });
 
   const { mutate } = useMutation({
@@ -142,7 +136,7 @@ function ExperimentManagementFields({
           />
           <PageSelect
             options={
-              environmentsQuery.data?.allEnvironments.map((env) => ({
+              environmentsQuery.data?.map((env) => ({
                 label: env.name,
                 value: env.name,
               })) ?? []

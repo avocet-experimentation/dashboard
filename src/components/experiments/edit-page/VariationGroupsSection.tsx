@@ -28,7 +28,7 @@ export default function VariationGroupsSection({
 }) {
   const { mutate } = useMutation({
     mutationFn: async (groups: ExperimentGroup[]) => {
-      gqlRequest(UPDATE_EXPERIMENT, {
+      return gqlRequest(UPDATE_EXPERIMENT, {
         partialEntry: {
           groups: groups,
           id: experiment.id,

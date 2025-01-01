@@ -16,12 +16,10 @@ import {
 import FormModal from '#/components/forms/FormModal';
 import { NameField } from '#/components/forms/DefinedFields';
 import ControlledSwitch from '#/components/forms/ControlledSwitch';
-import {
-  CREATE_ENVIRONMENT,
-  UPDATE_ENVIRONMENT,
-} from '#/lib/environment-queries';
+import { CREATE_ENVIRONMENT } from '#/lib/environment-queries';
 import { useMutation } from '@tanstack/react-query';
 import { gqlRequest } from '#/lib/graphql-queries';
+import { useUpdateEnvironment } from '#/hooks/update-hooks';
 
 const ENVIRONMENT_MANAGEMENT_FORM_ID = 'environment-management-form';
 
@@ -91,7 +89,6 @@ function EnvironmentCreationForm({
     const safeParseResult =
       environmentDraftSchema.safeParse(environmentContent);
     if (!safeParseResult.success) {
-      // the error pretty-prints the Zod parse error message
       throw new SchemaParseError(safeParseResult);
     }
 
@@ -117,12 +114,7 @@ function EnvironmentManagementForm({
   setOpen,
   environment,
 }: EnvironmentManagementFormProps) {
-  const updateEnv = useMutation({
-    mutationFn: async (partialEntry: Partial<Environment>) =>
-      gqlRequest(UPDATE_ENVIRONMENT, {
-        partialEntry: { ...partialEntry, id: environment.id },
-      }),
-    mutationKey: ['allEnvironments'],
+  const updateEnv = useUpdateEnvironment(environment.id, {
     onSuccess: () => setOpen(false),
     onError: (e: Error) => console.error(e), // TODO: handle errors better
   });

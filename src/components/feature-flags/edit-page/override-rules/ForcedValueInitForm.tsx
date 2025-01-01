@@ -81,10 +81,10 @@ export default function ForcedValueInitForm({
 
   if (flagQuery.isPending) return <Loader />;
   if (flagQuery.isError) return <ErrorBox error={flagQuery.error} />;
-  if (flagQuery.data.featureFlag === null)
-    return <NotFound componentName="ForcedValueInitForm" />;
 
-  const { featureFlag } = flagQuery.data;
+  const featureFlag = flagQuery.data;
+  if (featureFlag === null)
+    return <NotFound componentName="ForcedValueInitForm" />;
 
   const onSubmit: SubmitHandler<ForcedValue> = async (ruleContent) => {
     const parsedRule = validateFormData(ruleContent);

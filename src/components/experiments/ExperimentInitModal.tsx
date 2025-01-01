@@ -16,7 +16,6 @@ import { useLocation } from 'wouter';
 import ControlledSelect from '../forms/ControlledSelect';
 import { NameField } from '../forms/DefinedFields';
 import FormModal from '../forms/FormModal';
-import { useCreateExperiment } from '#/hooks/query-hooks';
 
 const CREATE_EXPERIMENT_FORM_ID = 'experiment-management-form';
 
@@ -52,10 +51,13 @@ function ExperimentInitForm({
     queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
   });
 
-  const createExperiment = useCreateExperiment({
+  const createExperiment = useMutation({
+    mutationKey: ['allExperiments'],
+    mutationFn: async (newEntry: ExperimentDraft) =>
+      gqlRequest(CREATE_EXPERIMENT, { newEntry }),
     onSuccess: (data) => {
       setOpen(false);
-      navigate(`/experiments/${data.createExperiment.id}`);
+      navigate(`/experiments/${data.id}`);
     },
   });
 
@@ -67,8 +69,7 @@ function ExperimentInitForm({
   });
 
   const envCollection = useMemo(() => {
-    const environments = environmentsQuery.data?.allEnvironments;
-    if (!environments) return [];
+    const environments = environmentsQuery.data ?? [];
     return environments.map((environment) => ({
       label: environment.name,
       value: environment.name,

@@ -17,6 +17,7 @@ import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 interface FeatureFlagCreationFormProps {
   formId: string;
@@ -28,7 +29,12 @@ export default function FeatureFlagCreationForm({
   setOpen,
 }: FeatureFlagCreationFormProps) {
   const [, navigate] = useLocation();
-  const { isPending, isError, error, data } = useQuery({
+  const {
+    isPending,
+    isError,
+    error,
+    data: environments,
+  } = useQuery({
     queryKey: ['allEnvironments'],
     queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
   });
@@ -37,51 +43,37 @@ export default function FeatureFlagCreationForm({
     mutationFn: async (newEntry: FeatureFlagDraft) =>
       gqlRequest(CREATE_FEATURE_FLAG, { newEntry }),
     onSuccess: (data) => {
-      const flagId = data.createFeatureFlag?.id;
-      if (flagId) {
-        setOpen(false);
-        navigate(`/features/${flagId}`);
-      }
+      setOpen(false);
+      navigate(`/features/${data.id}`);
     },
   });
 
-  if (isPending) return <Loader />;
-
-  if (isError) return <ErrorBox error={error} />;
-
-  const environments = data.allEnvironments;
-
-  const pinnedEnvironments = createListCollection<string>({
-    items: environments.filter((env) => env.pinToLists).map((env) => env.name),
-  });
-
-  console.log({ environments, pinnedEnvironments });
   const formMethods = useForm<FeatureFlagDraft>({
     defaultValues: FeatureFlagDraft.templateBoolean({
       name: '',
     }),
   });
 
-  const onSubmit: SubmitHandler<FeatureFlagDraft> = async (featureContent) => {
-    try {
-      // todo: remove this filtering once no longer needed
-      const filteredEnvironmentNames = Object.fromEntries(
-        Object.entries(featureContent.environmentNames).filter(
-          ([, value]) => value === true,
-        ),
-      );
+  if (isPending) return <Loader />;
 
-      const safeParseResult = featureFlagDraftSchema.safeParse({
-        ...featureContent,
-        environmentNames: filteredEnvironmentNames,
-      });
-      if (!safeParseResult.success) {
-        // the error pretty-print the Zod parse error message
-        throw new SchemaParseError(safeParseResult);
-      }
+  if (isError) return <ErrorBox error={error} />;
+
+  const pinnedEnvironments = useMemo(
+    () =>
+      createListCollection<string>({
+        items: environments
+          .filter((env) => env.pinToLists)
+          .map((env) => env.name),
+      }),
+    [environments],
+  );
+
+  const onSubmit: SubmitHandler<FeatureFlagDraft> = async (flagContent) => {
+    const safeParseResult = featureFlagDraftSchema.safeParse(flagContent);
+    if (!safeParseResult.success) {
+      console.error(new SchemaParseError(safeParseResult));
+    } else {
       mutate(safeParseResult.data);
-    } catch (e) {
-      console.error(e);
     }
   };
 
@@ -92,6 +84,8 @@ export default function FeatureFlagCreationForm({
           <NameField label="Feature Flag Name" />
           <DescriptionField />
           <Field label="Enabled Environments" as="p" />
+          {/* TODO: allow environment switches to wrap to new rows,
+           and add a dropdown/search box to select non-pinned environments */}
           <Flex direction="row" width="100%" justifyContent="space-evenly">
             {pinnedEnvironments.items.map((env: string) => (
               <ControlledSwitch
