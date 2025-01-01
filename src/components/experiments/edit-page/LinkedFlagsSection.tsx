@@ -33,7 +33,7 @@ export default function LinkedFlagsSection({
   ) as FeatureFlag[];
 
   return (
-    <Stack padding="15px" bg="white" borderRadius="5px" width="500px">
+    <Stack padding="15px" bg="white" borderRadius="5px" width="50%">
       <Flex justifyContent="space-between">
         <Heading size="lg">
           Linked Feature Flags ({experiment.flagIds.length})
