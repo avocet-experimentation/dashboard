@@ -4,10 +4,11 @@ import {
   MenuRoot,
   MenuTrigger,
 } from '#/components/ui/menu';
-import { toaster } from '#/components/ui/toaster';
+import { toastError, toastSuccess } from '#/components/ui/toaster';
 import { DELETE_EXPERIMENT } from '#/lib/experiment-queries';
-import { useGQLMutation } from '#/lib/graphql-queries';
+import { getRequestFunc } from '#/lib/graphql-queries';
 import { Box, IconButton } from '@chakra-ui/react';
+import { useMutation } from '@tanstack/react-query';
 import { EllipsisVertical, Trash2 } from 'lucide-react';
 import { navigate } from 'wouter/use-browser-location';
 
@@ -18,15 +19,13 @@ export default function ExperimentControlMenu({
   experimentId: string;
   disabled: boolean;
 }) {
-  const deleteExperiment = useGQLMutation({
-    mutation: DELETE_EXPERIMENT,
-    cacheKey: ['allExperiments'],
+  const deleteExperiment = useMutation({
+    mutationKey: ['experiment', experimentId],
+    mutationFn: async () =>
+      getRequestFunc(DELETE_EXPERIMENT, { id: experimentId })(),
     onSuccess: () => {
-      toaster.create({
-        description: 'Experiment deleted',
-        duration: 6000,
-      });
-      // navigate('/experiments');
+      navigate('/experiments');
+      toastSuccess('Experiment deleted successfully.');
     },
   });
 
@@ -47,13 +46,9 @@ export default function ExperimentControlMenu({
           _hover={{ bg: 'bg.error', color: 'fg.error' }}
           onClick={() => {
             if (disabled) {
-              toaster.create({
-                title: 'Cannot delete experiment while active.',
-                description: 'Stop the experiment before deleting.',
-                type: 'error',
-              });
+              toastError('Cannot delete experiment while active or paused.');
             } else {
-              deleteExperiment.mutate({ id: experimentId });
+              deleteExperiment.mutate();
             }
           }}
         >

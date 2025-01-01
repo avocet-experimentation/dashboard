@@ -6,11 +6,8 @@ import {
   Flex,
   Heading,
   HStack,
-  IconButton,
   Stack,
 } from '@chakra-ui/react';
-import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from '../../ui/menu';
-import { EllipsisVertical, Trash2 } from 'lucide-react';
 import { Environment, Experiment, ExperimentDraft } from '@avocet/core';
 import {
   StartExperimentButton,
@@ -21,11 +18,7 @@ import LinkedFlagsSection from './LinkedFlagsSection';
 import PageEditable from '#/components/forms/PageEditable';
 import PageSelect from '#/components/forms/PageSelect';
 import { getRequestFunc } from '#/lib/graphql-queries';
-import {
-  DELETE_EXPERIMENT,
-  EXPERIMENT,
-  UPDATE_EXPERIMENT,
-} from '#/lib/experiment-queries';
+import { EXPERIMENT, UPDATE_EXPERIMENT } from '#/lib/experiment-queries';
 import ErrorBox from '#/components/helpers/ErrorBox';
 import Loader from '#/components/helpers/Loader';
 import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
@@ -34,8 +27,8 @@ import { Tooltip } from '#/components/ui/tooltip';
 import { Status } from '#/components/ui/status';
 import { EXP_STATUS_LEGEND } from '#/lib/constants';
 import DefinedTreatments from './DefinedTreatments';
-import GroupTables from './VariationGroupsSection';
 import VariationGroupsSection from './VariationGroupsSection';
+import ExperimentControlMenu from './ExperimentControlMenu';
 
 export default function ExperimentManagementPage() {
   const [_match, params] = useRoute('/experiments/:id');
@@ -95,12 +88,6 @@ function ExperimentManagementFields({
       })(),
   });
 
-  const deleteExperiment = useMutation({
-    mutationKey: ['experiment', experiment.id],
-    mutationFn: async () =>
-      getRequestFunc(DELETE_EXPERIMENT, { id: experiment.id })(),
-  });
-
   return (
     <Stack gap={4} padding="25px" height="100vh" overflowY="scroll">
       <Flex justifyContent="space-between">
@@ -128,30 +115,10 @@ function ExperimentManagementFields({
               <CompleteExperimentButton experiment={experiment} />
             </>
           )}
-          <MenuRoot>
-            <MenuTrigger asChild>
-              <IconButton size="md">
-                <EllipsisVertical color="black" />
-              </IconButton>
-            </MenuTrigger>
-            <MenuContent>
-              <MenuItem
-                value="delete"
-                valueText="Delete"
-                cursor="pointer"
-                color="fg.error"
-                _hover={{ bg: 'bg.error', color: 'fg.error' }}
-                onClick={() => {
-                  deleteExperiment.mutate();
-                  // TODO: if no experiment matches the id, show a not found popup flash error after navigating back to /experiments
-                  setLocation('/experiments');
-                }}
-              >
-                <Trash2 />
-                <Box flex="1">Delete</Box>
-              </MenuItem>
-            </MenuContent>
-          </MenuRoot>
+          <ExperimentControlMenu
+            experimentId={experiment.id}
+            disabled={['active', 'paused'].includes(experiment.status)}
+          />
         </HStack>
       </Flex>
       <Box>
