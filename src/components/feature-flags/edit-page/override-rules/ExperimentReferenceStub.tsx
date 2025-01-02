@@ -3,6 +3,7 @@ import { Tag } from '#/components/ui/tag';
 import { Tooltip } from '#/components/ui/tooltip';
 import { Stack, Flex, Text, HStack } from '@chakra-ui/react';
 import { ExperimentReference } from '@avocet/core';
+import { Link } from 'wouter';
 
 // todo: add to constants.ts file after merge
 const statusLegend = {
@@ -47,9 +48,11 @@ export default function ExperimentReferenceStub({
             width="fit-content"
             fontWeight="bold"
           >
-            Environment
+            Experiment
           </Tag>
-          <Text fontSize="lg">{rule.name}</Text>
+          <Link href={`/experiments/${rule.id}`}>
+            <Text fontSize="lg">{rule.name}</Text>
+          </Link>
           <Tooltip
             showArrow
             openDelay={50}
@@ -60,18 +63,7 @@ export default function ExperimentReferenceStub({
             </Status>
           </Tooltip>
         </HStack>
-        <Flex width="100%" alignContent="center">
-          <Text fontWeight="bold" width="fit-content">
-            SERVE
-          </Text>
-          <Text
-            fontWeight="normal"
-            fontFamily="'Lucida Console', 'Courier New', monospace"
-            padding="0 15px"
-          >
-            {rule.type ?? ''}
-          </Text>
-        </Flex>
+        <Flex width="100%" alignContent="center"></Flex>
       </Stack>
     </>
   );
