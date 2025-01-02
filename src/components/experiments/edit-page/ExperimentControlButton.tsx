@@ -1,45 +1,88 @@
+import ErrorBox from '#/components/helpers/ErrorBox';
 import { Button } from '#/components/ui/button';
-import { ServicesContext } from '#/services/ServiceContext';
+import {
+  COMPLETE_EXPERIMENT,
+  PAUSE_EXPERIMENT,
+  START_EXPERIMENT,
+} from '#/lib/experiment-queries';
+import {
+  ALL_FEATURE_FLAGS,
+  getRequestFunc,
+  gqlRequest,
+} from '#/lib/graphql-queries';
+import { Experiment, ExperimentDraft } from '@avocet/core';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { OctagonX, Power } from 'lucide-react';
-import { useContext } from 'react';
+import { useMemo } from 'react';
 
 export function StartExperimentButton({
-  experimentId,
-  disabled,
+  experiment,
 }: {
-  experimentId: string;
-  disabled: boolean;
+  experiment: Experiment;
 }) {
-  const services = useContext(ServicesContext);
+  const { isPending, isError, error, data } = useQuery({
+    queryKey: ['allFeatureFlags'],
+    queryFn: getRequestFunc(ALL_FEATURE_FLAGS, {}),
+  });
+
+  if (isError) return <ErrorBox error={error} />;
+
+  const { mutate } = useMutation({
+    mutationFn: async () => gqlRequest(START_EXPERIMENT, { id: experiment.id }),
+    mutationKey: ['experiment', experiment.id],
+  });
+
+  const disabled = useMemo(
+    () => isPending || !ExperimentDraft.isReadyToStart(experiment, data),
+    [experiment, data],
+  );
 
   return (
     <Button
       variant="solid"
-      disabled={disabled}
+      disabled={disabled || isPending}
       colorPalette="green"
-      onClick={() => services.experiment.start(experimentId)}
+      onClick={() => mutate()}
     >
       <Power />
-      Start Experiment
+      Start
     </Button>
   );
 }
 
 export function PauseExperimentButton({
-  experimentId,
+  experiment,
 }: {
-  experimentId: string;
+  experiment: Experiment;
 }) {
-  const services = useContext(ServicesContext);
+  const { mutate } = useMutation({
+    mutationFn: async () => gqlRequest(PAUSE_EXPERIMENT, { id: experiment.id }),
+    mutationKey: ['experiment', experiment.id],
+  });
 
   return (
-    <Button
-      variant="solid"
-      colorPalette="red"
-      onClick={() => services.experiment.pause(experimentId)}
-    >
+    <Button variant="solid" colorPalette="red" onClick={() => mutate()}>
       <OctagonX />
-      Stop Experiment
+      Pause
+    </Button>
+  );
+}
+
+export function CompleteExperimentButton({
+  experiment,
+}: {
+  experiment: Experiment;
+}) {
+  const { mutate } = useMutation({
+    mutationFn: async () =>
+      gqlRequest(COMPLETE_EXPERIMENT, { id: experiment.id }),
+    mutationKey: ['experiment', experiment.id],
+  });
+
+  return (
+    <Button variant="solid" colorPalette="red" onClick={() => mutate()}>
+      <OctagonX />
+      Complete
     </Button>
   );
 }

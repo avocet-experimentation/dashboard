@@ -25,8 +25,8 @@ export function FlagEnvironmentToggles({
               query={['null']}
               styles={{ color: 'red', fontFamily: VALUE_FONT }}
             >
-              In a disabled environment, the feature will always evaluate to
-              null. The default value and override rules will be ignored.
+              Flags always evaluate to null in environments in which they are
+              disabled. The default value and override rules will be ignored.
             </Highlight>
           </Text>
         </Flex>

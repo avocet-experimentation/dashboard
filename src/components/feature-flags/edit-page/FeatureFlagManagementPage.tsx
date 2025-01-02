@@ -9,12 +9,9 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { useContext, useEffect, useState } from 'react';
 import { Environment, FeatureFlag, FeatureFlagDraft } from '@avocet/core';
 import { CircleHelp, EllipsisVertical, Trash2 } from 'lucide-react';
 import { useLocation, useRoute } from 'wouter';
-import deepcopy from 'deepcopy';
-import { ServicesContext } from '#/services/ServiceContext';
 import { VALUE_FONT } from '#/lib/constants';
 import {
   MenuContent,
@@ -27,191 +24,170 @@ import EnvironmentTabs from './EnvironmentTabs';
 import PageEditable from '../../forms/PageEditable';
 import { FlagEnvironmentToggles } from './FlagEnvironmentToggles';
 import { Tooltip } from '#/components/ui/tooltip';
+import {
+  DELETE_FEATURE_FLAG,
+  gqlRequest,
+  UPDATE_FEATURE_FLAG,
+} from '#/lib/graphql-queries';
+import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
+import Loader from '#/components/helpers/Loader';
+import ErrorBox from '#/components/helpers/ErrorBox';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { FeatureFlagProvider } from './FeatureFlagContext';
+import { useFeatureFlag } from '#/hooks/query-hooks';
 
-interface FeatureFlagManagementPageProps {
-  // environments: Environment[];
-}
+export default function FeatureFlagManagementPage() {
+  const [, params] = useRoute('/features/:id');
 
-export default function FeatureFlagManagementPage(
-  {
-    // environments,
-  }: FeatureFlagManagementPageProps,
-) {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [featureFlag, setFeatureFlag] = useState<FeatureFlag>();
-  const [environments, setEnvironments] = useState<Environment[]>();
-  const [match, params] = useRoute('/features/:id');
-  const [location, navigate] = useLocation();
-  const services = useContext(ServicesContext);
-
-  // todo: consider passing a prop in instead of using route params
   if (params === null) {
-    throw new Error("Missing 'id' param!");
+    throw new Error(`No params passed!`);
   }
 
-  const handleFlagUpdate = async (
-    updates: Partial<FeatureFlagDraft>,
-  ): Promise<boolean> => {
-    const flagResponse = await services.featureFlag.updateFeature(
-      params.id,
-      updates,
-    );
+  if (typeof params.id !== 'string') {
+    throw new Error(`id "${params?.id}" is not a string!`);
+  }
 
-    return flagResponse.ok;
-  };
+  const { isPending, isError, error, data } = useFeatureFlag(params.id);
 
-  const handleGetFeature = async () => {
-    setIsLoading(true);
-    try {
-      const flagResponse = await services.featureFlag.get(params.id);
-      if (!flagResponse.ok) {
-        // todo: better error handling
-        throw new Error(`Couldn't fetch flag data for id ${params.id}!`);
-      }
+  if (isPending) return <Loader label="Loading feature flag..." />;
+  if (isError) return <ErrorBox error={error} />;
 
-      const envResponse = await services.environment.getMany();
-      // todo: better error handling
-      if (!envResponse.ok) throw new Error("Couldn't load environments!");
+  if (!data) {
+    return <NotFound componentName="Feature Flag" />;
+  }
 
-      setFeatureFlag(flagResponse.body);
-      setEnvironments(envResponse.body);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  return (
+    <FeatureFlagProvider flagId={params.id}>
+      <FlagManagementFields flag={data} />
+    </FeatureFlagProvider>
+  );
+}
 
-  useEffect(() => {
-    handleGetFeature();
-    // return () => handleGetFeature();
-  }, []);
+interface FlagManagementFieldsProps {
+  flag: FeatureFlag;
+}
 
-  const handleDeleteFeature = () => {
-    if (featureFlag) {
-      services.featureFlag.deleteFeature(featureFlag.id);
+function FlagManagementFields({ flag }: FlagManagementFieldsProps) {
+  const [, navigate] = useLocation();
+
+  const environmentsQuery = useQuery({
+    queryKey: ['allEnvironments'],
+    queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
+    placeholderData: [] as Environment[],
+  });
+
+  const { mutate } = useMutation({
+    mutationKey: ['featureFlag', flag.id],
+    mutationFn: (partialEntry: Partial<FeatureFlagDraft>) =>
+      gqlRequest(UPDATE_FEATURE_FLAG, {
+        partialEntry: { ...partialEntry, id: flag.id },
+      }),
+    onError: (error) => {
+      throw error; // TODO: handle failed updates better
+    },
+  });
+
+  const deleteFlag = useMutation({
+    mutationKey: ['allFeatureFlags'],
+    mutationFn: async () => gqlRequest(DELETE_FEATURE_FLAG, { id: flag.id }),
+    onSuccess: () => {
       navigate('/features');
-    }
-  };
+    },
+  });
+
+  const environments: Environment[] = environmentsQuery.data ?? [];
 
   const handleEnvToggleChange = async (envName: string, checked: boolean) => {
-    if (!featureFlag) {
-      throw new Error('Feature flag was not set on state');
+    const updatedFlag = structuredClone(flag);
+    if (checked) {
+      FeatureFlagDraft.enableEnvironment(updatedFlag, envName);
+    } else {
+      FeatureFlagDraft.disableEnvironment(updatedFlag, envName);
     }
-    try {
-      const response = await services.featureFlag.toggleEnvironment(
-        params.id,
-        envName,
-      );
-      if (!response.ok) {
-        throw new Error(`Failed to update record for flag ${params.id}`);
-      }
 
-      setFeatureFlag((prevState) => {
-        if (!prevState)
-          throw new Error(
-            'Attempted to update flag before it was set on state!',
-          );
-        const updatedFlag = deepcopy(prevState);
-        FeatureFlagDraft.toggleEnvironment(updatedFlag, envName);
-        return updatedFlag;
-      });
-    } catch (e) {
-      console.error(e);
-    }
+    mutate({
+      environmentNames: updatedFlag.environmentNames,
+    });
   };
 
   return (
-    <>
-      {!isLoading && featureFlag ? (
-        <Stack gap={4} padding="25px" height="100vh" overflowY="scroll">
-          <Flex justifyContent="space-between">
-            <Heading size="3xl">{featureFlag.name}</Heading>
-            <MenuRoot>
-              <MenuTrigger asChild>
-                <IconButton size="md">
-                  <EllipsisVertical color="black" />
-                </IconButton>
-              </MenuTrigger>
-              <MenuContent>
-                <MenuItem
-                  value="delete"
-                  valueText="Delete"
-                  cursor="pointer"
-                  color="fg.error"
-                  _hover={{ bg: 'bg.error', color: 'fg.error' }}
-                  onClick={handleDeleteFeature}
-                >
-                  <Trash2 />
-                  <Box flex="1">Delete</Box>
-                </MenuItem>
-              </MenuContent>
-            </MenuRoot>
+    <Stack gap={4} padding="25px" height="100vh" overflowY="scroll">
+      <Flex justifyContent="space-between">
+        <Heading size="3xl">{flag.name}</Heading>
+        <MenuRoot>
+          <MenuTrigger asChild>
+            <IconButton size="md">
+              <EllipsisVertical color="black" />
+            </IconButton>
+          </MenuTrigger>
+          <MenuContent>
+            <MenuItem
+              value="delete"
+              valueText="Delete"
+              cursor="pointer"
+              color="fg.error"
+              _hover={{ bg: 'bg.error', color: 'fg.error' }}
+              onClick={() => deleteFlag.mutate()}
+            >
+              <Trash2 />
+              <Box flex="1">Delete</Box>
+            </MenuItem>
+          </MenuContent>
+        </MenuRoot>
+      </Flex>
+      <Box>
+        <Heading size="xl" marginBottom="15px">
+          Overview
+        </Heading>
+        <PageEditable
+          label="Description"
+          initialValue={flag.description ?? ''}
+          submitHandler={async (e: EditableValueChangeDetails) => {
+            mutate({ description: e.value });
+          }}
+        />
+      </Box>
+
+      <FlagEnvironmentToggles
+        environments={environments}
+        featureFlag={flag}
+        handleEnvToggleChange={handleEnvToggleChange}
+      />
+
+      <Box>
+        <Heading size="xl" marginBottom="15px">
+          Values and Rules
+        </Heading>
+        <Stack padding="15px" bg="white" borderRadius="5px">
+          <Heading size="lg">Default Value</Heading>
+          <Flex border="1px solid gray" borderRadius="5px" padding="15px">
+            <Text fontWeight="bold" width="fit-content" padding="0 5px">
+              {flag.value.type.toUpperCase()}
+            </Text>
+            <Text fontWeight="normal" fontFamily={VALUE_FONT} padding="0 10px">
+              {String(flag.value.initial)}
+            </Text>
           </Flex>
-          <Box>
-            <Heading size="xl" marginBottom="15px">
-              Overview
-            </Heading>
-            <PageEditable
-              label="Description"
-              initialValue={featureFlag.description ?? ''}
-              submitHandler={async (e: EditableValueChangeDetails) => {
-                const success = await handleFlagUpdate({
-                  description: e.value,
-                });
-                return success ? e.value : (featureFlag.description ?? '');
-              }}
-            />
-          </Box>
 
-          <FlagEnvironmentToggles
-            environments={environments}
-            featureFlag={featureFlag}
-            handleEnvToggleChange={handleEnvToggleChange}
-          />
-
-          <Box>
-            <Heading size="xl" marginBottom="15px">
-              Values and Rules
-            </Heading>
-            <Stack padding="15px" bg="white" borderRadius="5px">
-              <Heading size="lg">Default Value</Heading>
-              <Flex border="1px solid gray" borderRadius="5px" padding="15px">
-                <Text fontWeight="bold" width="fit-content" padding="0 5px">
-                  {featureFlag.value.type.toUpperCase()}
-                </Text>
-                <Text
-                  fontWeight="normal"
-                  fontFamily={VALUE_FONT}
-                  padding="0 10px"
-                >
-                  {String(featureFlag.value.initial)}
-                </Text>
-              </Flex>
-
-              <Heading size="lg" margin="15px 0 0 0">
-                <HStack gap={2.5}>
-                  Rules{' '}
-                  <Tooltip
-                    showArrow
-                    openDelay={50}
-                    content={
-                      'Only enabled environments will only be shown. Enable an environment to view and edit its rules.'
-                    }
-                  >
-                    <Icon size="md">
-                      <CircleHelp />
-                    </Icon>
-                  </Tooltip>
-                </HStack>
-              </Heading>
-              <EnvironmentTabs featureFlag={featureFlag} />
-            </Stack>
-          </Box>
+          <Heading size="lg" margin="15px 0 0 0">
+            <HStack gap={2.5}>
+              Rules
+              <Tooltip
+                showArrow
+                openDelay={50}
+                content={
+                  'Enable the flag in an environment to view and edit rules for it.'
+                }
+              >
+                <Icon size="md">
+                  <CircleHelp />
+                </Icon>
+              </Tooltip>
+            </HStack>
+          </Heading>
+          <EnvironmentTabs featureFlag={flag} />
         </Stack>
-      ) : (
-        <NotFound componentName="feature" />
-      )}
-    </>
+      </Box>
+    </Stack>
   );
 }

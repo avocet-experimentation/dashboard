@@ -1,11 +1,18 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { Experiment, ExperimentDraft, Treatment } from '@avocet/core';
-import { ServicesContext } from '#/services/ServiceContext';
+import {
+  Experiment,
+  ExperimentDraft,
+  SchemaParseError,
+  experimentDraftSchema,
+} from '@avocet/core';
 import { StepsContent, StepsItem, StepsList } from '../../ui/steps';
 import ExperimentFormGeneralSection from './ExperimentFormGeneralSection';
 import ExperimentFormTreatmentSection from './ExperimentFormTreatmentSection';
 import { ALargeSmall, Users } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { CREATE_EXPERIMENT, gqlRequest } from '#/lib/graphql-queries';
+import { useLocation } from 'wouter';
 
 export type ExperimentType = 'ab' | 'switchback';
 
@@ -35,23 +42,45 @@ const collectFeatureIds = (expContent: ExperimentDraft): void => {
   expContent.flagIds = collectedIds;
 };
 
+const processedDraft = (expContent: ExperimentDraft): ExperimentDraft => {
+  const content = structuredClone(expContent);
+  // createGroupIds(content);
+  reformatAllTrafficProportion(content);
+  collectFeatureIds(content);
+  const safeParseResult = experimentDraftSchema.safeParse(content);
+  if (!safeParseResult.success) {
+    throw new SchemaParseError(safeParseResult);
+  }
+
+  return safeParseResult.data;
+};
+
 interface ExperimentCreationFormProps {
   formId: string;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function ExperimentCreationForm({
   formId,
-  setIsLoading,
   setOpen,
 }: ExperimentCreationFormProps) {
+  const [location, setLocation] = useLocation();
   const [expType, setExpType] = useState<'ab' | 'switchback'>('ab');
   const [formValues, setFormValues] = useState({
     ab: defaultAB,
     switchback: defaultSwitchback,
   });
-  const services = useContext(ServicesContext);
+
+  const createExperiment = useMutation({
+    mutationKey: ['allExperiments'],
+    mutationFn: async (newEntry: ExperimentDraft) =>
+      gqlRequest(CREATE_EXPERIMENT, { newEntry }),
+    onSuccess: (data: Experiment) => {
+      setOpen(false);
+      setLocation(`/experiments/${data.id}`);
+    },
+  });
+
   const formMethods = useForm<ExperimentDraft>({
     defaultValues: formValues[expType],
     reValidateMode: 'onBlur',
@@ -67,33 +96,14 @@ export default function ExperimentCreationForm({
 
   const definedTreatments = formMethods.watch('definedTreatments');
 
-  const onSubmit = async (expContent: ExperimentDraft) => {
-    setIsLoading(true);
-    // createGroupIds(expContent);
-    try {
-      reformatAllTrafficProportion(expContent);
-
-      // todo: remove once no longer needed
-      collectFeatureIds(expContent);
-      if (expType === 'switchback') {
-        expContent.groups[0].sequence = Object.keys(
-          expContent.definedTreatments,
-        );
-      }
-      console.log('data', expContent);
-      // todo: handle failing responses
-      const result = await services.experiment.create(expContent);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
-      setOpen(false);
-    }
-  };
-
   return (
     <FormProvider {...formMethods}>
-      <form id={formId} onSubmit={formMethods.handleSubmit(onSubmit)}>
+      <form
+        id={formId}
+        onSubmit={formMethods.handleSubmit((draft) =>
+          createExperiment.mutate(processedDraft(draft)),
+        )}
+      >
         <StepsList>
           <StepsItem
             index={0}

@@ -1,62 +1,25 @@
-import {
-  Box,
-  createListCollection,
-  HStack,
-  Input,
-  ListCollection,
-  Stack,
-  Table,
-} from '@chakra-ui/react';
-import { Controller, useFormContext } from 'react-hook-form';
-import { useContext, useEffect, useState } from 'react';
+import { Box, HStack, Input, Stack, Table } from '@chakra-ui/react';
+import { useFormContext } from 'react-hook-form';
+import { useState } from 'react';
 import { FeatureFlag, Treatment } from '@avocet/core';
-import { ServicesContext } from '#/services/ServiceContext';
-import {
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from '#/components/ui/select';
 import { Field } from '#/components/ui/field';
 import TreatmentFeatureValueType from './TreatmentFeatureValueType';
 import FlagCountButtons from './FlagCountButtons';
 import ControlledSelect from '#/components/forms/ControlledSelect';
-import { ExperimentContext } from '../ExperimentContext';
-
-// export interface FeatureFlagCollection {
-//   /** Flag name */
-//   label: string;
-//   /** flag ID */
-//   value: string;
-//   type: 'string' | 'number' | 'boolean';
-//   initial: string | number | boolean;
-// }
-// const createFeatureFlagCollection = (features: FeatureFlag[]) => {
-//   const items: FeatureFlagCollection[] = features.map((feature) => ({
-//     label: feature.name,
-//     value: feature.id,
-//     type: feature.value.type,
-//     initial: feature.value.initial,
-//   }));
-//   return createListCollection({ items });
-// };
+import { useAllFeatureFlags } from '#/hooks/query-hooks';
 
 export default function ExperimentTreatmentField() {
-  const services = useContext(ServicesContext);
-  const {
-    formState: { errors },
-    register,
-    watch,
-  } = useFormContext();
+  const { watch } = useFormContext();
   const definedTreatments: Record<string, Treatment> =
     watch('definedTreatments');
 
-  const { featureFlags } = useContext(ExperimentContext);
-  const flagOptions = featureFlags.map((flag) => ({
-    label: flag.name,
-    value: flag.id,
-  }));
+  const allFlagsQuery = useAllFeatureFlags();
+
+  const flagOptions =
+    allFlagsQuery.data?.map((flag) => ({
+      label: flag.name,
+      value: flag.id,
+    })) ?? [];
 
   return (
     <Field label={`Treatments (${Object.keys(definedTreatments).length})`}>
@@ -81,18 +44,19 @@ interface TreatmentRowProps {
   featureIdx?: number;
   flagOptions: { label: string; value: string }[];
   treatmentId: string;
-  // treatmentIdx: number;
 }
 
 function TreatmentRow({
   featureIdx,
   flagOptions,
   treatmentId,
-  // treatmentIdx,
 }: TreatmentRowProps) {
-  const { featureFlags } = useContext(ExperimentContext);
+  const allFlagsQuery = useAllFeatureFlags();
   const [selectedFlag, setSelectedFlag] = useState<FeatureFlag>();
+
+  const featureFlags = allFlagsQuery.data ?? [];
   const flagStatePath = `definedTreatments.${treatmentId}.flagStates.${featureIdx}`;
+
   return (
     <Table.Row>
       <Table.Cell>
@@ -103,45 +67,6 @@ function TreatmentRow({
             setSelectedFlag(featureFlags.find((flag) => flag.id === value))
           }
         />
-        {/* <Field>
-          <Controller
-            control={control}
-            name={`definedTreatments.${treatmentId}.flagStates.${featureIdx}.id`}
-            render={({ field }) => (
-              <SelectRoot
-                collection={flagOptions}
-                disabled={treatmentIdx > 0}
-                onValueChange={({ value }) => {
-                  field.onChange(value[0]);
-                  setValue(
-                    `definedTreatments.${treatmentId}.flagStates.${featureIdx}.id`,
-                    value[0],
-                  );
-                  setSelectedFlagId(value[0]);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValueText
-                    placeholder={
-                      field.value && 'items' in flagOptions
-                        ? flagOptions.items.find(
-                            (flag) => flag.value === field.value,
-                          )?.label
-                        : 'Select feature...'
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent zIndex="popover">
-                  {flagOptions.items.map((feature) => (
-                    <SelectItem item={feature} key={feature.value}>
-                      {feature.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </SelectRoot>
-            )}
-          />
-        </Field> */}
       </Table.Cell>
       <Table.Cell>
         {featureIdx && selectedFlag && (

@@ -6,7 +6,6 @@ import RuleCreationForm from './RuleCreationForm';
 import { ADD_RULE_FORM_ID } from '../../feature-constants';
 
 interface RuleModalProps {
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   featureFlag: FeatureFlag;
   environmentName: string;
 }
@@ -14,7 +13,6 @@ interface RuleModalProps {
 export default function RuleCreationModal({
   featureFlag,
   environmentName,
-  setIsLoading,
 }: RuleModalProps) {
   const [open, setOpen] = useState(false);
 
@@ -37,7 +35,6 @@ export default function RuleCreationModal({
     >
       <RuleCreationForm
         formId={ADD_RULE_FORM_ID}
-        setIsLoading={setIsLoading}
         valueType={featureFlag.value.type}
         environmentName={environmentName}
         featureFlagId={featureFlag.id}

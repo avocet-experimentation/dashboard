@@ -7,8 +7,9 @@ import ExperimentsMain from './components/experiments/ExperimentsMain';
 import FeatureFlagManagementPage from './components/feature-flags/edit-page/FeatureFlagManagementPage';
 import ExperimentManagementPage from './components/experiments/edit-page/ExperimentManagementPage';
 import EnvironmentsMainPage from './components/environments/EnvironmentsMainPage';
-import TelemetryMain from './telemetry/TelemetryMain';
+import TelemetryMain from './components/telemetry/TelemetryMain';
 import SDKConnectionsMain from './components/sdk-connections/SDKConnectionsMain';
+import { Toaster } from './components/ui/toaster';
 import LoginPage from './components/LoginPage';
 import { useAuth0 } from '@auth0/auth0-react';
 import AuthLoader from './AuthLoader';
@@ -21,37 +22,34 @@ export default function App() {
 
   if (isLoading) return <AuthLoader message="Checking credentials..." />;
 
-  if (isAuthenticated)
-    return (
-      <Grid
-        bg="avocet-bg"
-        color="avocet-text"
-        templateColumns="300px 1fr"
-        templateRows="1fr"
-        width="100vw"
-        height="100vh"
-        overflow="hidden"
-      >
-        <GridItem display="flex" flexDir="row" justifyContent="center">
-          <Navbar />
-        </GridItem>
-        <GridItem>
-          <Switch>
-            <Route path="/profile" component={UserProfile} />
-            <Route path="/features" component={FeatureFlagsMain} />
-            <Route path="/features/:id" component={FeatureFlagManagementPage} />
-            <Route path="/environments" component={EnvironmentsMainPage} />
-            <Route path="/experiments" component={ExperimentsMain} />
-            <Route
-              path="/experiments/:id"
-              component={ExperimentManagementPage}
-            />
-            <Route path="/telemetry" component={TelemetryMain} />
-            <Route path="/connections" component={SDKConnectionsMain} />
-          </Switch>
-        </GridItem>
-      </Grid>
-    );
+  if (!isAuthenticated) return <LoginPage />;
 
-  return <LoginPage />;
+  return (
+    <Grid
+      bg="avocet-bg"
+      color="avocet-text"
+      templateColumns="300px 1fr"
+      templateRows="1fr"
+      width="100vw"
+      height="100vh"
+      overflow="hidden"
+    >
+      <GridItem display="flex" flexDir="row" justifyContent="center">
+        <Navbar />
+      </GridItem>
+      <GridItem>
+        <Switch>
+          <Route path="/profile" component={UserProfile} />
+          <Route path="/features" component={FeatureFlagsMain} />
+          <Route path="/features/:id" component={FeatureFlagManagementPage} />
+          <Route path="/environments" component={EnvironmentsMainPage} />
+          <Route path="/experiments" component={ExperimentsMain} />
+          <Route path="/experiments/:id" component={ExperimentManagementPage} />
+          <Route path="/telemetry" component={TelemetryMain} />
+          <Route path="/connections" component={SDKConnectionsMain} />
+        </Switch>
+      </GridItem>
+      <Toaster />
+    </Grid>
+  );
 }

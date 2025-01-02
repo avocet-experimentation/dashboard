@@ -27,7 +27,7 @@ function TelemetryMain() {
         justifyContent="space-between"
         alignItems="center"
       >
-        <Heading size="3xl">Telemetry Data</Heading>
+        <Heading size="3xl">Telemetry</Heading>
         <TelemetryTypeSelector />
       </Flex>
       <Text margin="15px 0">View telemetry data here.</Text>

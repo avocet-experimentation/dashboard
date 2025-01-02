@@ -4,75 +4,64 @@ import { Status } from '../../ui/status';
 
 // library
 import { formatDate } from '#/lib/timeFunctions';
-
-// types
-import { Experiment } from '@avocet/core';
+import { EXP_STATUS_LEGEND } from '#/lib/constants';
 
 // util
 import { Link } from 'wouter';
 import { Tooltip } from '../../ui/tooltip';
-import { useContext } from 'react';
-import { ExperimentContext } from '../ExperimentContext';
-import { LoaderWrapper } from '#/components/helpers/LoaderWrapper';
-
-const statusLegend = {
-  draft: {
-    color: 'yellow',
-    description: 'This experiment is still being configured.',
-  },
-  active: { color: 'green', description: 'This experiment is in progress.' },
-  paused: {
-    color: 'red',
-    description: 'This experiment is currently not running.',
-  },
-  completed: {
-    color: 'blue',
-    description: 'This experiment has reached its end.',
-  },
-};
+import { ALL_EXPERIMENTS } from '#/lib/experiment-queries';
+import Loader from '#/components/helpers/Loader';
+import ErrorBox from '#/components/helpers/ErrorBox';
+import { useQuery } from '@tanstack/react-query';
+import { gqlRequest } from '#/lib/graphql-queries';
 
 export default function ExperimentTable() {
-  const { experiments, isLoading } = useContext(ExperimentContext);
-  // console.table(experiments);
+  const { isPending, isError, error, data } = useQuery({
+    queryKey: ['allExperiments'],
+    queryFn: async () => gqlRequest(ALL_EXPERIMENTS, {}),
+  });
+
+  if (isPending) return <Loader />;
+
+  if (isError || !data) return <ErrorBox error={error} />;
+
+  if (data.length === 0)
+    return (
+      <ErrorBox error={new Error('No experiments found. Please create one.')} />
+    );
+
   return (
-    <LoaderWrapper isLoading={isLoading}>
-      {experiments.length ? (
-        <Table.Root className="table">
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeader>Experiment Name</Table.ColumnHeader>
-              <Table.ColumnHeader>Environment</Table.ColumnHeader>
-              <Table.ColumnHeader>Status</Table.ColumnHeader>
-              <Table.ColumnHeader>Date Created</Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {experiments &&
-              experiments.map((exp: Experiment) => (
-                <Table.Row key={exp.id}>
-                  <Table.Cell>
-                    <Link href={`/experiments/${exp.id}`}>{exp.name}</Link>
-                  </Table.Cell>
-                  <Table.Cell>{exp.environmentName}</Table.Cell>
-                  <Table.Cell>
-                    <Tooltip
-                      showArrow
-                      openDelay={50}
-                      content={statusLegend[exp.status].description}
-                    >
-                      <Status colorPalette={statusLegend[exp.status].color}>
-                        {exp.status}
-                      </Status>
-                    </Tooltip>
-                  </Table.Cell>
-                  <Table.Cell>{formatDate(exp.createdAt)}</Table.Cell>
-                </Table.Row>
-              ))}
-          </Table.Body>
-        </Table.Root>
-      ) : (
-        'No experiments found. Please create one.'
-      )}
-    </LoaderWrapper>
+    <Table.Root className="table">
+      <Table.Header>
+        <Table.Row>
+          <Table.ColumnHeader>Experiment Name</Table.ColumnHeader>
+          <Table.ColumnHeader>Environment</Table.ColumnHeader>
+          <Table.ColumnHeader>Status</Table.ColumnHeader>
+          <Table.ColumnHeader>Date Created</Table.ColumnHeader>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {data.map((exp) => (
+          <Table.Row key={exp.id}>
+            <Table.Cell>
+              <Link href={`/experiments/${exp.id}`}>{exp.name}</Link>
+            </Table.Cell>
+            <Table.Cell>{exp.environmentName}</Table.Cell>
+            <Table.Cell>
+              <Tooltip
+                showArrow
+                openDelay={50}
+                content={EXP_STATUS_LEGEND[exp.status].description}
+              >
+                <Status colorPalette={EXP_STATUS_LEGEND[exp.status].color}>
+                  {exp.status}
+                </Status>
+              </Tooltip>
+            </Table.Cell>
+            <Table.Cell>{formatDate(exp.createdAt)}</Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table.Root>
   );
 }

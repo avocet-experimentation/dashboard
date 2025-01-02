@@ -74,7 +74,7 @@ export default function Navbar() {
           <AlignHorizontalDistributeCenter />
         </Icon>
         <Link href="/telemetry" draggable={false}>
-          <NavText>Telemetry Data</NavText>
+          <NavText>Telemetry</NavText>
         </Link>
       </NavBox>
       <NavBox>

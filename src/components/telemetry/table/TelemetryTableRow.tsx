@@ -1,16 +1,11 @@
 import { TransformedSpan } from '@avocet/core';
 import { Stack, Table, Text } from '@chakra-ui/react';
 import { useContext } from 'react';
-import { lastUpdated, formatDate } from '#/lib/timeFunctions';
-import { ServicesContext } from '#/services/ServiceContext';
-import { Switch } from '#/components/ui/switch';
-import { Tooltip } from '#/components/ui/tooltip';
 import { TelemetryContext } from '../TelemetryContext';
 
 interface TelemetryTableRowProps {
   span: TransformedSpan;
   allHeaders: (keyof TransformedSpan)[];
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function TelemetryTableRow({

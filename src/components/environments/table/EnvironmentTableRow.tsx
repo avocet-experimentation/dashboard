@@ -1,45 +1,32 @@
 import { Environment } from '@avocet/core';
 import { Table, Text } from '@chakra-ui/react';
-import { useContext } from 'react';
 import { lastUpdated, formatDate } from '#/lib/timeFunctions';
-import { ServicesContext } from '#/services/ServiceContext';
 import { Switch } from '../../ui/switch';
 import { Tooltip } from '../../ui/tooltip';
 import EnvironmentManagementModal from '../management-form/EnvironmentManagementModal';
+import { useUpdateEnvironment } from '#/hooks/update-hooks';
 
 interface EnvironmentTableRowProps {
   environment: Environment;
-  updateEnvironment: (updated: Environment) => void;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function EnvironmentTableRow({
   environment,
-  updateEnvironment,
-  setIsLoading,
-}: EnvironmentTableRowProps) {
-  const { environment: environmentService } = useContext(ServicesContext);
-  const handleCheckedChange = (checked: boolean) => {
-    environmentService.update(environment.id, {
-      defaultEnabled: checked,
-    });
-
-    updateEnvironment({ ...environment, defaultEnabled: checked });
-  };
+}: {
+  environment: Environment;
+}) {
+  const { mutate, isPending } = useUpdateEnvironment(environment.id);
 
   return (
     <Table.Row>
       <Table.Cell color="black" textDecor="none">
-        <EnvironmentManagementModal
-          setIsLoading={setIsLoading}
-          environment={environment}
-          updateEnvironment={updateEnvironment}
-        />
+        <EnvironmentManagementModal environment={environment} />
       </Table.Cell>
       <Table.Cell key={environment.name}>
         <Switch
           checked={environment.defaultEnabled}
-          onCheckedChange={(e) => handleCheckedChange(e.checked)}
+          onCheckedChange={(e) => mutate({ defaultEnabled: e.checked })}
+          disabled={isPending}
         />
       </Table.Cell>
       <Table.Cell>

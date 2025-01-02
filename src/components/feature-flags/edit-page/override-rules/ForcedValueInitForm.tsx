@@ -8,10 +8,17 @@ import {
   OverrideRuleUnion,
   SchemaParseError,
 } from '@avocet/core';
-import { useContext } from 'react';
-import { ServicesContext } from '#/services/ServiceContext';
 import { Field } from '#/components/ui/field';
 import OverrideValueField from './OverrideValueField';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  FEATURE_FLAG,
+  gqlRequest,
+  UPDATE_FEATURE_FLAG,
+} from '#/lib/graphql-queries';
+import Loader from '#/components/helpers/Loader';
+import ErrorBox from '#/components/helpers/ErrorBox';
+import NotFound from '#/components/NotFound';
 
 const validateFormData = <R extends Pick<OverrideRuleUnion, 'type'>>(
   ruleContent: R,
@@ -29,21 +36,22 @@ interface ForcedValueInitFormProps {
   valueType: FlagValueTypeDef;
   envName: string;
   formId: string;
-  featureFlagId: string;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  flagId: string;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+/**
+ * Create Forced Value rules
+ * TODO:
+ * - disable the form while submission is pending
+ */
 export default function ForcedValueInitForm({
   valueType,
   envName,
   formId,
-  featureFlagId,
-  setIsLoading,
+  flagId,
   setOpen,
 }: ForcedValueInitFormProps) {
-  const services = useContext(ServicesContext);
-
   const {
     control,
     register,
@@ -57,24 +65,30 @@ export default function ForcedValueInitForm({
     }),
   });
 
+  const flagQuery = useQuery({
+    queryKey: ['featureFlag', flagId],
+    queryFn: async () => gqlRequest(FEATURE_FLAG, { id: flagId }),
+  });
+
+  const addRule = useMutation({
+    mutationKey: ['featureFlag', flagId],
+    mutationFn: async (updatedRules: OverrideRuleUnion[]) =>
+      gqlRequest(UPDATE_FEATURE_FLAG, {
+        partialEntry: { id: flagId, overrideRules: updatedRules },
+      }),
+    onSuccess: () => setOpen(false),
+  });
+
+  if (flagQuery.isPending) return <Loader />;
+  if (flagQuery.isError) return <ErrorBox error={flagQuery.error} />;
+
+  const featureFlag = flagQuery.data;
+  if (featureFlag === null)
+    return <NotFound componentName="ForcedValueInitForm" />;
+
   const onSubmit: SubmitHandler<ForcedValue> = async (ruleContent) => {
-    setIsLoading(true);
-
     const parsedRule = validateFormData(ruleContent);
-    // const parsedRule: OverrideRuleUnion = parseWithConciseError(schema, ruleContent);
-
-    const response = await services.featureFlag.addRule(
-      featureFlagId,
-      envName,
-      parsedRule,
-    );
-
-    // todo: replace with a navigate() call
-    if (response.ok) {
-      window.location.reload();
-    }
-    setIsLoading(false);
-    setOpen(false);
+    addRule.mutate([...featureFlag.overrideRules, parsedRule]);
   };
 
   return (
@@ -91,9 +105,7 @@ export default function ForcedValueInitForm({
             >
               <Input
                 placeholder="A human-readable description of your rule"
-                {...register('description', {
-                  // required: 'A description of your rule is required.',
-                })}
+                {...register('description')}
               />
             </Field>
           )}
