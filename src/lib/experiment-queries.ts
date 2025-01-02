@@ -4,6 +4,8 @@ export const CREATE_EXPERIMENT = graphql(`
   mutation createExperiment($newEntry: ExperimentDraft!) {
     createExperiment(newEntry: $newEntry) {
       id
+      createdAt
+      updatedAt
       name
       environmentName
       status
@@ -30,8 +32,6 @@ export const CREATE_EXPERIMENT = graphql(`
         fieldDataType
       }
       flagIds
-      createdAt
-      updatedAt
     }
   }
 `);
@@ -40,6 +40,8 @@ export const EXPERIMENT = graphql(`
   query experiment($id: ID!) {
     experiment(id: $id) {
       id
+      createdAt
+      updatedAt
       name
       environmentName
       status
@@ -66,8 +68,6 @@ export const EXPERIMENT = graphql(`
         fieldDataType
       }
       flagIds
-      createdAt
-      updatedAt
     }
   }
 `);
@@ -89,6 +89,8 @@ export const UPDATE_EXPERIMENT = graphql(`
   mutation updateExperiment($partialEntry: PartialExperimentWithId!) {
     updateExperiment(partialEntry: $partialEntry) {
       id
+      createdAt
+      updatedAt
       name
       environmentName
       status
