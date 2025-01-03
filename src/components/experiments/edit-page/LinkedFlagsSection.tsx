@@ -1,36 +1,37 @@
 import { AccordionRoot } from '#/components/ui/accordion';
 import { Experiment, ExperimentDraft, FeatureFlag } from '@avocet/core';
 import { useMemo } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { ALL_FEATURE_FLAGS, getRequestFunc } from '#/lib/graphql-queries';
 import ErrorBox from '#/components/helpers/ErrorBox';
 import Loader from '#/components/helpers/Loader';
 import { LinkedFlagInfo } from './LinkedFlagInfo';
-import { UPDATE_EXPERIMENT } from '#/lib/experiment-queries';
 import { Flex, Heading, Stack } from '@chakra-ui/react';
 import PageSelect from '#/components/forms/PageSelect';
+import { useAllFeatureFlags } from '#/hooks/query-hooks';
+import { useExperimentContext } from './ExperimentContext';
 
-export default function LinkedFlagsSection({
-  experiment,
-}: {
-  experiment: Experiment;
-}) {
-  const { isPending, isError, error, data } = useQuery({
-    queryKey: ['allFeatureFlags'],
-    queryFn: getRequestFunc(ALL_FEATURE_FLAGS, {}),
-  });
-
-  const expFlagIds = useMemo(() => new Set(experiment.flagIds), [experiment]);
+export default function LinkedFlagsSection() {
+  const { isPending, isError, error, data: allFlags } = useAllFeatureFlags();
+  const { useExperiment } = useExperimentContext();
+  const { data: experiment } = useExperiment();
 
   if (isPending) return <Loader label="Loading experiment..." />;
   if (isError) return <ErrorBox error={error} />;
+  if (!experiment) return <></>;
 
-  const linkedFlags = data.filter((flag) =>
-    expFlagIds.has(flag.id),
-  ) as FeatureFlag[];
+  const expFlagIds = new Set(experiment.flagIds);
+
+  const [availableFlags, linkedFlags] = allFlags.reduce(
+    (acc: [FeatureFlag[], FeatureFlag[]], flag) => {
+      if (expFlagIds.has(flag.id)) {
+        acc[1].push(flag);
+      } else acc[0].push(flag);
+      return acc;
+    },
+    [[], []],
+  );
 
   return (
-    <Stack padding="15px" bg="white" borderRadius="5px" width="50%">
+    <Stack padding="15px" bg="white" borderRadius="5px" width="100%">
       <Flex justifyContent="space-between">
         <Heading size="lg">
           Linked Feature Flags ({experiment.flagIds.length})
@@ -38,17 +39,17 @@ export default function LinkedFlagsSection({
       </Flex>
       <AccordionRoot variant="enclosed" multiple>
         {linkedFlags.map((flag: FeatureFlag) => (
-          <LinkedFlagInfo key={flag.id} experiment={experiment} flag={flag} />
+          <LinkedFlagInfo key={flag.id} flag={flag} />
         ))}
       </AccordionRoot>
-      <FlagSelect experiment={experiment} />
+      <FlagSelect experiment={experiment} availableFlags={availableFlags} />
     </Stack>
   );
 }
 
 interface FlagSelectProps {
   experiment: Experiment;
-  // availableFlags: FeatureFlag[];
+  availableFlags: FeatureFlag[];
 }
 
 /**
@@ -56,28 +57,12 @@ interface FlagSelectProps {
  *
  * todo:
  * - fix dropdown list covering relevant info
+ * - place alongside title
  * - add search box to PageSelect to filter options by label?
  */
-function FlagSelect({ experiment }: FlagSelectProps) {
-  const flagsQuery = useQuery({
-    queryKey: ['allFeatureFlags'],
-    queryFn: async () => getRequestFunc(ALL_FEATURE_FLAGS, {})(),
-    placeholderData: [] as FeatureFlag[],
-  });
-
-  const { mutate } = useMutation({
-    mutationFn: async (partialEntry: Partial<ExperimentDraft>) =>
-      getRequestFunc(UPDATE_EXPERIMENT, {
-        partialEntry: { ...partialEntry, id: experiment.id },
-      })(),
-    mutationKey: ['experiment', experiment.id],
-  });
-
-  const expFlagIds = useMemo(() => new Set(experiment.flagIds), [experiment]);
-  const availableFlags = useMemo(
-    () => flagsQuery.data?.filter((flag) => !expFlagIds.has(flag.id)),
-    [flagsQuery.data, expFlagIds],
-  );
+function FlagSelect({ experiment, availableFlags }: FlagSelectProps) {
+  const { useUpdateExperiment } = useExperimentContext();
+  const { mutate } = useUpdateExperiment();
 
   const options = useMemo(
     () =>
@@ -87,9 +72,6 @@ function FlagSelect({ experiment }: FlagSelectProps) {
       })) ?? [],
     [availableFlags],
   );
-
-  if (flagsQuery.isPending) return <Loader label="loading flags..." />;
-  if (flagsQuery.isError) return <ErrorBox error={flagsQuery.error} />;
 
   if (!availableFlags || availableFlags.length === 0) {
     return (

@@ -23,26 +23,12 @@ import {
   TriangleAlert,
 } from 'lucide-react';
 import { useMemo } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { gqlRequest } from '#/lib/graphql-queries';
-import { UPDATE_EXPERIMENT } from '#/lib/experiment-queries';
+import { useExperimentContext } from './ExperimentContext';
 
-interface LinkedFlagInfoProps {
-  experiment: Experiment;
-  flag: FeatureFlag;
-}
-export function LinkedFlagInfo({ experiment, flag }: LinkedFlagInfoProps) {
-  const removeFlag = useMutation({
-    mutationFn: async (flagId: string) => {
-      return gqlRequest(UPDATE_EXPERIMENT, {
-        partialEntry: {
-          id: experiment.id,
-          ...ExperimentDraft.removeFlag(experiment, flagId),
-        },
-      });
-    },
-  });
-
+export function LinkedFlagInfo({ flag }: { flag: FeatureFlag }) {
+  const { useExperiment, useUpdateExperiment } = useExperimentContext();
+  const { data: experiment } = useExperiment();
+  const { mutate } = useUpdateExperiment();
   const renderValueTypeIcon = useMemo(() => {
     switch (flag.value.type) {
       case 'string':
@@ -55,6 +41,8 @@ export function LinkedFlagInfo({ experiment, flag }: LinkedFlagInfoProps) {
       //   return <></>;
     }
   }, [flag.value.type]);
+
+  if (!experiment) return <></>;
 
   const { icon, colorPalette, tooltip, text } =
     experiment.environmentName in flag.environmentNames
@@ -71,6 +59,13 @@ export function LinkedFlagInfo({ experiment, flag }: LinkedFlagInfoProps) {
           tooltip: `This flag is disabled in the '${experiment.environmentName}' environment.`,
         };
 
+  const removeFlag = (flagId: string) => {
+    console.log(`Clicked remove at ${String(Date.now()).slice(-5)}`);
+    const updated = ExperimentDraft.removeFlag(experiment, flagId);
+    mutate(updated);
+  };
+
+  console.log(`Rendering at ${String(Date.now()).slice(-5)}`);
   return (
     <AccordionItem key={flag.id} value={flag.name}>
       <Box position="relative" id="flag-accordion-trigger">
@@ -95,14 +90,14 @@ export function LinkedFlagInfo({ experiment, flag }: LinkedFlagInfoProps) {
             background={'red'}
             padding="4px"
             size="sm"
-            onClick={() => removeFlag.mutate(flag.id)}
+            onClick={() => removeFlag(flag.id)}
           >
             <Trash2 />
           </Button>
         </AbsoluteCenter>
       </Box>
       <AccordionItemContent>
-        <FlagStateTable experiment={experiment} flag={flag} />
+        <FlagStateTable flag={flag} />
       </AccordionItemContent>
     </AccordionItem>
   );
@@ -110,11 +105,13 @@ export function LinkedFlagInfo({ experiment, flag }: LinkedFlagInfoProps) {
 /**
  * A table of all the flag states for a specific flag in an experiment
  */
-interface FlagStateTableProps {
-  experiment: Experiment;
-  flag: FeatureFlag;
-}
-function FlagStateTable({ experiment, flag }: FlagStateTableProps) {
+function FlagStateTable({ flag }: { flag: FeatureFlag }) {
+  const { useExperiment } = useExperimentContext();
+  const { data } = useExperiment();
+
+  if (!data) return <></>;
+  const experiment: Experiment = data;
+
   return (
     <Stack gap={2}>
       <Text>Flag Values</Text>
