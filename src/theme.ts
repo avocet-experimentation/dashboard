@@ -68,6 +68,13 @@ const config: SystemConfig = defineConfig({
             _dark: '#1A4F73',
           },
         },
+        'avocet-button-bg': {
+          value: {
+            base: 'black',
+            _dark: '#012a40',
+          },
+        },
+        'avocet-button-color': {},
       },
     },
   },
