@@ -1,25 +1,50 @@
 import { COLORS } from '#/lib/constants';
 import { Experiment, ExperimentGroup } from '@avocet/core';
-import { Flex, Icon, Stack } from '@chakra-ui/react';
+import {
+  Flex,
+  Grid,
+  GridItem,
+  HStack,
+  Icon,
+  Stack,
+  Text,
+} from '@chakra-ui/react';
 import { Tabs } from '@chakra-ui/react/tabs';
-import { UseMutateFunction } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Square } from 'lucide-react';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { EditableGenerals } from './EditableGenerals';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { useDrag, useDrop } from 'react-dnd';
+import SortableTreatmentList from './SortableTreatmentList';
+import { getRequestFunc, UPDATE_EXPERIMENT } from '#/lib/graphql-queries';
+import { toastError, toastSuccess } from '#/components/ui/toaster';
+import AddGroupTreatment from './AddGroupTreatment';
 
 export default function GroupTabsView({
   experiment,
-  mutate,
 }: {
   experiment: Experiment;
-  mutate: UseMutateFunction<void, Error, ExperimentGroup[], unknown>;
 }) {
   const [selectedTab, setSelectedTab] = useState<string>(
     experiment.groups[0].id,
   );
+
+  const { mutate } = useMutation({
+    mutationFn: async (groups: ExperimentGroup[]) =>
+      getRequestFunc(UPDATE_EXPERIMENT, {
+        partialEntry: {
+          groups: groups,
+          id: experiment.id,
+        },
+      })(),
+    mutationKey: ['experiment', experiment.id],
+    onSuccess: () => {
+      toastSuccess('Experiment updated successfully.');
+    },
+    onError: () => {
+      toastError('Could not update the experiment at this time.');
+    },
+  });
+
   return (
     <Tabs.Root
       value={selectedTab}
@@ -59,7 +84,7 @@ export default function GroupTabsView({
                     defaultValue={String(group.proportion)}
                     inputType="number"
                     onValueCommit={(e) => {
-                      experiment.groups[idx].name = e.value;
+                      experiment.groups[idx].proportion = Number(e.value);
                       mutate(experiment.groups);
                     }}
                   />
@@ -69,13 +94,33 @@ export default function GroupTabsView({
                     defaultValue={String(group.cycles)}
                     inputType="number"
                     onValueCommit={(e) => {
-                      experiment.groups[idx].name = e.value;
+                      experiment.groups[idx].cycles = Number(e.value);
                       mutate(experiment.groups);
                     }}
                   />
                 </Flex>
+                <Grid templateColumns="1fr 4fr" alignItems="center">
+                  <GridItem>
+                    <Text>
+                      Treatments (
+                      {Object.keys(experiment.definedTreatments).length})
+                    </Text>
+                  </GridItem>
+                  <GridItem>
+                    <AddGroupTreatment
+                      experiment={experiment}
+                      group={group}
+                      idx={idx}
+                      mutate={mutate}
+                    />
+                  </GridItem>
+                </Grid>
                 <Stack>
-                  <DndProvider backend={HTML5Backend}></DndProvider>
+                  <SortableTreatmentList
+                    experiment={experiment}
+                    group={group}
+                    idx={idx}
+                  />
                 </Stack>
               </Stack>
             </Tabs.Content>
@@ -84,15 +129,4 @@ export default function GroupTabsView({
       </Tabs.ContentGroup>
     </Tabs.Root>
   );
-}
-
-export interface CardProps {
-  id: any;
-  text: string;
-  index: number;
-  moveCard: (dragIndex: number, hoverIndex: number) => void;
-}
-
-function Card({ id, text, index, moveCard }: CardProps) {
-  // TODO: create drag and drop functionality
 }

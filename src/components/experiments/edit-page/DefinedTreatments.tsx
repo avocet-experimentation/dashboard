@@ -6,7 +6,6 @@ import { getRequestFunc } from '#/lib/graphql-queries';
 import { Experiment, FeatureFlag, Treatment } from '@avocet/core';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
-  Box,
   Editable,
   Flex,
   Grid,
@@ -32,14 +31,13 @@ export default function DefinedTreatments({
   });
 
   const { mutate } = useMutation({
-    mutationFn: async (definedTreatment: Record<string, Treatment>) => {
+    mutationFn: async (definedTreatment: Record<string, Treatment>) =>
       getRequestFunc(UPDATE_EXPERIMENT, {
         partialEntry: {
           definedTreatments: definedTreatment,
           id: experiment.id,
         },
-      })();
-    },
+      })(),
     mutationKey: ['experiment', experiment.id],
     onSuccess: () => {
       toastSuccess('Experiment updated successfully.');

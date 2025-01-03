@@ -76,7 +76,7 @@ export function CompleteExperimentButton({
 
   return (
     <Button variant="solid" colorPalette="red" onClick={() => mutate()}>
-      <OctagonX />
+      <CircleCheckBig />
       Complete
     </Button>
   );
