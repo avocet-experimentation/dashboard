@@ -1,63 +1,26 @@
-import { Experiment, ExperimentGroup, Treatment } from '@avocet/core';
-import {
-  createListCollection,
-  Grid,
-  GridItem,
-  Heading,
-  Stack,
-} from '@chakra-ui/react';
+import { Experiment } from '@avocet/core';
+import { Grid, GridItem, Heading, Stack } from '@chakra-ui/react';
 import GroupPieChart from './GroupPieChart';
-import { UPDATE_EXPERIMENT } from '#/lib/experiment-queries';
-import { useMutation } from '@tanstack/react-query';
-import { gqlRequest } from '#/lib/graphql-queries';
-import { toastError, toastSuccess } from '#/components/ui/toaster';
 import GroupTabsView from './GroupTabsView';
-
-const createTreatmentCollection = (definedTreatments: Treatment) => {
-  const items = Object.entries(definedTreatments).map(([id, treatment]) => ({
-    label: treatment.name,
-    value: id,
-  }));
-  return createListCollection({ items });
-};
-
 export default function VariationGroupsSection({
   experiment,
 }: {
   experiment: Experiment;
 }) {
-  const { mutate } = useMutation({
-    mutationFn: async (groups: ExperimentGroup[]) => {
-      return gqlRequest(UPDATE_EXPERIMENT, {
-        partialEntry: {
-          groups: groups,
-          id: experiment.id,
-        },
-      });
-    },
-    mutationKey: ['experiment', experiment.id],
-    onSuccess: () => {
-      toastSuccess('Experiment updated successfully.');
-    },
-    onError: () => {
-      toastError('Could not update the experiment at this time.');
-    },
-  });
-
-  const getTreatmentName = (treatmentId: string) => {
-    return experiment.definedTreatments[treatmentId].name;
-  };
-
   return (
     <Stack padding="15px" bg="white" borderRadius="5px">
       <Heading size="lg">User Groups ({experiment.groups.length})</Heading>
       <Grid templateColumns="1fr 2fr" gap={6}>
         <GridItem>
+          {/* <Grid templateRows="1fr 1fr">
+            <GridItem> */}
           <GroupPieChart experiment={experiment} />
+          {/* </GridItem>
+            <GridItem>test</GridItem>
+          </Grid> */}
         </GridItem>
         <GridItem>
-          {/* <GroupTableView experiment={experiment} mutate={mutate} /> */}
-          <GroupTabsView experiment={experiment} mutate={mutate} />
+          <GroupTabsView experiment={experiment} />
         </GridItem>
       </Grid>
     </Stack>

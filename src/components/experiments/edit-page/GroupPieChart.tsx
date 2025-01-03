@@ -1,12 +1,10 @@
 import { COLORS, RADIAN } from '#/lib/constants';
-import { Box, Heading, Stack } from '@chakra-ui/react';
-import { ExperimentDraft } from '@avocet/core';
+import { Experiment } from '@avocet/core';
 import {
   PieChart,
   Pie,
   Cell,
   ResponsiveContainer,
-  Legend,
   Tooltip,
   LabelProps as RechartsLabelProps,
 } from 'recharts';
@@ -48,7 +46,7 @@ const renderCustomizedLabel = ({
 export default function GroupPieChart({
   experiment,
 }: {
-  experiment: ExperimentDraft;
+  experiment: Experiment;
 }) {
   return (
     <ResponsiveContainer minWidth="250px" minHeight="250px">
@@ -68,7 +66,6 @@ export default function GroupPieChart({
             <Cell cursor="help" key={`cell-${index}`} fill={color} />
           ))}
         </Pie>
-        {/* <Legend layout="vertical" align="center" verticalAlign="middle" /> */}
         <Tooltip />
       </PieChart>
     </ResponsiveContainer>
