@@ -39,3 +39,15 @@ export const useAllTelemetry = () => {
     },
   });
 };
+
+export const useAllTelemetryTypes = () => {
+  const telemetryService = new TelemetryService();
+  return useQuery({
+    queryKey: ['allTelemetryTypes'],
+    queryFn: async () => {
+      const response = await telemetryService.getAllSpanTypes();
+      if (!response.ok) return [];
+      return response.body;
+    },
+  });
+};
