@@ -1,4 +1,4 @@
-import { Table } from '@chakra-ui/react';
+import { Box, Table } from '@chakra-ui/react';
 import { Environment, FeatureFlag } from '@avocet/core';
 import FeatureFlagTableRow from './FeatureFlagTableRow';
 import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
@@ -34,29 +34,31 @@ export default function FeatureFlagTable() {
     );
 
   return (
-    <Table.Root className="table">
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeader>Name</Table.ColumnHeader>
-          <Table.ColumnHeader>Default Value</Table.ColumnHeader>
-          {pinnedEnvironments.map((env) => (
-            <Table.ColumnHeader key={`${env.name}-header`}>
-              {env.name.charAt(0).toUpperCase() + env.name.slice(1)}
-            </Table.ColumnHeader>
+    <Box borderRadius="5px" overflow="hidden">
+      <Table.Root className="table">
+        <Table.Header>
+          <Table.Row bg="avocet-section">
+            <Table.ColumnHeader>Name</Table.ColumnHeader>
+            <Table.ColumnHeader>Default Value</Table.ColumnHeader>
+            {pinnedEnvironments.map((env) => (
+              <Table.ColumnHeader key={`${env.name}-header`}>
+                {env.name.charAt(0).toUpperCase() + env.name.slice(1)}
+              </Table.ColumnHeader>
+            ))}
+            <Table.ColumnHeader>Override Rules</Table.ColumnHeader>
+            <Table.ColumnHeader>Last Updated</Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {featureFlags.map((flag) => (
+            <FeatureFlagTableRow
+              key={flag.id}
+              allEnvironmentNames={pinnedEnvironments.map((env) => env.name)}
+              flag={flag}
+            />
           ))}
-          <Table.ColumnHeader>Override Rules</Table.ColumnHeader>
-          <Table.ColumnHeader>Last Updated</Table.ColumnHeader>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {featureFlags.map((flag) => (
-          <FeatureFlagTableRow
-            key={flag.id}
-            allEnvironmentNames={pinnedEnvironments.map((env) => env.name)}
-            flag={flag}
-          />
-        ))}
-      </Table.Body>
-    </Table.Root>
+        </Table.Body>
+      </Table.Root>
+    </Box>
   );
 }

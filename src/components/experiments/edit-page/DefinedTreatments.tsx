@@ -6,6 +6,7 @@ import { getRequestFunc } from '#/lib/graphql-queries';
 import { Experiment, FeatureFlag, Treatment } from '@avocet/core';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
+  Box,
   Editable,
   Flex,
   Grid,
@@ -64,7 +65,7 @@ export default function DefinedTreatments({
   };
 
   return (
-    <Stack padding="15px" bg="white" borderRadius="5px">
+    <Stack padding="15px" bg="avocet-section" borderRadius="5px">
       <Heading size="lg">
         <HStack gap={2.5}>
           Defined Treatments ({Object.keys(experiment.definedTreatments).length}
@@ -115,48 +116,53 @@ export default function DefinedTreatments({
                   }}
                 />
               </Flex>
-              <Table.Root stickyHeader interactive bg="transparent">
-                <Table.Header>
-                  <Table.Row>
-                    <Table.ColumnHeader>FEATURE</Table.ColumnHeader>
-                    <Table.ColumnHeader>VALUE</Table.ColumnHeader>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {props.flagStates.map(({ value, id }, featureIdx) => {
-                    const { name, type } = getFlagDetails(id);
-                    return (
-                      <Table.Row key={id}>
-                        <Table.Cell>{name}</Table.Cell>
-                        <Table.Cell>
-                          {type === 'boolean' ? (
-                            <Switch
-                              checked={Boolean(value)}
-                              onCheckedChange={({ checked }) => {
-                                props.flagStates[featureIdx].value = !!checked;
-                                mutate(experiment.definedTreatments);
-                              }}
-                            ></Switch>
-                          ) : (
-                            <Editable.Root
-                              activationMode="dblclick"
-                              defaultValue={defaultFlagValue(type, value)}
-                              fontSize="inherit"
-                              onValueCommit={(e) => {
-                                props.flagStates[featureIdx].value = e.value;
-                                mutate(experiment.definedTreatments);
-                              }}
-                            >
-                              <Editable.Preview />
-                              <Editable.Input />
-                            </Editable.Root>
-                          )}
-                        </Table.Cell>
-                      </Table.Row>
-                    );
-                  })}
-                </Table.Body>
-              </Table.Root>
+              <Box borderRadius="5px" overflow="hidden">
+                <Table.Root stickyHeader interactive bg="transparent">
+                  <Table.Header>
+                    <Table.Row bg="avocet-bg">
+                      <Table.ColumnHeader>FEATURE</Table.ColumnHeader>
+                      <Table.ColumnHeader>VALUE</Table.ColumnHeader>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {props.flagStates.map(({ value, id }, featureIdx) => {
+                      const { name, type } = getFlagDetails(id);
+                      return (
+                        <Table.Row key={id} bg="avocet-bg">
+                          <Table.Cell>{name}</Table.Cell>
+                          <Table.Cell>
+                            {type === 'boolean' ? (
+                              <Switch
+                                checked={Boolean(value)}
+                                onCheckedChange={({ checked }) => {
+                                  props.flagStates[featureIdx].value =
+                                    !!checked;
+                                  mutate(experiment.definedTreatments);
+                                }}
+                              ></Switch>
+                            ) : (
+                              <Editable.Root
+                                activationMode="dblclick"
+                                defaultValue={defaultFlagValue(type, value)}
+                                fontSize="inherit"
+                                onValueCommit={(e) => {
+                                  props.flagStates[featureIdx].value = e.value;
+                                  mutate(experiment.definedTreatments);
+                                }}
+                              >
+                                <Editable.Preview
+                                  _hover={{ bg: 'avocet-hover' }}
+                                />
+                                <Editable.Input />
+                              </Editable.Root>
+                            )}
+                          </Table.Cell>
+                        </Table.Row>
+                      );
+                    })}
+                  </Table.Body>
+                </Table.Root>
+              </Box>
             </Stack>
           ),
         )}

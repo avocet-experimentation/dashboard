@@ -8,7 +8,7 @@ export default function VariationGroupsSection({
   experiment: Experiment;
 }) {
   return (
-    <Stack padding="15px" bg="white" borderRadius="5px">
+    <Stack padding="15px" bg="avocet-section" borderRadius="5px">
       <Heading size="lg">User Groups ({experiment.groups.length})</Heading>
       <Grid templateColumns="1fr 2fr" gap={6}>
         <GridItem>

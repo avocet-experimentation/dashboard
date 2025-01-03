@@ -36,13 +36,14 @@ export default function ExperimentReferenceStub({
       <Stack
         gap={4}
         key={rule.id}
-        bg="whiteAlpha.700"
-        border="1px solid black"
+        bg="avocet-section"
+        border="1px solid"
         borderRadius="5px"
         padding="15px"
       >
         <HStack gap={4}>
           <Tag
+            colorPalette="avocet-tag"
             variant="outline"
             size="xl"
             width="fit-content"

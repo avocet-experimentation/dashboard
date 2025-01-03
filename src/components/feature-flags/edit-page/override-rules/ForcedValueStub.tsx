@@ -8,12 +8,18 @@ export default function ForcedValueStub({ rule }: { rule: ForcedValue }) {
       <Stack
         gap={4}
         key={rule.id}
-        bg="whiteAlpha.700"
-        border="1px solid black"
+        bg="avocet-section"
+        border="1px solid"
         borderRadius="5px"
         padding="15px"
       >
-        <Tag variant="outline" size="xl" width="fit-content" fontWeight="bold">
+        <Tag
+          colorPalette="avocet-tag"
+          variant="outline"
+          size="xl"
+          width="fit-content"
+          fontWeight="bold"
+        >
           Forced Value
         </Tag>
         <Flex width="100%" alignContent="center">

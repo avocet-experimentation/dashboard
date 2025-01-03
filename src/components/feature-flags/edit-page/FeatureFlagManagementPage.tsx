@@ -116,17 +116,23 @@ function FlagManagementFields({ flag }: FlagManagementFieldsProps) {
         <Heading size="3xl">{flag.name}</Heading>
         <MenuRoot>
           <MenuTrigger asChild>
-            <IconButton size="md">
-              <EllipsisVertical color="black" />
+            <IconButton
+              _open={{ bg: 'avocet-hover' }}
+              _hover={{ bg: 'avocet-hover' }}
+              bg="avocet-section"
+              color="avocet-text"
+              size="md"
+            >
+              <EllipsisVertical />
             </IconButton>
           </MenuTrigger>
-          <MenuContent>
+          <MenuContent bg="avocet-section">
             <MenuItem
               value="delete"
               valueText="Delete"
               cursor="pointer"
-              color="fg.error"
-              _hover={{ bg: 'bg.error', color: 'fg.error' }}
+              color="avocet-error-fg"
+              _hover={{ bg: 'avocet-error-bg', color: 'avocet-error-fg' }}
               onClick={() => deleteFlag.mutate()}
             >
               <Trash2 />
@@ -158,9 +164,14 @@ function FlagManagementFields({ flag }: FlagManagementFieldsProps) {
         <Heading size="xl" marginBottom="15px">
           Values and Rules
         </Heading>
-        <Stack padding="15px" bg="white" borderRadius="5px">
+        <Stack padding="15px" bg="avocet-section" borderRadius="5px">
           <Heading size="lg">Default Value</Heading>
-          <Flex border="1px solid gray" borderRadius="5px" padding="15px">
+          <Flex
+            bg="avocet-bg"
+            border="1px solid"
+            borderRadius="5px"
+            padding="15px"
+          >
             <Text fontWeight="bold" width="fit-content" padding="0 5px">
               {flag.value.type.toUpperCase()}
             </Text>

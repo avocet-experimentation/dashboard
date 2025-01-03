@@ -17,6 +17,8 @@ export function UserProfileMenu() {
         marginBottom="15px"
       >
         <Button
+          _open={{ bg: 'avocet-hover' }}
+          _hover={{ bg: 'avocet-hover' }}
           width="90%"
           height="fit-content"
           justifyContent="space-evenly"
@@ -27,15 +29,18 @@ export function UserProfileMenu() {
           <Text>{user?.email}</Text>
         </Button>
       </MenuTrigger>
-      <MenuContent>
+      <MenuContent bg="avocet-section">
         <Link href="/profile" draggable={false}>
           <MenuItem value="Profile">Profile</MenuItem>
         </Link>
         <MenuItem
           value="Logout"
-          color="fg.error"
+          color="avocet-fg-error"
           draggable={false}
-          _hover={{ bg: 'bg.error', color: 'fg.error', cursor: 'pointer' }}
+          _hover={{
+            bg: 'avocet-error-bg',
+            color: 'avocet-error-fg',
+          }}
           onClick={() => logout()}
         >
           Logout

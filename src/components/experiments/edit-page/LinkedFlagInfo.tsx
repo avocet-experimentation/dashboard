@@ -9,6 +9,7 @@ import {
   AbsoluteCenter,
   Box,
   Button,
+  IconButton,
   Stack,
   Table,
   Text,
@@ -67,7 +68,7 @@ export function LinkedFlagInfo({ flag }: { flag: FeatureFlag }) {
 
   console.log(`Rendering at ${String(Date.now()).slice(-5)}`);
   return (
-    <AccordionItem key={flag.id} value={flag.name}>
+    <AccordionItem key={flag.id} value={flag.name} bg="avocet-bg">
       <Box position="relative" id="flag-accordion-trigger">
         <AccordionItemTrigger id={flag.id} indicatorPlacement="start">
           <Stack direction="row" gap={4}>
@@ -84,16 +85,16 @@ export function LinkedFlagInfo({ flag }: { flag: FeatureFlag }) {
         </AccordionItemTrigger>
         {/* TODO: match the styling and look of this button with other inline elements */}
         <AbsoluteCenter axis="vertical" insetEnd="15px">
-          <Button
-            variant="solid"
-            // colorPalette="red"
-            background={'red'}
-            padding="4px"
-            size="sm"
+          <IconButton
+            aria-label={`Delete treatment: ${name}`}
+            bg="transparent"
+            color="avocet-error-fg"
+            _hover={{ bg: 'avocet-error-bg', color: 'avocet-error-fg' }}
+            marginLeft="auto"
             onClick={() => removeFlag(flag.id)}
           >
             <Trash2 />
-          </Button>
+          </IconButton>
         </AbsoluteCenter>
       </Box>
       <AccordionItemContent>
@@ -117,7 +118,7 @@ function FlagStateTable({ flag }: { flag: FeatureFlag }) {
       <Text>Flag Values</Text>
       <Table.Root width="250px" size="sm" variant="outline" showColumnBorder>
         <Table.Header>
-          <Table.Row>
+          <Table.Row bg="avocet-hover">
             <Table.ColumnHeader>TREATMENT</Table.ColumnHeader>
             <Table.ColumnHeader>VALUE</Table.ColumnHeader>
           </Table.Row>
@@ -132,7 +133,7 @@ function FlagStateTable({ flag }: { flag: FeatureFlag }) {
               return <></>;
             }
             return (
-              <Table.Row key={treatment.id}>
+              <Table.Row key={treatment.id} bg="avocet-section">
                 <Table.Cell>{treatment.name}</Table.Cell>
                 <Table.Cell>{String(flagState.value)}</Table.Cell>
               </Table.Row>

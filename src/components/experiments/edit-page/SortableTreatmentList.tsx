@@ -62,7 +62,7 @@ function SortableTreatmentCard({
     <HStack
       alignItems="center"
       ref={ref}
-      bg={isDragging ? 'gray.200' : 'whitesmoke'}
+      bg={isDragging ? 'avocet-dragging' : 'avocet-section'}
       p={4}
       mb={2}
       borderRadius="5px"
@@ -70,7 +70,8 @@ function SortableTreatmentCard({
       opacity={isDragging ? 0.5 : 1}
     >
       <Flex
-        bg="white"
+        bg="avocet-bg"
+        color="avocet-text"
         width="20px"
         height="20px"
         padding="2.5px"
@@ -85,7 +86,8 @@ function SortableTreatmentCard({
       <IconButton
         aria-label={`Delete treatment: ${name}`}
         bg="transparent"
-        color="red"
+        color="avocet-error-fg"
+        _hover={{ bg: 'avocet-error-bg', color: 'avocet-error-fg' }}
         marginLeft="auto"
         onClick={() => deleteItem(index)}
       >

@@ -50,9 +50,11 @@ export default function FeatureFlagTableRow({
     type === 'string' ? `"${initial}"` : String(initial);
 
   return (
-    <Table.Row key={flag.id}>
-      <Table.Cell color="black" textDecor="none">
-        <Link href={`/features/${flag.id}`}>{flag.name}</Link>
+    <Table.Row key={flag.id} bg="avocet-section">
+      <Table.Cell textDecor="none">
+        <Link href={`/features/${flag.id}`}>
+          <Text _hover={{ textDecor: 'underline' }}>{flag.name}</Text>
+        </Link>
       </Table.Cell>
       <Table.Cell>
         <Tooltip showArrow openDelay={50} content={flag.value.type}>

@@ -22,7 +22,7 @@ export default function SDKConnectionTableRow({
   }
 
   return (
-    <Table.Row>
+    <Table.Row bg="avocet-section">
       <Table.Cell color="black" textDecor="none">
         <SDKConnectionManagementModal sdkConnection={sdkConnection} />
       </Table.Cell>

@@ -27,13 +27,7 @@ const ExperimentTabContent = ({
   tabName,
   children,
 }: React.PropsWithChildren<{ tabName: TabName }>) => (
-  <Tabs.Content
-    border="1px solid"
-    borderColor="gray.200"
-    value={tabName}
-    background="whitesmoke"
-    padding="15px"
-  >
+  <Tabs.Content value={tabName} background="transparent">
     {children}
   </Tabs.Content>
 );
@@ -66,16 +60,15 @@ export default function ExperimentManagementPage() {
           <Tabs.Root
             value={selectedTab}
             margin="15px 0 0 0"
-            variant="outline"
+            variant="enclosed"
             onValueChange={(e) =>
               isValidTab(e.value) && setSelectedTab(e.value)
             }
           >
-            <Tabs.List>
+            <Tabs.List bg="transparent" border="none">
               {tabNames.map((tabName) => (
                 <Tabs.Trigger
-                  border="1px solid"
-                  borderColor="gray.200"
+                  _selected={{ bg: 'avocet-section' }}
                   value={tabName}
                   key={tabName}
                 >

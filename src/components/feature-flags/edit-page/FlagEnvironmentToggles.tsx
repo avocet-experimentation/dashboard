@@ -18,7 +18,7 @@ export function FlagEnvironmentToggles({
       <Heading size="xl" marginBottom="15px">
         Enabled Environments
       </Heading>
-      <Stack padding="15px" bg="white" borderRadius="5px">
+      <Stack padding="15px" bg="avocet-section" borderRadius="5px">
         <Flex>
           <Text>
             <Highlight

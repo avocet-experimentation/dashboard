@@ -35,7 +35,7 @@ export default function AddGroupTreatment({
       placeholder={
         availableTreatments && availableTreatments.length
           ? 'Add a treatment...'
-          : 'No other treatments'
+          : 'You have selected all available treatments.'
       }
       options={options}
       disabled={!availableTreatments || availableTreatments.length === 0}

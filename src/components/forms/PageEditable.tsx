@@ -41,13 +41,13 @@ export default function PageEditable({
       onValueCommit={async (e) => await submitHandler(e)}
       submitMode="enter"
     >
-      <Stack padding="15px" bg="white" borderRadius="5px" width="full">
+      <Stack padding="15px" bg="avocet-section" borderRadius="5px" width="full">
         <HStack gap={2.5}>
           {label && <Heading size="lg">{label}</Heading>}
           <Editable.Control>
             <Editable.EditTrigger asChild>
               <IconButton variant="ghost" size="xs">
-                <FilePenLine color="black" />
+                <FilePenLine />
               </IconButton>
             </Editable.EditTrigger>
             <Editable.CancelTrigger asChild>
@@ -62,7 +62,12 @@ export default function PageEditable({
             </Editable.SubmitTrigger>
           </Editable.Control>
         </HStack>
-        <Editable.Preview minH="48px" alignItems="flex-start" width="full" />
+        <Editable.Preview
+          minH="48px"
+          alignItems="flex-start"
+          width="full"
+          _hover={{ bg: 'avocet-hover' }}
+        />
         <Editable.Textarea />
       </Stack>
     </Editable.Root>

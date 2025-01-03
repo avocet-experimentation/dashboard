@@ -31,18 +31,24 @@ export default function ExperimentControlMenu({
   return (
     <MenuRoot>
       <MenuTrigger asChild>
-        <IconButton size="md">
-          <EllipsisVertical color="black" />
+        <IconButton
+          _open={{ bg: 'avocet-hover' }}
+          _hover={{ bg: 'avocet-hover' }}
+          bg="avocet-section"
+          color="avocet-text"
+          size="md"
+        >
+          <EllipsisVertical />
         </IconButton>
       </MenuTrigger>
-      <MenuContent>
+      <MenuContent bg="avocet-section">
         <MenuItem
           disabled={disabled}
           value="delete"
           valueText="Delete"
           cursor="pointer"
-          color="fg.error"
-          _hover={{ bg: 'bg.error', color: 'fg.error' }}
+          color="avocet-error-fg"
+          _hover={{ bg: 'avocet-error-bg', color: 'avocet-error-fg' }}
           onClick={() => {
             if (disabled) {
               toastError('Cannot delete experiment while active or paused.');

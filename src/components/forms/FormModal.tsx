@@ -56,7 +56,12 @@ export default function FormModal({
       size="lg"
     >
       <DialogTrigger asChild color="avocet-text">
-        <IconButton variant="outline" size="md" padding="15px">
+        <IconButton
+          variant="outline"
+          size="md"
+          padding="15px"
+          _hover={{ bg: 'avocet-hover' }}
+        >
           {triggerButtonIcon}
           {triggerButtonText}
         </IconButton>

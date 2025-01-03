@@ -1,5 +1,5 @@
 import { Environment, SDKConnection } from '@avocet/core';
-import { Table, Text } from '@chakra-ui/react';
+import { Box, Table, Text } from '@chakra-ui/react';
 import SDKConnectionTableRow from './SDKConnectionTableRow';
 import { ALL_SDK_CONNECTIONS } from '#/lib/sdk-connection-queries';
 import Loader from '#/components/helpers/Loader';
@@ -35,11 +35,11 @@ export default function SDKConnectionTable() {
     return <ErrorBox error={environmentsQuery.error} />;
 
   return (
-    <div>
+    <Box borderRadius="5px" overflow="hidden">
       {sdkConnections.length && (
         <Table.Root className="table">
           <Table.Header>
-            <Table.Row>
+            <Table.Row bg="avocet-section">
               <Table.ColumnHeader>Name</Table.ColumnHeader>
               <Table.ColumnHeader>Environment</Table.ColumnHeader>
               <Table.ColumnHeader>Allowed origins</Table.ColumnHeader>
@@ -59,6 +59,6 @@ export default function SDKConnectionTable() {
           </Table.Body>
         </Table.Root>
       )}
-    </div>
+    </Box>
   );
 }

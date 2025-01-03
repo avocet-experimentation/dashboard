@@ -1,5 +1,5 @@
 // components
-import { Table } from '@chakra-ui/react';
+import { Box, Table, Text } from '@chakra-ui/react';
 import { Status } from '../../ui/status';
 
 // library
@@ -31,37 +31,47 @@ export default function ExperimentTable() {
     );
 
   return (
-    <Table.Root className="table">
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeader>Experiment Name</Table.ColumnHeader>
-          <Table.ColumnHeader>Environment</Table.ColumnHeader>
-          <Table.ColumnHeader>Status</Table.ColumnHeader>
-          <Table.ColumnHeader>Date Created</Table.ColumnHeader>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {data.map((exp) => (
-          <Table.Row key={exp.id}>
-            <Table.Cell>
-              <Link href={`/experiments/${exp.id}`}>{exp.name}</Link>
-            </Table.Cell>
-            <Table.Cell>{exp.environmentName}</Table.Cell>
-            <Table.Cell>
-              <Tooltip
-                showArrow
-                openDelay={50}
-                content={EXP_STATUS_LEGEND[exp.status].description}
-              >
-                <Status colorPalette={EXP_STATUS_LEGEND[exp.status].color}>
-                  {exp.status}
-                </Status>
-              </Tooltip>
-            </Table.Cell>
-            <Table.Cell>{formatDate(exp.createdAt)}</Table.Cell>
+    <Box borderRadius="5px" overflow="hidden">
+      <Table.Root className="table">
+        <Table.Header>
+          <Table.Row bg="avocet-section">
+            <Table.ColumnHeader>Experiment Name</Table.ColumnHeader>
+            <Table.ColumnHeader>Environment</Table.ColumnHeader>
+            <Table.ColumnHeader>Status</Table.ColumnHeader>
+            <Table.ColumnHeader>Date Created</Table.ColumnHeader>
           </Table.Row>
-        ))}
-      </Table.Body>
-    </Table.Root>
+        </Table.Header>
+        <Table.Body>
+          {data.map((exp) => (
+            <Table.Row key={exp.id} bg="avocet-section">
+              <Table.Cell textDecor="none">
+                <Link href={`/experiments/${exp.id}`}>
+                  <Text
+                    _hover={{
+                      textDecor: 'underline',
+                    }}
+                  >
+                    {exp.name}
+                  </Text>
+                </Link>
+              </Table.Cell>
+              <Table.Cell>{exp.environmentName}</Table.Cell>
+              <Table.Cell>
+                <Tooltip
+                  showArrow
+                  openDelay={50}
+                  content={EXP_STATUS_LEGEND[exp.status].description}
+                >
+                  <Status colorPalette={EXP_STATUS_LEGEND[exp.status].color}>
+                    {exp.status}
+                  </Status>
+                </Tooltip>
+              </Table.Cell>
+              <Table.Cell>{formatDate(exp.createdAt)}</Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
+    </Box>
   );
 }

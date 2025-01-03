@@ -31,7 +31,7 @@ export default function LinkedFlagsSection() {
   );
 
   return (
-    <Stack padding="15px" bg="white" borderRadius="5px" width="100%">
+    <Stack padding="15px" bg="avocet-section" borderRadius="5px" width="100%">
       <Flex justifyContent="space-between">
         <Heading size="lg">
           Linked Feature Flags ({experiment.flagIds.length})
@@ -75,13 +75,17 @@ function FlagSelect({ experiment, availableFlags }: FlagSelectProps) {
 
   if (!availableFlags || availableFlags.length === 0) {
     return (
-      <PageSelect placeholder="no flags to add" disabled options={options} />
+      <PageSelect
+        placeholder="You have selected all available flags."
+        disabled
+        options={options}
+      />
     );
   }
 
   return (
     <PageSelect
-      placeholder="add a flag..."
+      placeholder="Add a flag..."
       options={options}
       disabled={!availableFlags || availableFlags.length === 0}
       handleValueChange={(selectedFlagIds) => {

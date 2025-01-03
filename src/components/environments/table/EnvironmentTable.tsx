@@ -1,5 +1,5 @@
 import { Environment } from '@avocet/core';
-import { Table, Text } from '@chakra-ui/react';
+import { Box, Table, Text } from '@chakra-ui/react';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
 import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
@@ -25,10 +25,10 @@ export default function EnvironmentTable() {
   if (isError) return <ErrorBox error={error} />;
 
   return (
-    <div>
-      <Table.Root className="table">
+    <Box borderRadius="5px" overflow="hidden">
+      <Table.Root>
         <Table.Header>
-          <Table.Row>
+          <Table.Row bg="avocet-section">
             <Table.ColumnHeader>Name</Table.ColumnHeader>
             <Table.ColumnHeader>Enabled by Default</Table.ColumnHeader>
             <Table.ColumnHeader>Last Updated</Table.ColumnHeader>
@@ -40,14 +40,14 @@ export default function EnvironmentTable() {
           ))}
         </Table.Body>
       </Table.Root>
-    </div>
+    </Box>
   );
 }
 function EnvironmentTableRow({ environment }: { environment: Environment }) {
   const { mutate, isPending } = useUpdateEnvironment(environment.id);
 
   return (
-    <Table.Row>
+    <Table.Row bg="avocet-section">
       <Table.Cell color="black" textDecor="none">
         <EnvironmentManagementModal environment={environment} />
       </Table.Cell>

@@ -15,12 +15,6 @@ const config: SystemConfig = defineConfig({
             _dark: '#0c142e',
           },
         },
-        'avocet-hover': {
-          value: {
-            base: '#e4e4e7',
-            _dark: '#27272a',
-          },
-        },
         'avocet-text': {
           value: {
             base: '#013856',
@@ -36,6 +30,42 @@ const config: SystemConfig = defineConfig({
         'avocet-table': {
           value: {
             _dark: '#013856',
+          },
+        },
+        'avocet-section': {
+          value: {
+            base: 'white',
+            _dark: '#012a40',
+          },
+        },
+        'avocet-tag': {
+          value: {
+            base: 'gray',
+            _dark: 'blue',
+          },
+        },
+        'avocet-error-fg': {
+          value: {
+            base: '#ef4444',
+            _dark: '#FFFFFF',
+          },
+        },
+        'avocet-error-bg': {
+          value: {
+            base: '#fee2e2',
+            _dark: '#9B1C2E',
+          },
+        },
+        'avocet-dragging': {
+          value: {
+            base: '#e4e4e7',
+            _dark: '#012a40',
+          },
+        },
+        'avocet-hover': {
+          value: {
+            base: '#e4e4e7',
+            _dark: '#1A4F73',
           },
         },
       },

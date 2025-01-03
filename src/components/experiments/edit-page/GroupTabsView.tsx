@@ -54,7 +54,13 @@ export default function GroupTabsView({
     >
       <Tabs.List>
         {experiment.groups.map((group: ExperimentGroup, idx: number) => (
-          <Tabs.Trigger value={group.id} key={`${group.id}-tab`}>
+          <Tabs.Trigger
+            _selected={{ bg: 'avocet-bg' }}
+            border="1px solid"
+            borderBottom="none"
+            value={group.id}
+            key={`${group.id}-tab`}
+          >
             <Icon color={COLORS[idx]} marginRight="2.5px">
               <Square />
             </Icon>
@@ -65,7 +71,13 @@ export default function GroupTabsView({
       <Tabs.ContentGroup>
         {experiment.groups.map((group: ExperimentGroup, idx: number) => {
           return (
-            <Tabs.Content value={group.id} key={`${group.id}-body`}>
+            <Tabs.Content
+              bg="avocet-bg"
+              borderRadius="0px 5px 5px 5px"
+              value={group.id}
+              key={`${group.id}-body`}
+              padding="15px"
+            >
               <Stack>
                 <Flex dir="row" justifyContent="space-between">
                   <EditableGenerals

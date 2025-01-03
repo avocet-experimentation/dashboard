@@ -48,8 +48,13 @@ export default function EnvironmentTabs({ featureFlag }: EnvironmentTabsProps) {
             );
             return (
               <Tabs.Trigger
+                _selected={{
+                  bg: 'avocet-bg',
+                  borderBottom: 'none',
+                  _hover: { bg: 'transparent' },
+                }}
+                _hover={{ bg: 'avocet-hover' }}
                 border="1px solid"
-                borderColor="gray.200"
                 defaultValue={`${envNames[0]}-tab`}
                 value={`${envName}-tab`}
                 key={`${envName}-tab`}
@@ -67,10 +72,11 @@ export default function EnvironmentTabs({ featureFlag }: EnvironmentTabsProps) {
             return (
               <Tabs.Content
                 border="1px solid"
-                borderColor="gray.200"
+                borderTop="none"
+                borderTopRightRadius="5px"
                 value={`${envName}-tab`}
                 key={`${envName}-tab-content`}
-                background="whitesmoke"
+                bg="avocet-bg"
                 padding="15px"
               >
                 <Stack gap={4}>
@@ -99,9 +105,8 @@ export default function EnvironmentTabs({ featureFlag }: EnvironmentTabsProps) {
           <Flex
             direction="row"
             justifyContent="space-between"
-            border="1px solid grey"
+            border="1px solid"
             borderBottomRadius="5px"
-            borderTopColor="gray.300"
             alignItems="center"
             padding="15px"
           >

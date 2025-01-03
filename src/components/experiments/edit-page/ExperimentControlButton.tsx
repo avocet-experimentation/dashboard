@@ -9,7 +9,7 @@ import {
 import { gqlRequest } from '#/lib/graphql-queries';
 import { Experiment, ExperimentDraft } from '@avocet/core';
 import { useMutation } from '@tanstack/react-query';
-import { OctagonX, Power } from 'lucide-react';
+import { OctagonX, CircleCheckBig, Power } from 'lucide-react';
 import { useMemo } from 'react';
 
 export function StartExperimentButton({

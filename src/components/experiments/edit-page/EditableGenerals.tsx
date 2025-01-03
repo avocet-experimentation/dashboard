@@ -22,7 +22,7 @@ export function EditableGenerals({
         fontSize="inherit"
         onValueCommit={onValueCommit}
       >
-        <Editable.Preview />
+        <Editable.Preview _hover={{ bg: 'avocet-hover' }} />
         <Editable.Input type={inputType} />
       </Editable.Root>
     </HStack>

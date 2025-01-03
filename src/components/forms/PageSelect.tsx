@@ -61,9 +61,14 @@ export default function PageSelect<O extends { label: string; value: string }>({
         <SelectTrigger>
           <SelectValueText placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent zIndex="popover">
+        <SelectContent bg="avocet-section" zIndex="popover">
           {optionCollection.items.map((option) => (
-            <SelectItem item={option} key={option.value} cursor="pointer">
+            <SelectItem
+              item={option}
+              key={option.value}
+              cursor="pointer"
+              _hover={{ bg: 'avocet-hover' }}
+            >
               {option.label}
             </SelectItem>
           ))}

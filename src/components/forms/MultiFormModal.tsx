@@ -60,13 +60,23 @@ export default function MultiFormModal({
       motionPreset="slide-in-bottom"
       size="xl"
     >
-      <DialogTrigger asChild bg="avocet-bg" color="avocet-text">
-        <IconButton variant="outline" size="md" padding="15px">
+      <DialogTrigger asChild color="avocet-text">
+        <IconButton
+          variant="outline"
+          size="md"
+          padding="15px"
+          _hover={{ bg: 'avocet-hover' }}
+        >
           {triggerButtonIcon}
           {triggerButtonText}
         </IconButton>
       </DialogTrigger>
-      <DialogContent bg="avocet-bg" color="avocet-text" maxHeight="95vh" maxWidth="90vw">
+      <DialogContent
+        bg="avocet-bg"
+        color="avocet-text"
+        maxHeight="95vh"
+        maxWidth="90vw"
+      >
         <StepsRoot
           size="sm"
           variant="solid"
