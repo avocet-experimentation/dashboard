@@ -4,14 +4,10 @@ import { Experiment, ExperimentGroup } from '@avocet/core';
 import { Box, Flex, HStack, IconButton, Text, VStack } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
 import { Trash2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-
-interface Treatment {
-  id: string;
-  name: string;
-}
+import { useExperimentContext } from './ExperimentContext';
 
 interface DragTreatment {
   id: string;
@@ -28,7 +24,6 @@ interface SortableTreatmentProp {
 
 const ItemType = 'LIST_ITEM';
 
-// Draggable List Item Component
 function SortableTreatmentCard({
   id,
   name,
@@ -97,63 +92,55 @@ function SortableTreatmentCard({
   );
 }
 
-// Main Sortable List Component
 export default function SortableTreatmentList({
-  experiment,
   group,
-  idx,
 }: {
-  experiment: Experiment;
   group: ExperimentGroup;
-  idx: number;
 }) {
-  const { mutate } = useMutation({
-    mutationFn: async (groups: ExperimentGroup[]) => {
-      getRequestFunc(UPDATE_EXPERIMENT, {
-        partialEntry: {
-          groups: groups,
-          id: experiment.id,
-        },
-      })();
-    },
-    mutationKey: ['experiment', experiment.id],
-    onSuccess: () => {
-      toastSuccess(`${group.name}'s treatments reordered successfully.`);
-    },
-    onError: () => {
-      toastError('Could not update the experiment at this time.');
-    },
-  });
+  // const { mutate } = useMutation({
+  //   mutationFn: async (groups: ExperimentGroup[]) => {
+  //     getRequestFunc(UPDATE_EXPERIMENT, {
+  //       partialEntry: {
+  //         groups: groups,
+  //         id: experiment.id,
+  //       },
+  //     })();
+  //   },
+  //   mutationKey: ['experiment', experiment.id],
+  //   onSuccess: () => {
+  //     toastSuccess(`${group.name}'s treatments reordered successfully.`);
+  //   },
+  //   onError: () => {
+  //     toastError('Could not update the experiment at this time.');
+  //   },
+  // });
 
-  const [treatmentSequence, setTreatmentSequence] = useState(
-    group.sequence.map((treatmentId) => ({
-      id: treatmentId,
-      name: experiment.definedTreatments[treatmentId].name,
-    })),
-  );
+  const { useExperiment, useUpdateExperiment } = useExperimentContext();
+  const { data: experiment } = useExperiment();
+  const { mutate } = useUpdateExperiment();
+
+  const treatmentSequence = group.sequence.map((treatmentId) => ({
+    id: treatmentId,
+    name: experiment?.definedTreatments[treatmentId].name,
+  }));
 
   const moveItem = (fromIndex: number, toIndex: number) => {
-    const updatedSequence = [...treatmentSequence];
+    const updatedSequence = [...group.sequence];
     const [movedSequence] = updatedSequence.splice(fromIndex, 1);
     updatedSequence.splice(toIndex, 0, movedSequence);
-    setTreatmentSequence(updatedSequence);
+    group.sequence = updatedSequence;
+    mutate({ groups: experiment?.groups });
   };
 
   const deleteItem = (itemIndex: number) => {
-    setTreatmentSequence((prevSequence) => [
-      ...prevSequence.slice(0, itemIndex),
-      ...prevSequence.slice(itemIndex + 1),
-    ]);
+    const currentSequence = group.sequence;
+    const mutatedSequence = [
+      ...currentSequence.slice(0, itemIndex),
+      ...currentSequence.slice(itemIndex + 1),
+    ];
+    group.sequence = mutatedSequence;
+    mutate({ groups: experiment?.groups });
   };
-
-  useEffect(() => {
-    const currentSequence = experiment.groups[idx].sequence;
-    const mutatedSequence = treatmentSequence.map(({ id }) => id);
-    if (currentSequence != mutatedSequence) {
-      experiment.groups[idx].sequence = mutatedSequence;
-      mutate(experiment.groups);
-    }
-  }, [treatmentSequence]);
 
   return (
     <DndProvider backend={HTML5Backend}>

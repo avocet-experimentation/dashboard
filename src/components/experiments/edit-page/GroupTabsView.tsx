@@ -1,52 +1,66 @@
 import { COLORS } from '#/lib/constants';
-import { Experiment, ExperimentGroup } from '@avocet/core';
-import {
-  Flex,
-  Grid,
-  GridItem,
-  HStack,
-  Icon,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
+import { ExperimentGroup } from '@avocet/core';
+import { Flex, Grid, GridItem, Icon, Stack, Text } from '@chakra-ui/react';
 import { Tabs } from '@chakra-ui/react/tabs';
 import { useMutation } from '@tanstack/react-query';
-import { Square } from 'lucide-react';
+import { Square, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { EditableGenerals } from './EditableGenerals';
 import SortableTreatmentList from './SortableTreatmentList';
 import { getRequestFunc, UPDATE_EXPERIMENT } from '#/lib/graphql-queries';
 import { toastError, toastSuccess } from '#/components/ui/toaster';
 import AddGroupTreatment from './AddGroupTreatment';
+import { Button } from '#/components/ui/button';
+import { useExperimentContext } from './ExperimentContext';
+import InfoWarning from './InfoWarning';
 
-export default function GroupTabsView({
-  experiment,
-}: {
-  experiment: Experiment;
-}) {
+export default function GroupTabsView() {
+  const { useExperiment, useUpdateExperiment } = useExperimentContext();
+  const { data: experiment } = useExperiment();
+  const { mutate } = useUpdateExperiment();
+
+  // const { mutate } = useMutation({
+  //   mutationFn: async (groups: ExperimentGroup[]) =>
+  //     getRequestFunc(UPDATE_EXPERIMENT, {
+  //       partialEntry: {
+  //         groups: groups,
+  //         id: experiment.id,
+  //       },
+  //     })(),
+  //   mutationKey: ['experiment', experiment.id],
+  //   onSuccess: () => {
+  //     toastSuccess('Experiment updated successfully.');
+  //   },
+  //   onError: () => {
+  //     toastError('Could not update the experiment at this time.');
+  //   },
+  // });
+
+  const handleDeleteGroup = (groupId: string) => {
+    const mutatedGroups = experiment.groups.filter(
+      (group) => group.id !== groupId,
+    );
+    mutate({ groups: mutatedGroups });
+  };
+
+  // const handleGeneralUpdate = () => {
+  //   mutate({ groups: experiment.groups })
+  //     .onSuccess(() => toastSuccess('Experiment updated successfully.'))
+  //     .onError(() =>
+  //       toastError('Could not update the experiment at this time.'),
+  //     );
+  // };
+
+  if (experiment?.groups.length === 0)
+    return <InfoWarning message="No groups exist in this experiment." />;
+
   const [selectedTab, setSelectedTab] = useState<string>(
     experiment.groups[0].id,
   );
 
-  const { mutate } = useMutation({
-    mutationFn: async (groups: ExperimentGroup[]) =>
-      getRequestFunc(UPDATE_EXPERIMENT, {
-        partialEntry: {
-          groups: groups,
-          id: experiment.id,
-        },
-      })(),
-    mutationKey: ['experiment', experiment.id],
-    onSuccess: () => {
-      toastSuccess('Experiment updated successfully.');
-    },
-    onError: () => {
-      toastError('Could not update the experiment at this time.');
-    },
-  });
-
   return (
     <Tabs.Root
+      lazyMount
       value={selectedTab}
       variant="outline"
       size="md"
@@ -78,7 +92,7 @@ export default function GroupTabsView({
               key={`${group.id}-body`}
               padding="15px"
             >
-              <Stack>
+              <Stack gap={4}>
                 <Flex dir="row" justifyContent="space-between">
                   <EditableGenerals
                     fieldName="Name"
@@ -87,7 +101,7 @@ export default function GroupTabsView({
                     inputType="text"
                     onValueCommit={(e) => {
                       experiment.groups[idx].name = e.value;
-                      mutate(experiment.groups);
+                      mutate({ groups: experiment.groups });
                     }}
                   />
                   <EditableGenerals
@@ -97,7 +111,7 @@ export default function GroupTabsView({
                     inputType="number"
                     onValueCommit={(e) => {
                       experiment.groups[idx].proportion = Number(e.value);
-                      mutate(experiment.groups);
+                      mutate({ groups: experiment.groups });
                     }}
                   />
                   <EditableGenerals
@@ -107,33 +121,40 @@ export default function GroupTabsView({
                     inputType="number"
                     onValueCommit={(e) => {
                       experiment.groups[idx].cycles = Number(e.value);
-                      mutate(experiment.groups);
+                      mutate({ groups: experiment.groups });
                     }}
                   />
                 </Flex>
                 <Grid templateColumns="1fr 4fr" alignItems="center">
                   <GridItem>
-                    <Text>
-                      Treatments (
-                      {Object.keys(experiment.definedTreatments).length})
-                    </Text>
+                    <Text>Treatments:</Text>
                   </GridItem>
                   <GridItem>
-                    <AddGroupTreatment
-                      experiment={experiment}
-                      group={group}
-                      idx={idx}
-                      mutate={mutate}
-                    />
+                    <AddGroupTreatment group={group} idx={idx} />
                   </GridItem>
                 </Grid>
                 <Stack>
-                  <SortableTreatmentList
-                    experiment={experiment}
-                    group={group}
-                    idx={idx}
-                  />
+                  {!group.sequence.length ? (
+                    <InfoWarning message="No treatments have been selected for this group." />
+                  ) : (
+                    <SortableTreatmentList group={group} idx={idx} />
+                  )}
                 </Stack>
+                {experiment?.groups.length > 1 && (
+                  <Button
+                    marginLeft="auto"
+                    width="fit-content"
+                    onClick={() => {
+                      handleDeleteGroup(group.id);
+                      console.log(idx);
+                      if (idx === 0) setSelectedTab(experiment.groups[1].id);
+                      setSelectedTab(experiment.groups[idx - 1].id);
+                    }}
+                  >
+                    <Trash2 />
+                    Delete Group
+                  </Button>
+                )}
               </Stack>
             </Tabs.Content>
           );
