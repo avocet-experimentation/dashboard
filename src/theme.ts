@@ -74,7 +74,18 @@ const config: SystemConfig = defineConfig({
             _dark: '#012a40',
           },
         },
-        'avocet-button-color': {},
+        'avocet-plain-button-hover-color': {
+          value: {
+            base: 'blue',
+            _dark: '#2e90d1',
+          },
+        },
+        'avocet-plain-button-hover-bg': {
+          value: {
+            base: 'whitesmoke',
+            _dark: '#001c2b',
+          },
+        },
       },
     },
   },
