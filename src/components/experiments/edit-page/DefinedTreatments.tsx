@@ -3,7 +3,13 @@ import { toastError, toastSuccess } from '#/components/ui/toaster';
 import { UPDATE_EXPERIMENT } from '#/lib/experiment-queries';
 import { ALL_FEATURE_FLAGS } from '#/lib/flag-queries';
 import { getRequestFunc } from '#/lib/graphql-queries';
-import { Experiment, FeatureFlag, Treatment } from '@avocet/core';
+import {
+  Experiment,
+  ExperimentDraft,
+  FeatureFlag,
+  FlagState,
+  Treatment,
+} from '@avocet/core';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   Box,
@@ -15,38 +21,42 @@ import {
   Icon,
   Stack,
   Table,
+  Text,
 } from '@chakra-ui/react';
 import { EditableGenerals } from './EditableGenerals';
 import { Tooltip } from '#/components/ui/tooltip';
-import { CircleHelp } from 'lucide-react';
+import { CircleAlert, CircleHelp, CirclePlus, Trash2 } from 'lucide-react';
+import { useExperimentContext } from './ExperimentContext';
+import { Button } from '#/components/ui/button';
+import InfoWarning from './InfoWarning';
 
-export default function DefinedTreatments({
-  experiment,
-}: {
-  experiment: Experiment;
-}) {
+export default function DefinedTreatments() {
   const flagsQuery = useQuery({
     queryKey: ['allFeatureFlags'],
     queryFn: async () => getRequestFunc(ALL_FEATURE_FLAGS, {})(),
     placeholderData: [] as FeatureFlag[],
   });
 
-  const { mutate } = useMutation({
-    mutationFn: async (definedTreatment: Record<string, Treatment>) =>
-      getRequestFunc(UPDATE_EXPERIMENT, {
-        partialEntry: {
-          definedTreatments: definedTreatment,
-          id: experiment.id,
-        },
-      })(),
-    mutationKey: ['experiment', experiment.id],
-    onSuccess: () => {
-      toastSuccess('Experiment updated successfully.');
-    },
-    onError: () => {
-      toastError('Could not update the experiment at this time.');
-    },
-  });
+  const { useExperiment, useUpdateExperiment } = useExperimentContext();
+  const { data: experiment } = useExperiment();
+  const { mutate } = useUpdateExperiment();
+
+  // const { mutate } = useMutation({
+  //   mutationFn: async (definedTreatment: Record<string, Treatment>) =>
+  //     getRequestFunc(UPDATE_EXPERIMENT, {
+  //       partialEntry: {
+  //         definedTreatments: definedTreatment,
+  //         id: experiment.id,
+  //       },
+  //     })(),
+  //   mutationKey: ['experiment', experiment.id],
+  //   onSuccess: () => {
+  //     toastSuccess('Experiment updated successfully.');
+  //   },
+  //   onError: () => {
+  //     toastError('Could not update the experiment at this time.');
+  //   },
+  // });
 
   const getFlagDetails = (id: string) => {
     const flag = flagsQuery.data?.find((flag) => flag.id === id);
@@ -64,8 +74,44 @@ export default function DefinedTreatments({
     }
   };
 
+  const handleAddTreatment = () => {
+    const treatmentIds: string[] = Object.keys(experiment?.definedTreatments);
+    const newTreatmentName = `Treatment ${treatmentIds.length + 1}`;
+    let potentialFlags: FeatureFlag[] = [];
+    if (treatmentIds.length) {
+      const flagStates: FlagState[] =
+        experiment?.definedTreatments[treatmentIds[0]].flagStates;
+      if (flagStates.length) {
+        const flagIds = flagStates.reduce(
+          (accumulator: string[], flag: FeatureFlag) => {
+            accumulator.push(flag.id);
+            return accumulator;
+          },
+          [],
+        );
+        potentialFlags = flagsQuery.data?.filter((flag) =>
+          flagIds.includes(flag.id),
+        );
+      }
+    }
+    ExperimentDraft.addTreatment(experiment, potentialFlags, newTreatmentName);
+    mutate({ definedTreatments: experiment?.definedTreatments });
+  };
+
+  const handleDeleteTreatment = (treatmentId: string) => {
+    experiment?.groups.forEach(
+      (group) =>
+        (group.sequence = group.sequence.filter((id) => id !== treatmentId)),
+    );
+    delete experiment?.definedTreatments[treatmentId];
+    mutate({
+      definedTreatments: experiment?.definedTreatments,
+      groups: experiment?.groups,
+    });
+  };
+
   return (
-    <Stack padding="15px" bg="avocet-section" borderRadius="5px">
+    <Stack padding="15px" bg="avocet-section" borderRadius="5px" gap={4}>
       <Heading size="lg">
         <HStack gap={2.5}>
           Defined Treatments ({Object.keys(experiment.definedTreatments).length}
@@ -83,90 +129,135 @@ export default function DefinedTreatments({
           </Tooltip>
         </HStack>
       </Heading>
-      <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-        {Object.entries(experiment.definedTreatments).map(
-          ([treatmentId, props]) => (
-            <Stack
-              key={treatmentId}
-              padding="15px"
-              border="1px solid"
-              borderRadius="5px"
-            >
-              <Flex dir="row" justifyContent="space-between">
-                <EditableGenerals
-                  fieldName={'Name'}
-                  includeName={true}
-                  defaultValue={props.name}
-                  inputType="text"
-                  onValueCommit={(e) => {
-                    experiment.definedTreatments[treatmentId].name = e.value;
-                    mutate(experiment.definedTreatments);
-                  }}
-                />
-                <EditableGenerals
-                  fieldName={'Duration'}
-                  includeName={true}
-                  defaultValue={String(props.duration)}
-                  inputType="number"
-                  onValueCommit={(e) => {
-                    experiment.definedTreatments[treatmentId].duration = Number(
-                      e.value,
-                    );
-                    mutate(experiment.definedTreatments);
-                  }}
-                />
-              </Flex>
-              <Box borderRadius="5px" overflow="hidden">
-                <Table.Root stickyHeader interactive bg="transparent">
-                  <Table.Header>
-                    <Table.Row bg="avocet-bg">
-                      <Table.ColumnHeader>FEATURE</Table.ColumnHeader>
-                      <Table.ColumnHeader>VALUE</Table.ColumnHeader>
-                    </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
-                    {props.flagStates.map(({ value, id }, featureIdx) => {
-                      const { name, type } = getFlagDetails(id);
-                      return (
-                        <Table.Row key={id} bg="avocet-bg">
-                          <Table.Cell>{name}</Table.Cell>
-                          <Table.Cell>
-                            {type === 'boolean' ? (
-                              <Switch
-                                checked={Boolean(value)}
-                                onCheckedChange={({ checked }) => {
-                                  props.flagStates[featureIdx].value =
-                                    !!checked;
-                                  mutate(experiment.definedTreatments);
-                                }}
-                              ></Switch>
-                            ) : (
-                              <Editable.Root
-                                activationMode="dblclick"
-                                defaultValue={defaultFlagValue(type, value)}
-                                fontSize="inherit"
-                                onValueCommit={(e) => {
-                                  props.flagStates[featureIdx].value = e.value;
-                                  mutate(experiment.definedTreatments);
-                                }}
-                              >
-                                <Editable.Preview
-                                  _hover={{ bg: 'avocet-hover' }}
-                                />
-                                <Editable.Input />
-                              </Editable.Root>
-                            )}
-                          </Table.Cell>
-                        </Table.Row>
-                      );
-                    })}
-                  </Table.Body>
-                </Table.Root>
-              </Box>
-            </Stack>
-          ),
-        )}
-      </Grid>
+      {Object.keys(experiment?.definedTreatments).length === 0 ? (
+        <InfoWarning message="No treatments have been defined for this experiment." />
+      ) : (
+        <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+          {Object.entries(experiment.definedTreatments).map(
+            ([treatmentId, props]) => (
+              <Stack
+                key={treatmentId}
+                padding="15px"
+                border="1px solid"
+                borderRadius="5px"
+              >
+                <Flex dir="row" justifyContent="space-between">
+                  <EditableGenerals
+                    fieldName={'Name'}
+                    includeName={true}
+                    defaultValue={props.name}
+                    inputType="text"
+                    onValueCommit={(e) => {
+                      experiment.definedTreatments[treatmentId].name = e.value;
+                      mutate({
+                        definedTreatments: experiment.definedTreatments,
+                      });
+                    }}
+                  />
+                  <EditableGenerals
+                    fieldName={'Duration'}
+                    includeName={true}
+                    defaultValue={String(props.duration)}
+                    inputType="number"
+                    onValueCommit={(e) => {
+                      experiment.definedTreatments[treatmentId].duration =
+                        Number(e.value);
+                      mutate({
+                        definedTreatments: experiment.definedTreatments,
+                      });
+                    }}
+                  />
+                </Flex>
+                {!props.flagStates.length ? (
+                  <InfoWarning message="No feature flags have been linked to this experiment." />
+                ) : (
+                  <>
+                    <Box borderRadius="5px" overflow="hidden">
+                      <Table.Root stickyHeader interactive bg="transparent">
+                        <Table.Header>
+                          <Table.Row bg="avocet-bg">
+                            <Table.ColumnHeader>FEATURE</Table.ColumnHeader>
+                            <Table.ColumnHeader>VALUE</Table.ColumnHeader>
+                          </Table.Row>
+                        </Table.Header>
+                        <Table.Body>
+                          {props.flagStates.map(({ value, id }, featureIdx) => {
+                            const { name, type } = getFlagDetails(id);
+                            return (
+                              <Table.Row key={id} bg="avocet-bg">
+                                <Table.Cell>{name}</Table.Cell>
+                                <Table.Cell>
+                                  {type === 'boolean' ? (
+                                    <Switch
+                                      checked={Boolean(value)}
+                                      onCheckedChange={({ checked }) => {
+                                        props.flagStates[featureIdx].value =
+                                          !!checked;
+                                        mutate({
+                                          definedTreatments:
+                                            experiment.definedTreatments,
+                                        });
+                                      }}
+                                    ></Switch>
+                                  ) : (
+                                    <Editable.Root
+                                      activationMode="dblclick"
+                                      defaultValue={defaultFlagValue(
+                                        type,
+                                        value,
+                                      )}
+                                      fontSize="inherit"
+                                      onValueCommit={(e) => {
+                                        props.flagStates[featureIdx].value =
+                                          e.value;
+                                        mutate({
+                                          definedTreatments:
+                                            experiment.definedTreatments,
+                                        });
+                                      }}
+                                    >
+                                      <Editable.Preview
+                                        _hover={{ bg: 'avocet-hover' }}
+                                      />
+                                      <Editable.Input />
+                                    </Editable.Root>
+                                  )}
+                                </Table.Cell>
+                              </Table.Row>
+                            );
+                          })}
+                        </Table.Body>
+                      </Table.Root>
+                    </Box>
+                  </>
+                )}
+                {Object.keys(experiment?.definedTreatments).length > 1 && (
+                  <Button
+                    marginLeft="auto"
+                    width="fit-content"
+                    onClick={() => handleDeleteTreatment(treatmentId)}
+                  >
+                    <Trash2 />
+                    Delete Treatment
+                  </Button>
+                )}
+              </Stack>
+            ),
+          )}
+        </Grid>
+      )}
+      <Button
+        width="fit-content"
+        variant="plain"
+        _hover={{
+          color: 'avocet-plain-button-hover-color',
+          bg: 'avocet-plain-button-hover-bg',
+        }}
+        onClick={handleAddTreatment}
+      >
+        <CirclePlus />
+        Add Treatment
+      </Button>
     </Stack>
   );
 }
