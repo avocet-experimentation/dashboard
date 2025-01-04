@@ -4,10 +4,12 @@ import { useMemo } from 'react';
 import ErrorBox from '#/components/helpers/ErrorBox';
 import Loader from '#/components/helpers/Loader';
 import { LinkedFlagInfo } from './LinkedFlagInfo';
-import { Flex, Heading, Stack } from '@chakra-ui/react';
+import { Flex, Heading, HStack, Icon, Stack, Text } from '@chakra-ui/react';
 import PageSelect from '#/components/forms/PageSelect';
 import { useAllFeatureFlags } from '#/hooks/query-hooks';
 import { useExperimentContext } from './ExperimentContext';
+import { CircleAlert } from 'lucide-react';
+import InfoWarning from './InfoWarning';
 
 export default function LinkedFlagsSection() {
   const { isPending, isError, error, data: allFlags } = useAllFeatureFlags();
@@ -31,17 +33,27 @@ export default function LinkedFlagsSection() {
   );
 
   return (
-    <Stack padding="15px" bg="avocet-section" borderRadius="5px" width="100%">
+    <Stack
+      padding="15px"
+      bg="avocet-section"
+      borderRadius="5px"
+      width="100%"
+      gap={4}
+    >
       <Flex justifyContent="space-between">
         <Heading size="lg">
           Linked Feature Flags ({experiment.flagIds.length})
         </Heading>
       </Flex>
-      <AccordionRoot variant="enclosed" multiple>
-        {linkedFlags.map((flag: FeatureFlag) => (
-          <LinkedFlagInfo key={flag.id} flag={flag} />
-        ))}
-      </AccordionRoot>
+      {!linkedFlags.length ? (
+        <InfoWarning message="Link a feature flag to define treatments for this experiment." />
+      ) : (
+        <AccordionRoot variant="enclosed" multiple>
+          {linkedFlags.map((flag: FeatureFlag) => (
+            <LinkedFlagInfo key={flag.id} flag={flag} />
+          ))}
+        </AccordionRoot>
+      )}
       <FlagSelect experiment={experiment} availableFlags={availableFlags} />
     </Stack>
   );
