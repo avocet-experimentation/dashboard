@@ -1,34 +1,27 @@
 import PageSelect from '#/components/forms/PageSelect';
-import { Experiment, ExperimentGroup } from '@avocet/core';
+import { ExperimentGroup } from '@avocet/core';
 import { useMemo } from 'react';
+import { useExperimentContext } from './ExperimentContext';
 
 export default function AddGroupTreatment({
-  experiment,
   group,
   idx,
-  mutate,
 }: {
-  experiment: Experiment;
   group: ExperimentGroup;
   idx: number;
-  mutate: any;
 }) {
-  const treatmentIds = useMemo(() => new Set(group.sequence), [experiment]);
-  const availableTreatments = useMemo(
-    () =>
-      Object.keys(experiment.definedTreatments).filter(
-        (treatment) => !treatmentIds.has(treatment),
-      ),
-    [experiment.definedTreatments],
+  const { useExperiment, useUpdateExperiment } = useExperimentContext();
+  const { data: experiment } = useExperiment();
+  const { mutate } = useUpdateExperiment();
+
+  const treatmentIds = new Set(group.sequence);
+  const availableTreatments = Object.keys(experiment.definedTreatments).filter(
+    (treatment) => !treatmentIds.has(treatment),
   );
-  const options = useMemo(
-    () =>
-      availableTreatments.map((treatmentId) => ({
-        label: experiment.definedTreatments[treatmentId].name,
-        value: treatmentId,
-      })),
-    [availableTreatments],
-  );
+  const options = availableTreatments.map((treatmentId) => ({
+    label: experiment.definedTreatments[treatmentId].name,
+    value: treatmentId,
+  }));
 
   return (
     <PageSelect
@@ -51,7 +44,7 @@ export default function AddGroupTreatment({
 
         experiment.groups[idx].sequence.push(selectedTreatment);
 
-        mutate(experiment.groups);
+        mutate({ groups: experiment.groups });
       }}
     />
   );

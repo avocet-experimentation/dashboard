@@ -66,7 +66,7 @@ export function ExperimentOverview() {
         </Heading>
         <Stack gap={4}>
           <LinkedFlagsSection />
-          <DefinedTreatments experiment={experiment} />
+          <DefinedTreatments />
           <VariationGroupsSection experiment={experiment} />
         </Stack>
       </Box>

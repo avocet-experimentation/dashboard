@@ -8,6 +8,7 @@ import {
   Tooltip,
   LabelProps as RechartsLabelProps,
 } from 'recharts';
+import { useExperimentContext } from './ExperimentContext';
 
 interface CustomLabelProps extends RechartsLabelProps {
   innerRadius: number; // The inner radius of the pie slice
@@ -43,11 +44,10 @@ const renderCustomizedLabel = ({
   );
 };
 
-export default function GroupPieChart({
-  experiment,
-}: {
-  experiment: Experiment;
-}) {
+export default function GroupPieChart() {
+  const { useExperiment } = useExperimentContext();
+  const { data: experiment } = useExperiment();
+
   return (
     <ResponsiveContainer minWidth="250px" minHeight="250px">
       <PieChart width={500} height={500}>
