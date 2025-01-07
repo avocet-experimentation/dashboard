@@ -31,6 +31,7 @@ export default function EnvironmentTable() {
           <Table.Row bg="avocet-section">
             <Table.ColumnHeader>Name</Table.ColumnHeader>
             <Table.ColumnHeader>Enabled by Default</Table.ColumnHeader>
+            <Table.ColumnHeader>Pin to Lists</Table.ColumnHeader>
             <Table.ColumnHeader>Last Updated</Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
@@ -51,10 +52,17 @@ function EnvironmentTableRow({ environment }: { environment: Environment }) {
       <Table.Cell color="black" textDecor="none">
         <EnvironmentManagementModal environment={environment} />
       </Table.Cell>
-      <Table.Cell key={environment.name}>
+      <Table.Cell>
         <Switch
           checked={environment.defaultEnabled}
           onCheckedChange={(e) => mutate({ defaultEnabled: e.checked })}
+          disabled={isPending}
+        />
+      </Table.Cell>
+      <Table.Cell>
+        <Switch
+          checked={environment.pinToLists}
+          onCheckedChange={(e) => mutate({ pinToLists: e.checked })}
           disabled={isPending}
         />
       </Table.Cell>
