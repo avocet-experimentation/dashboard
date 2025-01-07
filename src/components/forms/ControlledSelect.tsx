@@ -1,5 +1,6 @@
 import {
   createListCollection,
+  SelectRootProps,
   SelectValueChangeDetails,
 } from '@chakra-ui/react';
 import {
@@ -26,7 +27,6 @@ interface ControlledSelectProps<T, O> {
   handleValueChange?: (
     value: SelectValueChangeDetails<O>['value'][number],
   ) => void;
-  disabled?: boolean;
   /** Sets the width of the select. Defaults to 320px */
   width?: string;
 }
@@ -44,9 +44,9 @@ export default function ControlledSelect<
   placeholder = 'select an option',
   options,
   handleValueChange,
-  disabled,
   width = '320px',
-}: ControlledSelectProps<T, O>) {
+  ...otherSelectRootProps
+}: ControlledSelectProps<T, O> & Omit<SelectRootProps, 'collection'>) {
   const {
     control,
     formState: { errors },
@@ -74,12 +74,12 @@ export default function ControlledSelect<
             value={field.value}
             cursor="pointer"
             collection={optionCollection}
-            disabled={disabled}
             onValueChange={(e: SelectValueChangeDetails<O>) => {
               field.onChange(e.value);
               handleValueChange?.(e.value[0]);
             }}
             onInteractOutside={() => field.onBlur()}
+            {...otherSelectRootProps}
           >
             <SelectTrigger>
               <SelectValueText

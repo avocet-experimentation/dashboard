@@ -7,7 +7,7 @@ export function PageToolTip({
   ...toolTipProps
 }: { content: string } & TooltipProps) {
   return (
-    <Tooltip showArrow openDelay={50} content={content}>
+    <Tooltip showArrow openDelay={50} content={content} {...toolTipProps}>
       <Icon size="md">
         <CircleHelp />
       </Icon>
