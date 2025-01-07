@@ -61,7 +61,7 @@ export default function PageSelect<O extends { label: string; value: string }>({
         <SelectTrigger>
           <SelectValueText placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent bg="avocet-section" zIndex="popover">
+        <SelectContent bg="avocet-dropdown-bg" zIndex="popover">
           {optionCollection.items.map((option) => (
             <SelectItem
               item={option}

@@ -15,6 +15,12 @@ const config: SystemConfig = defineConfig({
             _dark: '#0c142e',
           },
         },
+        'avocet-dropdown-bg': {
+          value: {
+            base: 'whitesmoke',
+            _dark: '#0c142e',
+          },
+        },
         'avocet-text': {
           value: {
             base: '#013856',

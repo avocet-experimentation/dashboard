@@ -86,7 +86,7 @@ export default function ControlledSelect<
                 placeholder={field.value ? getLabel(field.value) : placeholder}
               />
             </SelectTrigger>
-            <SelectContent bg="avocet-section" zIndex="popover">
+            <SelectContent bg="avocet-dropdown-bg" zIndex="popover">
               {optionCollection.items.map((option) => (
                 <SelectItem
                   item={option}
