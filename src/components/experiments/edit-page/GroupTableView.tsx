@@ -1,7 +1,7 @@
 import { COLORS } from '#/lib/constants';
 import { Experiment, ExperimentGroup } from '@avocet/core';
 import { Icon, Table } from '@chakra-ui/react';
-import { EditableGenerals } from './EditableGenerals';
+import { EditableGenerals } from '#/components/helpers/EditableGenerals';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { Square } from 'lucide-react';
 

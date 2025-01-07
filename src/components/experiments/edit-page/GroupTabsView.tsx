@@ -5,14 +5,14 @@ import { Tabs } from '@chakra-ui/react/tabs';
 import { useMutation } from '@tanstack/react-query';
 import { Square, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { EditableGenerals } from './EditableGenerals';
+import { EditableGenerals } from '#/components/helpers/EditableGenerals';
 import SortableTreatmentList from './SortableTreatmentList';
 import { getRequestFunc, UPDATE_EXPERIMENT } from '#/lib/graphql-queries';
 import { toastError, toastSuccess } from '#/components/ui/toaster';
 import AddGroupTreatment from './AddGroupTreatment';
 import { Button } from '#/components/ui/button';
 import { useExperimentContext } from './ExperimentContext';
-import InfoWarning from './InfoWarning';
+import InfoWarning from '#/components/helpers/InfoWarning';
 
 export default function GroupTabsView() {
   const { useExperiment, useUpdateExperiment } = useExperimentContext();

@@ -9,7 +9,7 @@ import PageSelect from '#/components/forms/PageSelect';
 import { useAllFeatureFlags } from '#/hooks/query-hooks';
 import { useExperimentContext } from './ExperimentContext';
 import { CircleAlert } from 'lucide-react';
-import InfoWarning from './InfoWarning';
+import InfoWarning from '#/components/helpers/InfoWarning';
 
 export default function LinkedFlagsSection() {
   const { isPending, isError, error, data: allFlags } = useAllFeatureFlags();

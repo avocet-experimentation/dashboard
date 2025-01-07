@@ -23,12 +23,12 @@ import {
   Table,
   Text,
 } from '@chakra-ui/react';
-import { EditableGenerals } from './EditableGenerals';
+import { EditableGenerals } from '#/components/helpers/EditableGenerals';
 import { Tooltip } from '#/components/ui/tooltip';
 import { CircleAlert, CircleHelp, CirclePlus, Trash2 } from 'lucide-react';
 import { useExperimentContext } from './ExperimentContext';
 import { Button } from '#/components/ui/button';
-import InfoWarning from './InfoWarning';
+import InfoWarning from '#/components/helpers/InfoWarning';
 
 export default function DefinedTreatments() {
   const flagsQuery = useQuery({
@@ -37,26 +37,9 @@ export default function DefinedTreatments() {
     placeholderData: [] as FeatureFlag[],
   });
 
-  const { useExperiment, useUpdateExperiment } = useExperimentContext();
-  const { data: experiment } = useExperiment();
+  const { experiment, useUpdateExperiment } = useExperimentContext();
+  // const { data: experiment } = useExperiment();
   const { mutate } = useUpdateExperiment();
-
-  // const { mutate } = useMutation({
-  //   mutationFn: async (definedTreatment: Record<string, Treatment>) =>
-  //     getRequestFunc(UPDATE_EXPERIMENT, {
-  //       partialEntry: {
-  //         definedTreatments: definedTreatment,
-  //         id: experiment.id,
-  //       },
-  //     })(),
-  //   mutationKey: ['experiment', experiment.id],
-  //   onSuccess: () => {
-  //     toastSuccess('Experiment updated successfully.');
-  //   },
-  //   onError: () => {
-  //     toastError('Could not update the experiment at this time.');
-  //   },
-  // });
 
   const getFlagDetails = (id: string) => {
     const flag = flagsQuery.data?.find((flag) => flag.id === id);
