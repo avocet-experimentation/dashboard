@@ -9,7 +9,6 @@ import {
 } from '@avocet/core';
 import { DescriptionField, NameField } from '#/components/forms/DefinedFields';
 import ControlledSelect from '#/components/forms/ControlledSelect';
-import ControlledTextInput from '#/components/forms/ControlledTextInput';
 import { Field } from '#/components/ui/field';
 import { gqlRequest } from '#/lib/graphql-queries';
 import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
@@ -21,6 +20,7 @@ import {
 } from '#/lib/sdk-connection-queries';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { PartialSdkConnectionWithId } from '#/graphql/graphql';
+import { AllowedOriginsManager } from './AllowedOriginsManager';
 
 interface SDKConnectionManagementFormProps {
   formId: string;
@@ -29,12 +29,7 @@ interface SDKConnectionManagementFormProps {
 }
 
 /**
- * Create an sdk connection or update an existing one, if passed as an argument
- *
- * TODO:
- * - Revise allowed origins to be displayed as a set of boxes in a vertical list
- * - delete button on origin rows
- * - text box to add origins via submit button/enter key
+ * Create an SDK connection or update an existing one if passed as an argument
  */
 export default function SDKConnectionManagementForm({
   formId,
@@ -89,22 +84,24 @@ export default function SDKConnectionManagementForm({
 
   if (environments.length === 0) {
     //TODO correctly handle no environments
-    return <Text>No environments found. Please create one.</Text>;
+    return (
+      <Text>
+        No environments found. Please create one to begin setting up SDK
+        connections.
+      </Text>
+    );
   }
 
   const onSubmit: SubmitHandler<SDKConnectionDraft> = async (formContent) => {
-    const clonedContent = structuredClone(formContent);
-    if (clonedContent.environmentId.length !== 1)
-      throw new Error('Lacks environment');
-
-    clonedContent.environmentId = clonedContent.environmentId[0];
-    clonedContent.allowedOrigins = clonedContent.allowedOrigins
-      .split(',')
-      .map((origin) => origin.trim()); //TODO
-
-    const safeParseResult = sdkConnectionDraftSchema.safeParse(clonedContent);
+    const { environmentId } = formContent;
+    const fixedEnvId = Array.isArray(environmentId)
+      ? environmentId[0]
+      : environmentId;
+    const safeParseResult = sdkConnectionDraftSchema.safeParse({
+      ...formContent,
+      environmentId: fixedEnvId,
+    });
     if (!safeParseResult.success) {
-      // the error pretty-prints the Zod parse error message
       throw new SchemaParseError(safeParseResult);
     }
 
@@ -131,12 +128,7 @@ export default function SDKConnectionManagementForm({
               return { label: env.name, value: env.id };
             })}
           />
-          <ControlledTextInput
-            label="Comma-separated list of allowed origins"
-            fieldPath="allowedOrigins"
-            disabled={false}
-            registerReturn={formMethods.register('allowedOrigins')}
-          />
+          <AllowedOriginsManager />
           <Field label="API Key">
             <Text>{formMethods.getValues('apiKeyHash')}</Text>
           </Field>

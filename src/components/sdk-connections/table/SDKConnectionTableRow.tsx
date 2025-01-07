@@ -3,7 +3,10 @@ import { Table, Text } from '@chakra-ui/react';
 import { lastUpdated, formatDate } from '#/lib/timeFunctions';
 import { Tooltip } from '../../ui/tooltip';
 import SDKConnectionManagementModal from '../management-form/SDKConnectionManagementModal';
-import ErrorBox from '#/components/helpers/ErrorBox';
+import {
+  ElementListItem,
+  ElementListRoot,
+} from '#/components/helpers/ElementList';
 
 interface SDKConnectionTableRowProps {
   sdkConnection: SDKConnection;
@@ -14,24 +17,27 @@ export default function SDKConnectionTableRow({
   sdkConnection,
   environment,
 }: SDKConnectionTableRowProps) {
-  if (environment === undefined) {
-    const envError = new Error(
-      `Environment not found for SDK Connection "${sdkConnection.name}"`,
-    );
-    return <ErrorBox error={envError} />;
-  }
-
   return (
     <Table.Row bg="avocet-section">
       <Table.Cell color="black" textDecor="none">
         <SDKConnectionManagementModal sdkConnection={sdkConnection} />
       </Table.Cell>
       <Table.Cell key={sdkConnection.name}>
-        <Text width="fit-content">{environment.name}</Text>
+        <Text width="fit-content">
+          {environment?.name ?? '(No environment set)'}
+        </Text>
       </Table.Cell>
       <Table.Cell>
         <Text width="fit-content">
-          {sdkConnection.allowedOrigins.join('\n')}
+          {sdkConnection.allowedOrigins.length ? (
+            <ElementListRoot>
+              {sdkConnection.allowedOrigins.map((origin) => (
+                <ElementListItem>
+                  <Text>{origin}</Text>
+                </ElementListItem>
+              ))}
+            </ElementListRoot>
+          ) : undefined}
         </Text>
       </Table.Cell>
       <Table.Cell>
