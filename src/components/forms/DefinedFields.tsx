@@ -13,7 +13,7 @@ interface NameFieldProps {
 export function NameField({
   label,
   helperText = undefined,
-  disabled = false
+  disabled = false,
 }: NameFieldProps) {
   const { register } = useFormContext();
   return (
@@ -42,7 +42,7 @@ interface DescriptionFieldProps {
 }
 
 export function DescriptionField({
-  label = 'Description',
+  label = 'Description (optional)',
   disabled = false,
 }: DescriptionFieldProps) {
   const { register } = useFormContext();
@@ -51,22 +51,22 @@ export function DescriptionField({
       label={label}
       fieldPath="description"
       disabled={disabled}
-      registerReturn={register('description', {
-        required: 'A description is required.',
-      })}
+      registerReturn={register('description')}
     />
   );
 }
 
-export function HypothesisField({ label = 'Hypothesis' }: { label?: string }) {
+export function HypothesisField({
+  label = 'Hypothesis (optional)',
+}: {
+  label?: string;
+}) {
   const { register } = useFormContext();
   return (
     <ControlledTextInput
       label={label}
       fieldPath="hypothesis"
-      registerReturn={register('hypothesis', {
-        required: 'A hypothesis is required.',
-      })}
+      registerReturn={register('hypothesis')}
     />
   );
 }
