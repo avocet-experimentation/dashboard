@@ -7,7 +7,6 @@ export default function ForcedValueStub({ rule }: { rule: ForcedValue }) {
     <>
       <Stack
         gap={4}
-        key={rule.id}
         bg="avocet-section"
         border="1px solid"
         borderRadius="5px"

@@ -35,7 +35,6 @@ export default function ExperimentReferenceStub({
     <>
       <Stack
         gap={4}
-        key={rule.id}
         bg="avocet-section"
         border="1px solid"
         borderRadius="5px"

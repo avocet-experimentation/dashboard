@@ -25,8 +25,7 @@ export function StartExperimentButton({
   });
 
   const disabled = useMemo(
-    () =>
-      data && (isPending || !ExperimentDraft.isReadyToStart(experiment, data)),
+    () => !data || !ExperimentDraft.isReadyToStart(experiment, data),
     [experiment, data],
   );
 

@@ -17,6 +17,7 @@ export interface ControlledTextInputProps<
   label?: string;
   helperText?: React.ReactNode;
   disabled?: boolean;
+  width?: string;
 }
 
 /**
@@ -28,6 +29,7 @@ export default function ControlledTextInput<T extends FieldValues>({
   label,
   helperText,
   disabled,
+  width = '100%',
 }: ControlledTextInputProps<T>) {
   const { control, formState } = useFormContext<T>();
 
@@ -37,6 +39,7 @@ export default function ControlledTextInput<T extends FieldValues>({
       invalid={!!formState.errors[fieldPath]}
       helperText={helperText}
       errorText={(formState.errors[fieldPath]?.message as string) ?? undefined}
+      width={width}
     >
       <Controller
         name={fieldPath}

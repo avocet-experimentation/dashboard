@@ -3,7 +3,7 @@ import { Experiment, ExperimentDraft, FeatureFlag } from '@avocet/core';
 import { useMemo } from 'react';
 import ErrorBox from '#/components/helpers/ErrorBox';
 import Loader from '#/components/helpers/Loader';
-import { LinkedFlagInfo } from './LinkedFlagInfo';
+import LinkedFlagInfo from './LinkedFlagInfo';
 import { Flex, Heading, HStack, Icon, Stack, Text } from '@chakra-ui/react';
 import PageSelect from '#/components/forms/PageSelect';
 import { useAllFeatureFlags } from '#/hooks/query-hooks';
@@ -88,7 +88,7 @@ function FlagSelect({ experiment, availableFlags }: FlagSelectProps) {
   if (!availableFlags || availableFlags.length === 0) {
     return (
       <PageSelect
-        placeholder="You have selected all available flags."
+        placeholder="All available flags are already selected."
         disabled
         options={options}
       />

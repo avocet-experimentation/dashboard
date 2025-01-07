@@ -25,25 +25,13 @@ import {
 } from 'lucide-react';
 import { useMemo } from 'react';
 import { useExperimentContext } from './ExperimentContext';
+import ValueTypeIcon from '#/components/helpers/ValueTypeIcon';
 
-export function LinkedFlagInfo({ flag }: { flag: FeatureFlag }) {
+export default function LinkedFlagInfo({ flag }: { flag: FeatureFlag }) {
   const { useExperiment, useUpdateExperiment } = useExperimentContext();
   const { data: experiment } = useExperiment();
   const { mutate } = useUpdateExperiment();
-  const renderValueTypeIcon = useMemo(() => {
-    switch (flag.value.type) {
-      case 'string':
-        return <ALargeSmall />;
-      case 'number':
-        return <Hash />;
-      case 'boolean':
-        return <ToggleLeft />;
-      // default:
-      //   return <></>;
-    }
-  }, [flag.value.type]);
-
-  if (!experiment) return <></>;
+  // if (!experiment) return <></>;
 
   const { icon, colorPalette, tooltip, text } =
     experiment.environmentName in flag.environmentNames
@@ -61,19 +49,21 @@ export function LinkedFlagInfo({ flag }: { flag: FeatureFlag }) {
         };
 
   const removeFlag = (flagId: string) => {
-    console.log(`Clicked remove at ${String(Date.now()).slice(-5)}`);
     const updated = ExperimentDraft.removeFlag(experiment, flagId);
     mutate(updated);
   };
 
-  console.log(`Rendering at ${String(Date.now()).slice(-5)}`);
   return (
     <AccordionItem key={flag.id} value={flag.name} bg="avocet-bg">
       <Box position="relative" id="flag-accordion-trigger">
         <AccordionItemTrigger id={flag.id} indicatorPlacement="start">
           <Stack direction="row" gap={4}>
             <Text>{flag.name}</Text>
-            <Tag size="md" variant="outline" startElement={renderValueTypeIcon}>
+            <Tag
+              size="md"
+              variant="outline"
+              startElement={<ValueTypeIcon type={flag.value.type} />}
+            >
               {flag.value.type}
             </Tag>
             <Tooltip showArrow openDelay={50} content={tooltip}>
@@ -86,7 +76,7 @@ export function LinkedFlagInfo({ flag }: { flag: FeatureFlag }) {
         {/* TODO: match the styling and look of this button with other inline elements */}
         <AbsoluteCenter axis="vertical" insetEnd="15px">
           <IconButton
-            aria-label={`Delete treatment: ${name}`}
+            aria-label={`Remove flag: ${flag.name}`}
             bg="transparent"
             color="avocet-error-fg"
             _hover={{ bg: 'avocet-error-bg', color: 'avocet-error-fg' }}

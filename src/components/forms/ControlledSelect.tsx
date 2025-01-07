@@ -54,6 +54,10 @@ export default function ControlledSelect<
 
   const optionCollection = createListCollection({ items: options });
 
+  const getLabel = (value: PathValue<T, Path<T>>) =>
+    optionCollection.items.find((opt) => opt.value === value)?.label ??
+    placeholder;
+
   return (
     <Field
       label={label}
@@ -78,11 +82,18 @@ export default function ControlledSelect<
             onInteractOutside={() => field.onBlur()}
           >
             <SelectTrigger>
-              <SelectValueText placeholder={placeholder} />
+              <SelectValueText
+                placeholder={field.value ? getLabel(field.value) : placeholder}
+              />
             </SelectTrigger>
-            <SelectContent bg="avocet-bg" zIndex="popover">
+            <SelectContent bg="avocet-section" zIndex="popover">
               {optionCollection.items.map((option) => (
-                <SelectItem item={option} key={option.label} cursor="pointer">
+                <SelectItem
+                  item={option}
+                  key={option.label}
+                  cursor="pointer"
+                  _hover={{ bg: 'avocet-hover' }}
+                >
                   {option.label}
                 </SelectItem>
               ))}
