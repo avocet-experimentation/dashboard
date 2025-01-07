@@ -7,7 +7,7 @@ import {
   SDKConnectionDraft,
   Environment,
 } from '@avocet/core';
-import { DescriptionField, NameField } from '../../forms/DefinedFields';
+import { DescriptionField, NameField } from '#/components/forms/DefinedFields';
 import ControlledSelect from '#/components/forms/ControlledSelect';
 import ControlledTextInput from '#/components/forms/ControlledTextInput';
 import { Field } from '#/components/ui/field';
@@ -52,7 +52,7 @@ export default function SDKConnectionManagementForm({
     sdkConnection ??
     SDKConnectionDraft.template({
       name: '',
-      environmentId: environments[0].id,
+      environmentId: environments[0]?.id,
     });
 
   const formMethods = useForm<SDKConnectionDraft>({
@@ -138,7 +138,7 @@ export default function SDKConnectionManagementForm({
             registerReturn={formMethods.register('allowedOrigins')}
           />
           <Field label="API Key">
-            <Text>{formMethods.getValues('clientKeyHash')}</Text>
+            <Text>{formMethods.getValues('apiKeyHash')}</Text>
           </Field>
         </Stack>
       </form>

@@ -6,7 +6,7 @@ export const CREATE_SDK_CONNECTION = graphql(`
       id
       name
       allowedOrigins
-      clientKeyHash
+      apiKeyHash
       description
       environmentId
       updatedAt
@@ -21,7 +21,7 @@ export const ALL_SDK_CONNECTIONS = graphql(`
       id
       name
       allowedOrigins
-      clientKeyHash
+      apiKeyHash
       description
       environmentId
       updatedAt
@@ -36,7 +36,7 @@ export const UPDATE_SDK_CONNECTION = graphql(`
       id
       name
       allowedOrigins
-      clientKeyHash
+      apiKeyHash
       description
       environmentId
       updatedAt

@@ -317,7 +317,7 @@ input PartialFeatureFlagWithId {
 
 input PartialSDKConnectionWithId {
   allowedOrigins: [String!]
-  clientKeyHash: String
+  apiKeyHash: String
   createdAt: Float
   description: String
   environmentId: ID
@@ -357,7 +357,7 @@ type Query {
 
 type SDKConnection {
   allowedOrigins: [String!]!
-  clientKeyHash: String!
+  apiKeyHash: String!
   createdAt: Float!
   description: String
   environmentId: ID!
@@ -368,7 +368,7 @@ type SDKConnection {
 
 input SDKConnectionDraft {
   allowedOrigins: [String!]!
-  clientKeyHash: String!
+  apiKeyHash: String!
   description: String
   environmentId: ID!
   name: String!
