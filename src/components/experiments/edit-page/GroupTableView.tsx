@@ -1,17 +1,12 @@
 import { COLORS } from '#/lib/constants';
-import { Experiment, ExperimentGroup } from '@avocet/core';
 import { Icon, Table } from '@chakra-ui/react';
 import { EditableGenerals } from '#/components/helpers/EditableGenerals';
-import { UseMutateFunction } from '@tanstack/react-query';
 import { Square } from 'lucide-react';
+import { useExperimentContext } from './ExperimentContext';
 
-export default function GroupTableView({
-  experiment,
-  mutate,
-}: {
-  experiment: Experiment;
-  mutate: UseMutateFunction<void, Error, ExperimentGroup[], unknown>;
-}) {
+export default function GroupTableView() {
+  const { experiment, useUpdateExperiment } = useExperimentContext();
+  const { mutate } = useUpdateExperiment();
   return (
     <Table.Root stickyHeader interactive width="-moz-max-content">
       <Table.ColumnGroup>
@@ -40,7 +35,7 @@ export default function GroupTableView({
                 inputType="text"
                 onValueCommit={(e) => {
                   experiment.groups[idx].name = e.value;
-                  mutate(experiment.groups);
+                  mutate({ groups: experiment.groups });
                 }}
               />
             </Table.Cell>
@@ -51,7 +46,7 @@ export default function GroupTableView({
                 inputType="number"
                 onValueCommit={(e) => {
                   experiment.groups[idx].proportion = Number(e.value);
-                  mutate(experiment.groups);
+                  mutate({ groups: experiment.groups });
                 }}
               />
             </Table.Cell>
@@ -61,7 +56,7 @@ export default function GroupTableView({
                 inputType="number"
                 onValueCommit={(e) => {
                   experiment.groups[idx].cycles = Number(e.value);
-                  mutate(experiment.groups);
+                  mutate({ groups: experiment.groups });
                 }}
               />
             </Table.Cell>

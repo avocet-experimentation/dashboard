@@ -2,12 +2,10 @@ import { COLORS } from '#/lib/constants';
 import { ExperimentGroup } from '@avocet/core';
 import { Flex, Grid, GridItem, Icon, Stack, Text } from '@chakra-ui/react';
 import { Tabs } from '@chakra-ui/react/tabs';
-import { useMutation } from '@tanstack/react-query';
 import { Square, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { EditableGenerals } from '#/components/helpers/EditableGenerals';
 import SortableTreatmentList from './SortableTreatmentList';
-import { getRequestFunc, UPDATE_EXPERIMENT } from '#/lib/graphql-queries';
 import { toastError, toastSuccess } from '#/components/ui/toaster';
 import AddGroupTreatment from './AddGroupTreatment';
 import { Button } from '#/components/ui/button';
@@ -15,26 +13,8 @@ import { useExperimentContext } from './ExperimentContext';
 import InfoWarning from '#/components/helpers/InfoWarning';
 
 export default function GroupTabsView() {
-  const { useExperiment, useUpdateExperiment } = useExperimentContext();
-  const { data: experiment } = useExperiment();
-  const { mutate } = useUpdateExperiment();
-
-  // const { mutate } = useMutation({
-  //   mutationFn: async (groups: ExperimentGroup[]) =>
-  //     getRequestFunc(UPDATE_EXPERIMENT, {
-  //       partialEntry: {
-  //         groups: groups,
-  //         id: experiment.id,
-  //       },
-  //     })(),
-  //   mutationKey: ['experiment', experiment.id],
-  //   onSuccess: () => {
-  //     toastSuccess('Experiment updated successfully.');
-  //   },
-  //   onError: () => {
-  //     toastError('Could not update the experiment at this time.');
-  //   },
-  // });
+  const { experiment, useUpdateExperiment } = useExperimentContext();
+  const { mutate } = useUpdateExperiment({});
 
   const handleDeleteGroup = (groupId: string) => {
     const mutatedGroups = experiment.groups.filter(

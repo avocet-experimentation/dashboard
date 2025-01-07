@@ -29,34 +29,29 @@ const useUpdateExperimentHook = (
   >,
 ) => {
   return useMutation({
-    ...options,
     mutationFn: async (partialEntry: Partial<ExperimentDraft>) =>
       gqlRequest(UPDATE_EXPERIMENT, {
         partialEntry: { ...partialEntry, id: experimentId },
       }),
+    ...options,
     mutationKey: ['experiment', experimentId],
   });
 };
 
-const defaults = {
-  useExperiment: useExperimentHook.bind(undefined, ''),
-  useUpdateExperiment: useUpdateExperimentHook.bind(undefined, ''),
-};
-
 const ExperimentContext = createContext<{
-  useExperiment: () => ReturnType<typeof useExperimentHook>;
+  experiment: Experiment;
   useUpdateExperiment: (
     options?: Parameters<typeof useUpdateExperimentHook>[1],
   ) => ReturnType<typeof useUpdateExperimentHook>;
-}>(defaults);
+} | null>(null);
 
 export function ExperimentProvider({
-  experimentId,
+  experiment,
   children,
-}: React.PropsWithChildren<{ experimentId: string }>) {
+}: React.PropsWithChildren<{ experiment: Experiment }>) {
   const value = {
-    useExperiment: useExperimentHook.bind(undefined, experimentId),
-    useUpdateExperiment: useUpdateExperimentHook.bind(undefined, experimentId),
+    experiment,
+    useUpdateExperiment: useUpdateExperimentHook.bind(undefined, experiment.id),
   };
   return (
     <ExperimentContext.Provider value={value}>
@@ -65,4 +60,9 @@ export function ExperimentProvider({
   );
 }
 
-export const useExperimentContext = () => useContext(ExperimentContext);
+export const useExperimentContext = () => {
+  const result = useContext(ExperimentContext);
+  if (result === null)
+    throw new Error(`Experiment context was accessed outside its provider!`);
+  return result;
+};

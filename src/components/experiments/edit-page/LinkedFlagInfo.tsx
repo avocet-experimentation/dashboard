@@ -8,30 +8,19 @@ import { Tooltip } from '#/components/ui/tooltip';
 import {
   AbsoluteCenter,
   Box,
-  Button,
   IconButton,
   Stack,
   Table,
   Text,
 } from '@chakra-ui/react';
-import { Experiment, ExperimentDraft, FeatureFlag } from '@avocet/core';
-import {
-  ALargeSmall,
-  Check,
-  Hash,
-  ToggleLeft,
-  Trash2,
-  TriangleAlert,
-} from 'lucide-react';
-import { useMemo } from 'react';
+import { ExperimentDraft, FeatureFlag } from '@avocet/core';
+import { Check, Trash2, TriangleAlert } from 'lucide-react';
 import { useExperimentContext } from './ExperimentContext';
 import ValueTypeIcon from '#/components/helpers/ValueTypeIcon';
 
 export default function LinkedFlagInfo({ flag }: { flag: FeatureFlag }) {
-  const { useExperiment, useUpdateExperiment } = useExperimentContext();
-  const { data: experiment } = useExperiment();
+  const { experiment, useUpdateExperiment } = useExperimentContext();
   const { mutate } = useUpdateExperiment();
-  // if (!experiment) return <></>;
 
   const { icon, colorPalette, tooltip, text } =
     experiment.environmentName in flag.environmentNames
@@ -97,11 +86,7 @@ export default function LinkedFlagInfo({ flag }: { flag: FeatureFlag }) {
  * A table of all the flag states for a specific flag in an experiment
  */
 function FlagStateTable({ flag }: { flag: FeatureFlag }) {
-  const { useExperiment } = useExperimentContext();
-  const { data } = useExperiment();
-
-  if (!data) return <></>;
-  const experiment: Experiment = data;
+  const { experiment } = useExperimentContext();
 
   return (
     <Stack gap={2}>

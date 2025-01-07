@@ -1,5 +1,4 @@
 import { COLORS, RADIAN } from '#/lib/constants';
-import { Experiment } from '@avocet/core';
 import {
   PieChart,
   Pie,
@@ -45,8 +44,7 @@ const renderCustomizedLabel = ({
 };
 
 export default function GroupPieChart() {
-  const { useExperiment } = useExperimentContext();
-  const { data: experiment } = useExperiment();
+  const { experiment } = useExperimentContext();
 
   return (
     <ResponsiveContainer minWidth="250px" minHeight="250px">

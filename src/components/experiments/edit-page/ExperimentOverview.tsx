@@ -11,6 +11,7 @@ import DefinedTreatments from './DefinedTreatments';
 import VariationGroupsSection from './VariationGroupsSection';
 import { useExperimentContext } from './ExperimentContext';
 import { useAllEnvironments } from '#/hooks/query-hooks';
+import PageSection from '#/components/helpers/PageSection';
 
 /**
  * (WIP) Parent component for all editable fields
@@ -19,12 +20,9 @@ import { useAllEnvironments } from '#/hooks/query-hooks';
  * - tooltips on experiment pause/complete buttons to warn users
  */
 export function ExperimentOverview() {
-  const { useExperiment, useUpdateExperiment } = useExperimentContext();
-  const { data: experiment } = useExperiment();
+  const { experiment, useUpdateExperiment } = useExperimentContext();
   const { mutate } = useUpdateExperiment();
   const environmentsQuery = useAllEnvironments();
-
-  if (!experiment) return <></>;
 
   return (
     <Box>
@@ -44,21 +42,23 @@ export function ExperimentOverview() {
             mutate({ hypothesis: e.value });
           }}
         />
-        <PageSelect
-          options={
-            environmentsQuery.data?.map((env) => ({
-              label: env.name,
-              value: env.name,
-            })) ?? []
-          }
-          label="Environment"
-          selected={
-            experiment.environmentName ? [experiment.environmentName] : []
-          }
-          handleValueChange={(selectedEnvIds) =>
-            mutate({ environmentName: selectedEnvIds[0] })
-          }
-        />
+        <PageSection>
+          <PageSelect
+            options={
+              environmentsQuery.data?.map((env) => ({
+                label: env.name,
+                value: env.name,
+              })) ?? []
+            }
+            label="Environment"
+            selected={
+              experiment.environmentName ? [experiment.environmentName] : []
+            }
+            handleValueChange={(selectedEnvIds) =>
+              mutate({ environmentName: selectedEnvIds[0] })
+            }
+          />
+        </PageSection>
       </Stack>
       <Box>
         <Heading size="xl" marginBottom="15px">
@@ -67,7 +67,7 @@ export function ExperimentOverview() {
         <Stack gap={4}>
           <LinkedFlagsSection />
           <DefinedTreatments />
-          <VariationGroupsSection experiment={experiment} />
+          <VariationGroupsSection />
         </Stack>
       </Box>
       {/* </Stack> */}

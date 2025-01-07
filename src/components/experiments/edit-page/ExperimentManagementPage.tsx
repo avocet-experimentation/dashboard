@@ -1,7 +1,6 @@
 import { useRoute } from 'wouter';
-import NotFound from '../../NotFound';
+import NotFound from '#/components/NotFound';
 import { Box, Flex, Heading, HStack, Stack, Tabs } from '@chakra-ui/react';
-import { Experiment } from '@avocet/core';
 import {
   StartExperimentButton,
   PauseExperimentButton,
@@ -15,7 +14,11 @@ import { EXP_STATUS_LEGEND } from '#/lib/constants';
 import ExperimentControlMenu from './ExperimentControlMenu';
 import { useState } from 'react';
 import ExperimentAnalysisSection from './ExperimentAnalysisSection';
-import { ExperimentProvider, useExperimentHook } from './ExperimentContext';
+import {
+  ExperimentProvider,
+  useExperimentContext,
+  useExperimentHook,
+} from './ExperimentContext';
 import { ExperimentOverview } from './ExperimentOverview';
 
 const tabNames = ['Overview', 'Analysis'] as const;
@@ -53,10 +56,10 @@ export default function ExperimentManagementPage() {
   }
 
   return (
-    <ExperimentProvider experimentId={params.id}>
+    <ExperimentProvider experiment={data}>
       <Box>
         <Stack gap={4} padding="25px" height="100vh" overflowY="scroll">
-          <ExperimentTitleBar experiment={data} />
+          <ExperimentTitleBar />
           <Tabs.Root
             value={selectedTab}
             margin="15px 0 0 0"
@@ -91,7 +94,8 @@ export default function ExperimentManagementPage() {
   );
 }
 
-const ExperimentTitleBar = ({ experiment }: { experiment: Experiment }) => {
+const ExperimentTitleBar = () => {
+  const { experiment } = useExperimentContext();
   return (
     <Flex justifyContent="space-between">
       <Heading size="3xl">{experiment.name}</Heading>

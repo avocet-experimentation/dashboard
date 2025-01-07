@@ -1,15 +1,15 @@
-import { Experiment } from '@avocet/core';
-import { Grid, GridItem, Heading, Stack } from '@chakra-ui/react';
+import { Grid, GridItem, Heading } from '@chakra-ui/react';
 import GroupPieChart from './GroupPieChart';
 import GroupTabsView from './GroupTabsView';
 import GroupsControl from './GroupsControl';
-export default function VariationGroupsSection({
-  experiment,
-}: {
-  experiment: Experiment;
-}) {
+import PageSection from '#/components/helpers/PageSection';
+import { useExperimentContext } from './ExperimentContext';
+
+export default function VariationGroupsSection() {
+  const { experiment } = useExperimentContext();
+
   return (
-    <Stack padding="15px" bg="avocet-section" borderRadius="5px" gap={4}>
+    <PageSection>
       <Heading size="lg">User Groups ({experiment.groups.length})</Heading>
       <Grid templateColumns="1fr 2fr" gap={6}>
         <GridItem>
@@ -26,6 +26,6 @@ export default function VariationGroupsSection({
           <GroupTabsView />
         </GridItem>
       </Grid>
-    </Stack>
+    </PageSection>
   );
 }

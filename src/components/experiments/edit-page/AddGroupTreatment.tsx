@@ -1,6 +1,5 @@
 import PageSelect from '#/components/forms/PageSelect';
 import { ExperimentGroup } from '@avocet/core';
-import { useMemo } from 'react';
 import { useExperimentContext } from './ExperimentContext';
 
 export default function AddGroupTreatment({
@@ -10,8 +9,7 @@ export default function AddGroupTreatment({
   group: ExperimentGroup;
   idx: number;
 }) {
-  const { useExperiment, useUpdateExperiment } = useExperimentContext();
-  const { data: experiment } = useExperiment();
+  const { experiment, useUpdateExperiment } = useExperimentContext();
   const { mutate } = useUpdateExperiment();
 
   const treatmentIds = new Set(group.sequence);

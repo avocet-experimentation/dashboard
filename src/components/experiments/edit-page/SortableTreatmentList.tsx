@@ -1,8 +1,5 @@
-import { toastError, toastSuccess } from '#/components/ui/toaster';
-import { getRequestFunc, UPDATE_EXPERIMENT } from '#/lib/graphql-queries';
-import { Experiment, ExperimentGroup } from '@avocet/core';
-import { Box, Flex, HStack, IconButton, Text, VStack } from '@chakra-ui/react';
-import { useMutation } from '@tanstack/react-query';
+import { ExperimentGroup } from '@avocet/core';
+import { Flex, HStack, IconButton, Text, VStack } from '@chakra-ui/react';
 import { Trash2 } from 'lucide-react';
 import { useRef } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
@@ -97,26 +94,7 @@ export default function SortableTreatmentList({
 }: {
   group: ExperimentGroup;
 }) {
-  // const { mutate } = useMutation({
-  //   mutationFn: async (groups: ExperimentGroup[]) => {
-  //     getRequestFunc(UPDATE_EXPERIMENT, {
-  //       partialEntry: {
-  //         groups: groups,
-  //         id: experiment.id,
-  //       },
-  //     })();
-  //   },
-  //   mutationKey: ['experiment', experiment.id],
-  //   onSuccess: () => {
-  //     toastSuccess(`${group.name}'s treatments reordered successfully.`);
-  //   },
-  //   onError: () => {
-  //     toastError('Could not update the experiment at this time.');
-  //   },
-  // });
-
-  const { useExperiment, useUpdateExperiment } = useExperimentContext();
-  const { data: experiment } = useExperiment();
+  const { experiment, useUpdateExperiment } = useExperimentContext();
   const { mutate } = useUpdateExperiment();
 
   const treatmentSequence = group.sequence.map((treatmentId) => ({
@@ -129,7 +107,7 @@ export default function SortableTreatmentList({
     const [movedSequence] = updatedSequence.splice(fromIndex, 1);
     updatedSequence.splice(toIndex, 0, movedSequence);
     group.sequence = updatedSequence;
-    mutate({ groups: experiment?.groups });
+    mutate({ groups: experiment.groups });
   };
 
   const deleteItem = (itemIndex: number) => {
@@ -139,7 +117,7 @@ export default function SortableTreatmentList({
       ...currentSequence.slice(itemIndex + 1),
     ];
     group.sequence = mutatedSequence;
-    mutate({ groups: experiment?.groups });
+    mutate({ groups: experiment.groups });
   };
 
   return (

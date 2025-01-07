@@ -1,24 +1,21 @@
 import { AccordionRoot } from '#/components/ui/accordion';
-import { Experiment, ExperimentDraft, FeatureFlag } from '@avocet/core';
+import { ExperimentDraft, FeatureFlag } from '@avocet/core';
 import { useMemo } from 'react';
 import ErrorBox from '#/components/helpers/ErrorBox';
 import Loader from '#/components/helpers/Loader';
 import LinkedFlagInfo from './LinkedFlagInfo';
-import { Flex, Heading, HStack, Icon, Stack, Text } from '@chakra-ui/react';
+import { Flex, Heading, Stack } from '@chakra-ui/react';
 import PageSelect from '#/components/forms/PageSelect';
 import { useAllFeatureFlags } from '#/hooks/query-hooks';
 import { useExperimentContext } from './ExperimentContext';
-import { CircleAlert } from 'lucide-react';
 import InfoWarning from '#/components/helpers/InfoWarning';
 
 export default function LinkedFlagsSection() {
   const { isPending, isError, error, data: allFlags } = useAllFeatureFlags();
-  const { useExperiment } = useExperimentContext();
-  const { data: experiment } = useExperiment();
+  const { experiment } = useExperimentContext();
 
   if (isPending) return <Loader label="Loading experiment..." />;
   if (isError) return <ErrorBox error={error} />;
-  if (!experiment) return <></>;
 
   const expFlagIds = new Set(experiment.flagIds);
 
@@ -54,14 +51,9 @@ export default function LinkedFlagsSection() {
           ))}
         </AccordionRoot>
       )}
-      <FlagSelect experiment={experiment} availableFlags={availableFlags} />
+      <FlagSelect availableFlags={availableFlags} />
     </Stack>
   );
-}
-
-interface FlagSelectProps {
-  experiment: Experiment;
-  availableFlags: FeatureFlag[];
 }
 
 /**
@@ -72,8 +64,8 @@ interface FlagSelectProps {
  * - place alongside title
  * - add search box to PageSelect to filter options by label?
  */
-function FlagSelect({ experiment, availableFlags }: FlagSelectProps) {
-  const { useUpdateExperiment } = useExperimentContext();
+function FlagSelect({ availableFlags }: { availableFlags: FeatureFlag[] }) {
+  const { experiment, useUpdateExperiment } = useExperimentContext();
   const { mutate } = useUpdateExperiment();
 
   const options = useMemo(
