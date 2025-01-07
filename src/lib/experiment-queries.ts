@@ -29,7 +29,16 @@ export const CREATE_EXPERIMENT = graphql(`
       definedTreatments
       dependents {
         fieldName
-        fieldDataType
+        type
+      }
+      hypotheses {
+        id
+        dependentName
+        analysis
+        compareValue
+        compareOperator
+        baseCondition
+        testCondition
       }
       flagIds
     }
@@ -65,7 +74,16 @@ export const EXPERIMENT = graphql(`
       definedTreatments
       dependents {
         fieldName
-        fieldDataType
+        type
+      }
+      hypotheses {
+        id
+        dependentName
+        analysis
+        compareValue
+        compareOperator
+        baseCondition
+        testCondition
       }
       flagIds
     }
@@ -114,7 +132,16 @@ export const UPDATE_EXPERIMENT = graphql(`
       definedTreatments
       dependents {
         fieldName
-        fieldDataType
+        type
+      }
+      hypotheses {
+        id
+        dependentName
+        analysis
+        compareValue
+        compareOperator
+        baseCondition
+        testCondition
       }
       flagIds
     }

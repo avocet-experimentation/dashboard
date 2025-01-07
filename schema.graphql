@@ -22,6 +22,8 @@ input ClientPropDefDraft {
 
 scalar ClientPropValue
 
+scalar Condition
+
 scalar DefinedTreatments
 
 type Enrollment {
@@ -61,6 +63,7 @@ type Experiment {
   environmentName: String!
   flagIds: [String!]!
   groups: [ExperimentGroup!]!
+  hypotheses: [Hypothesis!]!
   hypothesis: String
   id: ID!
   name: String!
@@ -79,6 +82,7 @@ input ExperimentDraft {
   environmentName: String!
   flagIds: [String!]!
   groups: [ExperimentGroupInput!]!
+  hypotheses: [HypothesisInput!]!
   hypothesis: String
   name: String!
   startTimestamp: Float
@@ -170,16 +174,36 @@ type ForcedValue implements OverrideRule {
   value: TextPrimitive!
 }
 
+type Hypothesis {
+  analysis: String!
+  baseCondition: Condition!
+  compareOperator: String!
+  compareValue: TextPrimitive!
+  dependentName: String!
+  id: ID!
+  testCondition: Condition!
+}
+
+input HypothesisInput {
+  analysis: String!
+  baseCondition: Condition!
+  compareOperator: String!
+  compareValue: TextPrimitive!
+  dependentName: String!
+  id: ID!
+  testCondition: Condition!
+}
+
 type Metric {
-  fieldDataType: MetricDataType!
   fieldName: String!
+  type: MetricDataType!
 }
 
 scalar MetricDataType
 
 input MetricInput {
-  fieldDataType: MetricDataType!
   fieldName: String!
+  type: MetricDataType!
 }
 
 type Mutation {
@@ -270,6 +294,7 @@ input PartialExperimentWithId {
   environmentName: String
   flagIds: [String!]
   groups: [ExperimentGroupInput!]
+  hypotheses: [HypothesisInput!]
   hypothesis: String
   id: ID!
   name: String
