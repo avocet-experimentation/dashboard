@@ -56,6 +56,18 @@ const config: SystemConfig = defineConfig({
             _dark: '#9B1C2E',
           },
         },
+        'avocet-edit-fg': {
+          value: {
+            base: '#efc443',
+            _dark: '#FFFFFF',
+          },
+        },
+        'avocet-edit-bg': {
+          value: {
+            base: '#fef7e1',
+            _dark: '#9B1C2E',
+          },
+        },
         'avocet-dragging': {
           value: {
             base: '#e4e4e7',

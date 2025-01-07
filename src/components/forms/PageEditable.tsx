@@ -8,6 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { X, Check, FilePenLine } from 'lucide-react';
 import { useState } from 'react';
+import PageSection from '../helpers/PageSection';
 
 interface PageEditableProps {
   label?: string;
@@ -41,7 +42,7 @@ export default function PageEditable({
       onValueCommit={async (e) => await submitHandler(e)}
       submitMode="enter"
     >
-      <Stack padding="15px" bg="avocet-section" borderRadius="5px" width="full">
+      <PageSection>
         <HStack gap={2.5}>
           {label && <Heading size="lg">{label}</Heading>}
           <Editable.Control>
@@ -69,7 +70,7 @@ export default function PageEditable({
           _hover={{ bg: 'avocet-hover' }}
         />
         <Editable.Textarea />
-      </Stack>
+      </PageSection>
     </Editable.Root>
   );
 }
