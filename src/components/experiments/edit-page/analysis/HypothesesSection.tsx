@@ -1,6 +1,5 @@
 import PageSection from '#/components/helpers/PageSection';
 import { HStack, Heading } from '@chakra-ui/react';
-import { useExperimentContext } from '../ExperimentContext';
 import { PageToolTip } from '#/components/helpers/PageToolTip';
 import { HypothesisList } from './HypothesisList';
 import { HypothesisCreationForm } from './HypothesisCreationForm';
@@ -11,10 +10,9 @@ import { HypothesisCreationForm } from './HypothesisCreationForm';
  * todo:
  * - make form a modal
  * - make hypothesis list items manageable
+ * - improve tooltip, form, and line item for clarity
  */
 export default function HypothesesSection() {
-  const { experiment } = useExperimentContext();
-
   return (
     <PageSection>
       <HStack gap="2.5">

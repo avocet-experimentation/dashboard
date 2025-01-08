@@ -14,6 +14,9 @@ import { Button } from '#/components/ui/button';
 
 /**
  * Mini-form to add dependent variables to an experiment
+ *
+ * todo:
+ * - add sub-types for discrete vs continuous numbers if relevant
  */
 export function DependentCreationForm() {
   const { experiment, useUpdateExperiment } = useExperimentContext();

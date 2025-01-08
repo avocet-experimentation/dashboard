@@ -5,7 +5,7 @@ import {
   ElementListItem,
   ElementListRoot,
 } from '#/components/helpers/ElementList';
-import { DeleteButton } from '#/components/helpers/DeleteButton';
+import { DeleteButton } from '#/components/helpers/Buttons';
 import { Button } from '#/components/ui/button';
 import { useState } from 'react';
 import { PageToolTip } from '#/components/helpers/PageToolTip';
@@ -44,7 +44,7 @@ export function AllowedOriginsManager() {
                         <Text>{origin}</Text>
                         <DeleteButton
                           label={`Delete origin: ${origin}`}
-                          onDeleteClick={() =>
+                          onClick={() =>
                             setValue(
                               'allowedOrigins',
                               allowedOrigins.filter((_, j) => j !== i),

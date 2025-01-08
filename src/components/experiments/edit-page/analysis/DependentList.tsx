@@ -6,12 +6,12 @@ import {
 } from '#/components/helpers/ElementList';
 import { Metric } from '@avocet/core';
 import ValueTypeIcon from '#/components/helpers/ValueTypeIcon';
-import { DeleteButton } from '#/components/helpers/DeleteButton';
-import { EditButton } from '#/components/helpers/EditButton';
+import { DeleteButton, EditButton } from '#/components/helpers/Buttons';
 
 /**
  * (WIP) List dependent variables on an experiment
  * todo:
+ * - make edit buttons functional
  * - switch to grid
  * - style to resemble linked flags accordion triggers
  */
@@ -37,11 +37,11 @@ export function DependentList() {
           <Text>{dep.fieldName}</Text>
           <EditButton
             label={`Edit dependent: ${dep.fieldName}`}
-            onEditClick={() => {}}
+            onClick={() => {}}
           />
           <DeleteButton
             label={`Delete dependent: ${dep.fieldName}`}
-            onDeleteClick={() => handleDeleteClick(dep)}
+            onClick={() => handleDeleteClick(dep)}
           />
         </ElementListItem>
       ))}

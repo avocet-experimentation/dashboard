@@ -11,7 +11,7 @@ import {
   Treatment,
 } from '@avocet/core';
 import ValueTypeIcon from '#/components/helpers/ValueTypeIcon';
-import { DeleteButton } from '#/components/helpers/DeleteButton';
+import { DeleteButton } from '#/components/helpers/Buttons';
 /**
  * (WIP) List the hypotheses on an experiment
  * todo:
