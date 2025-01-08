@@ -35,8 +35,8 @@ interface ControlledSelectProps<
 }
 
 /**
- * (WIP) Dropdown controlled via react-hook-form. Expects the form to be
- * wrapped in a FormContextProvider
+ * Dropdown for selecting up to one option, controlled via react-hook-form.
+ * Expects the form to be wrapped in a FormContextProvider.
  */
 export default function ControlledSelect<
   T extends FieldValues,
@@ -49,7 +49,8 @@ export default function ControlledSelect<
   handleValueChange,
   width = '320px',
   ...otherSelectRootProps
-}: ControlledSelectProps<T, O> & Omit<SelectRootProps, 'collection'>) {
+}: ControlledSelectProps<T, O> &
+  Omit<SelectRootProps, 'collection' | 'multiple'>) {
   const {
     control,
     formState: { errors },

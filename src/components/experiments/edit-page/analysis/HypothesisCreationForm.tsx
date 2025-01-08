@@ -51,7 +51,7 @@ export function HypothesisCreationForm() {
   const { experiment, useUpdateExperiment } = useExperimentContext();
   const { mutate } = useUpdateExperiment();
 
-  const conditions = ExperimentDraft.getAllExperimentConditions(experiment);
+  const conditions = ExperimentDraft.getAllConditions(experiment);
 
   const dependentOptions = experiment.dependents.map((dep) => ({
     label: dep.fieldName,

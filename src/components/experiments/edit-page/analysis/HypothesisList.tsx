@@ -6,7 +6,6 @@ import {
 } from '#/components/helpers/ElementList';
 import {
   Condition,
-  ConditionReference,
   ExperimentDraft,
   ExperimentGroup,
   Hypothesis,
@@ -33,22 +32,6 @@ export function HypothesisList() {
     });
   };
 
-  const findCondition = (conditionRef: ConditionReference) =>
-    ExperimentDraft.getConditionFromRef(experiment, conditionRef);
-
-  const getHypothesisConditions = (hypothesis: Hypothesis) => {
-    const errorMessage = (conditionType: string) =>
-      `Couldn't find ${conditionType} condition for hypothesis ` +
-      `${JSON.stringify(hypothesis)}`;
-
-    const baseCondition = findCondition(hypothesis.baseConditionRef);
-    if (!baseCondition) throw new TypeError(errorMessage('base'));
-
-    const testCondition = findCondition(hypothesis.testConditionRef);
-    if (!testCondition) throw new TypeError(errorMessage('test'));
-    return { baseCondition, testCondition };
-  };
-
   return (
     <ElementListRoot>
       {experiment.hypotheses.map((hypothesis) => (
@@ -56,7 +39,7 @@ export function HypothesisList() {
           key={hypothesis.id}
           hypothesis={hypothesis}
           onDeleteClick={() => handleDeleteClick(hypothesis.id)}
-          {...getHypothesisConditions(hypothesis)}
+          {...ExperimentDraft.getHypothesisConditions(experiment, hypothesis)}
         />
       ))}
     </ElementListRoot>
@@ -66,16 +49,16 @@ export function HypothesisList() {
 const conditionDisplayName = (cond: [ExperimentGroup, Treatment]) =>
   `(${cond[0].name} Group: ${cond[1].name} Treatment)`;
 
-function HypothesisListItem({
+export function HypothesisListItem({
   hypothesis,
   baseCondition,
   testCondition,
   onDeleteClick,
 }: {
-  baseCondition: [ExperimentGroup, Treatment];
-  testCondition: [ExperimentGroup, Treatment];
+  baseCondition: Condition;
+  testCondition: Condition;
   hypothesis: Hypothesis;
-  onDeleteClick: () => void;
+  onDeleteClick: (() => void) | null;
 }) {
   const { id, dependentName, analysis, compareOperator, compareValue } =
     hypothesis;
@@ -96,10 +79,12 @@ function HypothesisListItem({
         <Text>{baseConditionLine}</Text>
       </VStack>
 
-      <DeleteButton
-        label={`Delete hypothesis: ${id}`}
-        onClick={onDeleteClick}
-      />
+      {hypothesis ? (
+        <DeleteButton
+          label={`Delete hypothesis: ${id}`}
+          onClick={onDeleteClick ?? (() => {})}
+        />
+      ) : undefined}
     </ElementListItem>
   );
 }

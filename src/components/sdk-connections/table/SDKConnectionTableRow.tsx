@@ -32,7 +32,7 @@ export default function SDKConnectionTableRow({
           {sdkConnection.allowedOrigins.length ? (
             <ElementListRoot>
               {sdkConnection.allowedOrigins.map((origin) => (
-                <ElementListItem>
+                <ElementListItem key={origin}>
                   <Text>{origin}</Text>
                 </ElementListItem>
               ))}

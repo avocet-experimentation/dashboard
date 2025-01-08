@@ -22,6 +22,9 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { PartialSdkConnectionWithId } from '#/graphql/graphql';
 import { AllowedOriginsManager } from './AllowedOriginsManager';
 
+type SDKConnectionFormFields = Omit<SDKConnectionDraft, 'environmentId'> & {
+  environmentId: string[];
+};
 interface SDKConnectionManagementFormProps {
   formId: string;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -43,15 +46,18 @@ export default function SDKConnectionManagementForm({
 
   const environments: Environment[] = environmentsQuery.data ?? [];
 
-  const defaultValues: SDKConnectionDraft =
+  const template: SDKConnectionDraft =
     sdkConnection ??
     SDKConnectionDraft.template({
       name: '',
       environmentId: environments[0]?.id,
     });
 
-  const formMethods = useForm<SDKConnectionDraft>({
-    defaultValues,
+  const formMethods = useForm<SDKConnectionFormFields>({
+    defaultValues: {
+      ...template,
+      environmentId: [template.environmentId],
+    },
   });
 
   const createSDKConnection = useMutation({
@@ -92,7 +98,9 @@ export default function SDKConnectionManagementForm({
     );
   }
 
-  const onSubmit: SubmitHandler<SDKConnectionDraft> = async (formContent) => {
+  const onSubmit: SubmitHandler<SDKConnectionFormFields> = async (
+    formContent,
+  ) => {
     const { environmentId } = formContent;
     const fixedEnvId = Array.isArray(environmentId)
       ? environmentId[0]
