@@ -37,8 +37,8 @@ export const CREATE_EXPERIMENT = graphql(`
         analysis
         compareValue
         compareOperator
-        baseCondition
-        testCondition
+        baseConditionRef
+        testConditionRef
       }
       flagIds
     }
@@ -82,8 +82,8 @@ export const EXPERIMENT = graphql(`
         analysis
         compareValue
         compareOperator
-        baseCondition
-        testCondition
+        baseConditionRef
+        testConditionRef
       }
       flagIds
     }
@@ -140,8 +140,8 @@ export const UPDATE_EXPERIMENT = graphql(`
         analysis
         compareValue
         compareOperator
-        baseCondition
-        testCondition
+        baseConditionRef
+        testConditionRef
       }
       flagIds
     }

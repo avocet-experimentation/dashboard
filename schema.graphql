@@ -22,7 +22,7 @@ input ClientPropDefDraft {
 
 scalar ClientPropValue
 
-scalar Condition
+scalar ConditionReference
 
 scalar DefinedTreatments
 
@@ -176,22 +176,22 @@ type ForcedValue implements OverrideRule {
 
 type Hypothesis {
   analysis: String!
-  baseCondition: Condition!
+  baseConditionRef: ConditionReference!
   compareOperator: String!
   compareValue: TextPrimitive!
   dependentName: String!
   id: ID!
-  testCondition: Condition!
+  testConditionRef: ConditionReference!
 }
 
 input HypothesisInput {
   analysis: String!
-  baseCondition: Condition!
+  baseConditionRef: ConditionReference!
   compareOperator: String!
   compareValue: TextPrimitive!
   dependentName: String!
   id: ID!
-  testCondition: Condition!
+  testConditionRef: ConditionReference!
 }
 
 type Metric {
