@@ -19,7 +19,10 @@ import {
   PathValue,
 } from 'react-hook-form';
 
-interface ControlledSelectProps<T, O> {
+interface ControlledSelectProps<
+  T,
+  O extends { label: string; value: PathValue<T, Path<T>> },
+> {
   label?: string;
   fieldPath: Path<T>;
   placeholder?: string;
@@ -54,10 +57,6 @@ export default function ControlledSelect<
 
   const optionCollection = createListCollection({ items: options });
 
-  const getLabel = (value: PathValue<T, Path<T>>) =>
-    optionCollection.items.find((opt) => opt.value === value)?.label ??
-    placeholder;
-
   return (
     <Field
       label={label}
@@ -82,9 +81,7 @@ export default function ControlledSelect<
             {...otherSelectRootProps}
           >
             <SelectTrigger>
-              <SelectValueText
-                placeholder={field.value ? getLabel(field.value) : placeholder}
-              />
+              <SelectValueText placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent bg="avocet-dropdown-bg" zIndex="popover">
               {optionCollection.items.map((option) => (

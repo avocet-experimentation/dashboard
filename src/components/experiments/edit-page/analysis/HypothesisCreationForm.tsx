@@ -2,61 +2,56 @@ import { HStack, Text } from '@chakra-ui/react';
 import { useExperimentContext } from '../ExperimentContext';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
-  ExperimentGroup,
   Hypothesis,
-  Treatment,
   hypothesisSchema,
   SchemaParseError,
-  Condition,
+  ExperimentDraft,
+  ConditionReference,
 } from '@avocet/core';
 import ControlledSelect from '#/components/forms/ControlledSelect';
 import ControlledTextInput from '#/components/forms/ControlledTextInput';
 import { Button } from '#/components/ui/button';
 import { numberAnalyses, operators } from './inference';
 
+const analysisOptions = Object.keys(numberAnalyses).map((key) => ({
+  label: key,
+  value: key,
+}));
+
+const operatorOptions = operators.map((operator) => ({
+  label: operator,
+  value: operator,
+}));
+
 type HypothesisFormContent = Pick<
   Hypothesis,
-  'compareOperator' | 'compareValue' | 'analysis'
+  'compareOperator' | 'compareValue'
 > & {
+  analysis: string[];
   dependentName: string[];
-  baseCondition: Condition[];
-  testCondition: Condition[];
+  baseConditionRef: string[];
+  testConditionRef: string[];
 };
 /**
  * (WIP) hypothesis creation form
  * todo:
- *   - change to a management modal
- *   - filter analysis methods for those that work on the dependent variable's data type
- *   - select a compare operator = > < >= <=
- *   - add presets to streamline this?
- *   - filter both condition dropdowns to exclude an already-selected condition on the other side
+ * - add tooltip on each input
+ * - consider disabling test condition dropdown until baseline is selected
+ *   - then resetting test condition when baseline is changed
+ *   - and limiting test condition options to only those that have the same group OR same treatment
+ * - change to a management modal
+ * - filter analysis methods for those that work on the dependent variable's data type
+ * - select a compare operator = > < >= <=
+ * - add presets to streamline this?
+ * - filter both condition dropdowns to exclude an already-selected condition on the other side
  * - show hypothesis list (similar to dependent variable list)
+ * - switch from stacks to grid for arranging inputs
  */
 export function HypothesisCreationForm() {
   const { experiment, useUpdateExperiment } = useExperimentContext();
   const { mutate } = useUpdateExperiment();
-  const analysisOptions = Object.keys(numberAnalyses).map((key) => ({
-    label: key,
-    value: key,
-  }));
 
-  const operatorOptions = operators.map((operator) => ({
-    label: operator,
-    value: operator,
-  }));
-
-  const conditions = experiment.groups.reduce(
-    (acc: Array<[ExperimentGroup, Treatment]>, group) => {
-      const groupConditions: Array<[ExperimentGroup, Treatment]> =
-        group.sequence.map((treatmentId) => {
-          const treatment = experiment.definedTreatments[treatmentId];
-          return [group, treatment];
-        });
-
-      return [...acc, ...groupConditions];
-    },
-    [],
-  );
+  const conditions = ExperimentDraft.getAllExperimentConditions(experiment);
 
   const dependentOptions = experiment.dependents.map((dep) => ({
     label: dep.fieldName,
@@ -65,32 +60,31 @@ export function HypothesisCreationForm() {
 
   const conditionOptions = conditions.map(([group, treatment]) => ({
     label: `${group.name}: ${treatment.name}`,
-    value: [group.id, treatment.id] as const,
+    value: JSON.stringify([group.id, treatment.id]),
   }));
 
   const formMethods = useForm<HypothesisFormContent>({
     defaultValues: {
-      // dependentName: dependentOptions[0]?.value,
-      analysis: analysisOptions[0].value,
-      compareOperator: '=',
+      analysis: [analysisOptions[0].value],
+      compareOperator: '>',
       compareValue: 0,
-      // baseCondition: conditionOptions[0]?.value,
-      // testCondition: conditionOptions[1]?.value,
     },
   });
 
   if (!experiment.dependents.length) {
     return (
-      <Text fontSize="md">Define at least one dependent variable first</Text>
+      <Text fontSize="md">Define at least one dependent variable first.</Text>
     );
   }
 
   const handleFormSubmit = (formContent: HypothesisFormContent) => {
+    console.log({ formContent });
     const newHypothesis = Hypothesis.template({
       ...formContent,
+      analysis: formContent.analysis[0],
       dependentName: formContent.dependentName[0],
-      baseCondition: formContent.baseCondition[0],
-      testCondition: formContent.testCondition[0],
+      baseConditionRef: JSON.parse(formContent.baseConditionRef[0]),
+      testConditionRef: JSON.parse(formContent.testConditionRef[0]),
     });
     const safeParseResult = hypothesisSchema.safeParse(newHypothesis);
     if (!safeParseResult.success) {
@@ -110,7 +104,7 @@ export function HypothesisCreationForm() {
           <ControlledSelect
             width="50%"
             label="Baseline condition"
-            fieldPath="baseCondition"
+            fieldPath="baseConditionRef"
             options={
               conditionOptions
               //   .filter(
@@ -125,7 +119,7 @@ export function HypothesisCreationForm() {
           <ControlledSelect
             width="50%"
             label="Test condition"
-            fieldPath="testCondition"
+            fieldPath="testConditionRef"
             options={conditionOptions}
           />
         </HStack>

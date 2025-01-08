@@ -6,6 +6,8 @@ import {
 } from '#/components/helpers/ElementList';
 import {
   Condition,
+  ConditionReference,
+  ExperimentDraft,
   ExperimentGroup,
   Hypothesis,
   Treatment,
@@ -31,36 +33,19 @@ export function HypothesisList() {
     });
   };
 
-  const findCondition = (
-    condition: Condition,
-  ): [ExperimentGroup, Treatment] | null => {
-    const [targetGroupId, targetTreatmentId] = condition;
-    const baseGroup = experiment.groups.find(
-      (group) => group.id === targetGroupId,
-    );
-    if (!baseGroup) return null;
-
-    const baseTreatmentId = baseGroup.sequence.find(
-      (treatmentId) => treatmentId === targetTreatmentId,
-    );
-
-    if (!baseTreatmentId) return null;
-
-    const baseTreatment = experiment.definedTreatments[baseTreatmentId];
-
-    if (!baseTreatment) return null;
-
-    return [baseGroup, baseTreatment];
-  };
+  const findCondition = (conditionRef: ConditionReference) =>
+    ExperimentDraft.getConditionFromRef(experiment, conditionRef);
 
   const getHypothesisConditions = (hypothesis: Hypothesis) => {
     const errorMessage = (conditionType: string) =>
       `Couldn't find ${conditionType} condition for hypothesis ` +
       `${JSON.stringify(hypothesis)}`;
-    const baseCondition = findCondition(hypothesis.baseCondition);
+
+    const baseCondition = findCondition(hypothesis.baseConditionRef);
     if (!baseCondition) throw new TypeError(errorMessage('base'));
-    const testCondition = findCondition(hypothesis.testCondition);
-    if (!testCondition) throw new TypeError(errorMessage('base'));
+
+    const testCondition = findCondition(hypothesis.testConditionRef);
+    if (!testCondition) throw new TypeError(errorMessage('test'));
     return { baseCondition, testCondition };
   };
 
@@ -113,7 +98,7 @@ function HypothesisListItem({
 
       <DeleteButton
         label={`Delete hypothesis: ${id}`}
-        onDeleteClick={onDeleteClick}
+        onClick={onDeleteClick}
       />
     </ElementListItem>
   );
