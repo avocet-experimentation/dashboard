@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { system } from './theme';
-import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import { ColorModeProvider } from './components/ui/color-mode';
 import {
   MutationCache,
@@ -30,7 +30,7 @@ const authAudience = import.meta.env.VITE_AUTH0_AUDIENCE;
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider theme={defaultSystem} value={system}>
+      <ChakraProvider value={system}>
         <ColorModeProvider>
           <Auth0Provider
             domain={authDomain}

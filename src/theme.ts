@@ -104,6 +104,18 @@ const config: SystemConfig = defineConfig({
             _dark: '#001c2b',
           },
         },
+        'avocet-switch-on': {
+          value: {
+            base: '#013856',
+            _dark: 'white',
+          },
+        },
+        'avocet-switch-off': {
+          value: {
+            base: 'whitesmoke',
+            _dark: '#0c142e',
+          },
+        },
       },
     },
   },

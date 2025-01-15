@@ -79,14 +79,6 @@ export default function Navbar() {
       </NavBox>
       <NavBox>
         <Icon>
-          <Microscope />
-        </Icon>
-        <Link href="/insights" draggable={false}>
-          <NavText>Insights</NavText>
-        </Link>
-      </NavBox>
-      <NavBox>
-        <Icon>
           <Earth />
         </Icon>
         <Link href="/environments" draggable={false}>
