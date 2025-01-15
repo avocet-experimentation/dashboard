@@ -12,13 +12,13 @@ const config: SystemConfig = defineConfig({
         'avocet-bg': {
           value: {
             base: 'whitesmoke',
-            _dark: '#0c142e',
+            _dark: '#010204',
           },
         },
         'avocet-dropdown-bg': {
           value: {
             base: 'whitesmoke',
-            _dark: '#0c142e',
+            _dark: '#010204',
           },
         },
         'avocet-text': {
@@ -113,7 +113,7 @@ const config: SystemConfig = defineConfig({
         'avocet-switch-off': {
           value: {
             base: 'whitesmoke',
-            _dark: '#0c142e',
+            _dark: '#010204',
           },
         },
       },

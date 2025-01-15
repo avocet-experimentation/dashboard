@@ -18,8 +18,10 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
         <ChakraSwitch.HiddenInput ref={ref} {...inputProps} />
         <ChakraSwitch.Control
           bg={checked ? 'avocet-switch-on' : 'avocet-switch-off'}
+          outline="1px solid"
+          outlineColor="avocet-text"
         >
-          <ChakraSwitch.Thumb>
+          <ChakraSwitch.Thumb outline="0.5px solid" outlineColor="avocet-text">
             {thumbLabel && (
               <ChakraSwitch.ThumbIndicator fallback={thumbLabel?.off}>
                 {thumbLabel?.on}

@@ -25,7 +25,7 @@ export default function LogoBox({
   return (
     <Flex
       borderBottom={withLine ? '1px solid' : ''}
-      borderColor="gray.400"
+      borderColor="avocet-text"
       width="100%"
       marginBottom="25px"
       alignItems="center"
