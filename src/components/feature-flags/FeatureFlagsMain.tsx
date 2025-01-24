@@ -11,12 +11,11 @@ export default function FeatureFlagsMain() {
         justifyContent="space-between"
         alignItems="center"
       >
-        <Heading size="3xl">Features</Heading>
+        <Heading size="3xl">Feature Flags</Heading>
         <FeatureFlagCreationModal />
       </Flex>
       <Text margin="15px 0">
-        Feature flags enable you to change your app's behavior from within this
-        dashboard.
+        Select a flag to view details and make changes.
       </Text>
       <FeatureFlagTable />
     </Flex>

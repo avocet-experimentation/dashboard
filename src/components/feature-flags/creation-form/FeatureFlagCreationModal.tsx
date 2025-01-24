@@ -15,7 +15,7 @@ export default function FeatureFlagCreationModal() {
       setOpen={setOpen}
       title="Create a New Feature Flag"
       confirmButtonText="Create"
-      triggerButtonText="Add Feature Flag"
+      triggerButtonText="Create Flag"
     >
       <FeatureFlagCreationForm
         formId={CREATE_FEATURE_FORM_ID}

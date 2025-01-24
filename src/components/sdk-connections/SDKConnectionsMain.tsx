@@ -14,10 +14,9 @@ export default function SDKConnectionsMain() {
         justifyContent="space-between"
         alignItems="center"
       >
-        <Heading size="3xl">Connections</Heading>
+        <Heading size="3xl">SDK Connections</Heading>
         <SDKConnectionManagementModal />
       </Flex>
-      <Text margin="15px 0">Defining user connections</Text>
       <SDKConnectionTable />
     </Flex>
   );

@@ -17,10 +17,10 @@ export default function EnvironmentsMainPage() {
         <Heading size="3xl">Environments</Heading>
         <EnvironmentManagementModal />
       </Flex>
-      <Text margin="15px 0">
+      {/* <Text margin="15px 0">
         Defining multiple environments allows for feature flags to behave
         differently in each environment.
-      </Text>
+      </Text> */}
       <EnvironmentTable />
     </Flex>
   );

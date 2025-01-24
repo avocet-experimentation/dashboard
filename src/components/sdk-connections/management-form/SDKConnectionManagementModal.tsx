@@ -52,7 +52,7 @@ export default function SDKConnectionManagementModal({
     : {
         title: 'Create a New SDK Connection',
         confirmButtonText: 'Create',
-        triggerButtonText: 'Add Connection',
+        triggerButtonText: 'Set Up New Connection',
         triggerButtonIcon: <CirclePlus />,
       };
 

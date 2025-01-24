@@ -42,7 +42,7 @@ export default function EnvironmentManagementModal({
     : {
         title: 'Create a New Environment',
         confirmButtonText: 'Create',
-        triggerButtonText: 'Add Environment',
+        triggerButtonText: 'Create Environment',
         triggerButtonIcon: <CirclePlus />,
       };
 
