@@ -2,6 +2,7 @@ import {
   Editable,
   EditableValueChangeDetails,
   Heading,
+  HeadingProps,
   HStack,
   IconButton,
   Stack,
@@ -12,6 +13,7 @@ import PageSection from '../helpers/PageSection';
 
 interface PageEditableProps {
   label?: string;
+  labelSize?: HeadingProps['size'];
   initialValue: string;
   submitHandler: (e: EditableValueChangeDetails) => void;
   startInEditMode?: boolean;
@@ -24,6 +26,7 @@ interface PageEditableProps {
  */
 export default function PageEditable({
   label,
+  labelSize = 'lg',
   initialValue,
   submitHandler,
   startInEditMode = false,
@@ -39,12 +42,12 @@ export default function PageEditable({
       selectOnFocus={false}
       activationMode="click"
       onValueChange={(e) => setValue(e.value)}
-      onValueCommit={async (e) => await submitHandler(e)}
+      onValueCommit={async (e) => submitHandler(e)}
       submitMode="enter"
     >
       <PageSection>
         <HStack gap={2.5}>
-          {label && <Heading size="lg">{label}</Heading>}
+          {label && <Heading size={labelSize}>{label}</Heading>}
           <Editable.Control>
             <Editable.EditTrigger asChild>
               <IconButton variant="ghost" size="xs">
