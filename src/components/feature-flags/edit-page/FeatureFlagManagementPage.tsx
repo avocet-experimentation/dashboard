@@ -37,7 +37,7 @@ import { FeatureFlagProvider } from './FeatureFlagContext';
 import { useFeatureFlag } from '#/hooks/query-hooks';
 
 export default function FeatureFlagManagementPage() {
-  const [, params] = useRoute('/features/:id');
+  const [, params] = useRoute('/feature-flags/:id');
 
   if (params === null) {
     throw new Error(`No params passed!`);
@@ -91,7 +91,7 @@ function FlagManagementFields({ flag }: FlagManagementFieldsProps) {
     mutationKey: ['allFeatureFlags'],
     mutationFn: async () => gqlRequest(DELETE_FEATURE_FLAG, { id: flag.id }),
     onSuccess: () => {
-      navigate('/features');
+      navigate('/feature-flags');
     },
   });
 

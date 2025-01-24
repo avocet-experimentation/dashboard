@@ -44,7 +44,7 @@ export default function FeatureFlagCreationForm({
       gqlRequest(CREATE_FEATURE_FLAG, { newEntry }),
     onSuccess: (data) => {
       setOpen(false);
-      navigate(`/features/${data.id}`);
+      navigate(`/feature-flags/${data.id}`);
     },
   });
 

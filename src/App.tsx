@@ -40,8 +40,11 @@ export default function App() {
       <GridItem>
         <Switch>
           <Route path="/profile" component={UserProfile} />
-          <Route path="/features" component={FeatureFlagsMain} />
-          <Route path="/features/:id" component={FeatureFlagManagementPage} />
+          <Route path="/feature-flags" component={FeatureFlagsMain} />
+          <Route
+            path="/feature-flags/:id"
+            component={FeatureFlagManagementPage}
+          />
           <Route path="/environments" component={EnvironmentsMainPage} />
           <Route path="/experiments" component={ExperimentsMain} />
           <Route path="/experiments/:id" component={ExperimentManagementPage} />

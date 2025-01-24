@@ -52,7 +52,7 @@ export default function FeatureFlagTableRow({
   return (
     <Table.Row key={flag.id} bg="avocet-section">
       <Table.Cell textDecor="none">
-        <Link href={`/features/${flag.id}`}>
+        <Link href={`/feature-flags/${flag.id}`}>
           <Text _hover={{ textDecor: 'underline' }}>{flag.name}</Text>
         </Link>
       </Table.Cell>

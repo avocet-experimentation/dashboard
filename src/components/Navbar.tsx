@@ -57,8 +57,8 @@ export default function Navbar() {
         <Icon>
           <Flag />
         </Icon>
-        <Link href="/features" draggable={false}>
-          <NavText>Features</NavText>
+        <Link href="/feature-flags" draggable={false}>
+          <NavText>Feature Flags</NavText>
         </Link>
       </NavBox>
       <NavBox>
@@ -90,7 +90,7 @@ export default function Navbar() {
           <Cable />
         </Icon>
         <Link href="/connections" draggable={false}>
-          <NavText>Connections</NavText>
+          <NavText>SDK Connections</NavText>
         </Link>
       </NavBox>
       <UserProfileMenu />
