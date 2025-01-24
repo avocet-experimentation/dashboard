@@ -40,14 +40,6 @@ export default function LoginPage() {
       >
         <Card.Body gap="2.5">
           <LogoBox withLine={true} withTitle={true} logoSize="65px" />
-          <Card.Title color="avocet-text" textAlign="center">
-            Log in to Avocet
-          </Card.Title>
-          <Card.Description color="avocet-text">
-            Avocet uses Auth0 to verify its internal users.
-          </Card.Description>
-        </Card.Body>
-        <Card.Footer>
           <Button
             bg="avocet-text"
             color="avocet-bg"
@@ -55,7 +47,8 @@ export default function LoginPage() {
           >
             Log in with Auth0
           </Button>
-        </Card.Footer>
+        </Card.Body>
+        <Card.Footer></Card.Footer>
       </Card.Root>
     </Stack>
   );
