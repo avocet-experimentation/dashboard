@@ -26,8 +26,9 @@ export function NameField({
         required:
           'A name is required and must be between 3-20 characters long.',
         pattern: {
-          value: /^[0-9A-Za-z-]+$/gi,
-          message: 'Names may only contain letters, numbers, and hyphens.',
+          value: /^[0-9A-Za-z-\s]+$/gi,
+          message:
+            'Names may only contain letters, numbers, spaces, and hyphens.',
         },
         minLength: 3,
         maxLength: 20,
