@@ -18,9 +18,6 @@ export default function ExperimentsMain() {
             setIsLoading={setIsLoading}
           /> */}
       </Flex>
-      <Text margin="15px 0">
-        Experiments are useful for tracking and assessing feature performance.
-      </Text>
       <ExperimentTable />
     </Flex>
   );
