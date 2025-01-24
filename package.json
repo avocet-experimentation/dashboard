@@ -1,9 +1,28 @@
 {
-  "name": "mangrove",
-  "description": "Dashboard application for managing feature flags, experiments, and events",
+  "name": "dashboard",
+  "description": "Avocet's dashboard for managing feature flags, experiments, and more",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
+  "homepage": "https://avocet-experimentation.github.io",
+  "author": "Avocet Team (https://avocet-experimentation.github.io)",
+  "contributors": [
+    {
+      "name": "Gautam Panakkal",
+      "email": "gautampanakkal@gmail.com",
+      "url": "https://github.com/gpanakkal"
+    },
+    {
+      "name": "Adnan O. Shihabi",
+      "email": "adnan@ashihabi.me",
+      "url": "https://ashihabi.me"
+    },
+    {
+      "name": "Sean Mentele",
+      "email": "sean.a.mentele@gmail.com",
+      "url": "https://www.linkedin.com/in/sean-mentele-58481417a"
+    }
+  ],
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
