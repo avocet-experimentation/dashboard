@@ -1,3 +1,5 @@
+import * as stats from 'simple-statistics';
+
 export type NonEmptyArray<T> = [T, ...T[]];
 export const isNonEmptyArray = <T>(arr: T[]): arr is NonEmptyArray<T> =>
   arr.length > 0;
@@ -46,13 +48,13 @@ export const numberAnalyses: Record<
 // }));
 
 // TODO: add ~= operator and conditionally render a box to choose the margin of error
-export const operators = ['=', '>', '>=', '<', '<='] as const;
+export const operators = ['>', '>=', '=', '<', '<='] as const;
 export type Operator = (typeof operators)[number];
 export type CompareFn = (x: number, y: number) => boolean;
 export const compareFns: Record<Operator, CompareFn> = {
-  '=': (x, y) => x === y,
   '>': (x, y) => x > y,
   '>=': (x, y) => x >= y,
+  '=': (x, y) => x === y,
   '<': (x, y) => x < y,
   '<=': (x, y) => x <= y,
 };

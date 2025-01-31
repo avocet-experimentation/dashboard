@@ -1,6 +1,7 @@
 import { Box, Stack } from '@chakra-ui/react';
 import DependentSection from './analysis/DependentSection';
 import HypothesesSection from './analysis/HypothesesSection';
+import ResultsSection from './analysis/ResultsSection';
 
 /**
  * (WIP) For setting the variable of interest and viewing data
@@ -16,6 +17,7 @@ export default function ExperimentAnalysisSection() {
       <Stack gap={4}>
         <DependentSection />
         <HypothesesSection />
+        <ResultsSection />
       </Stack>
     </Box>
   );
