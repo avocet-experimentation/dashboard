@@ -134,7 +134,7 @@ enum ExperimentType {
 type FeatureFlag {
   createdAt: Float!
   description: String
-  environmentNames: EnvironmentNames
+  environmentNames: EnvironmentNames!
   id: ID!
   name: String!
   overrideRules: [OverrideRule!]!
@@ -144,7 +144,7 @@ type FeatureFlag {
 
 input FeatureFlagDraft {
   description: String
-  environmentNames: EnvironmentNames
+  environmentNames: EnvironmentNames!
   name: String!
   overrideRules: [OverrideRuleInput!]!
   value: FlagValueDef!
@@ -169,7 +169,6 @@ type ForcedValue implements OverrideRule {
   environmentName: String!
   id: String!
   startTimestamp: Float
-  status: ExperimentStatus!
   type: OverrideRuleType!
   value: TextPrimitive!
 }
@@ -237,7 +236,6 @@ interface OverrideRule {
   environmentName: String!
   id: String!
   startTimestamp: Float
-  status: ExperimentStatus!
   type: OverrideRuleType!
 }
 
@@ -249,7 +247,7 @@ input OverrideRuleInput {
   id: String!
   name: String
   startTimestamp: Float
-  status: ExperimentStatus!
+  status: ExperimentStatus
   type: String!
   value: TextPrimitive
 }

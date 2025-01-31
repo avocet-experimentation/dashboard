@@ -18,12 +18,12 @@ export const CREATE_FEATURE_FLAG = graphql(`
           attributes
           proportion
         }
-        status
         startTimestamp
         endTimestamp
         ... on ExperimentReference {
           type
           name
+          status
         }
         ... on ForcedValue {
           type
@@ -52,12 +52,12 @@ export const FEATURE_FLAG = graphql(`
           attributes
           proportion
         }
-        status
         startTimestamp
         endTimestamp
         ... on ExperimentReference {
           type
           name
+          status
         }
         ... on ForcedValue {
           type
@@ -86,12 +86,12 @@ export const ALL_FEATURE_FLAGS = graphql(`
           attributes
           proportion
         }
-        status
         startTimestamp
         endTimestamp
         ... on ExperimentReference {
           type
           name
+          status
         }
         ... on ForcedValue {
           type
@@ -120,12 +120,12 @@ export const UPDATE_FEATURE_FLAG = graphql(`
           attributes
           proportion
         }
-        status
         startTimestamp
         endTimestamp
         ... on ExperimentReference {
           type
           name
+          status
         }
         ... on ForcedValue {
           type

@@ -9,7 +9,7 @@ export * from './sdk-connection-queries.ts';
 const gqlClient = new GraphQLClient(
   String(import.meta.env.VITE_GRAPHQL_SERVICE_URL),
   {
-    credentials: 'include',
+    // credentials: 'include', TODO: re-enable once setting Access-Control-Allow-Origin on server
     mode: 'cors',
   },
 );
