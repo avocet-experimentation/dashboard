@@ -1,22 +1,13 @@
 import { Box, Table } from '@chakra-ui/react';
 import { Environment, FeatureFlag } from '@avocet/core';
 import FeatureFlagTableRow from './FeatureFlagTableRow';
-import { ALL_ENVIRONMENTS } from '#/lib/environment-queries';
-import { ALL_FEATURE_FLAGS } from '#/lib/flag-queries';
 import Loader from '#/components/helpers/Loader';
 import ErrorBox from '#/components/helpers/ErrorBox';
-import { gqlRequest } from '#/lib/graphql-queries';
-import { useQuery } from '@tanstack/react-query';
+import { useAllEnvironments, useAllFeatureFlags } from '#/hooks/query-hooks';
 
 export default function FeatureFlagTable() {
-  const flagsQuery = useQuery({
-    queryKey: ['allFeatureFlags'],
-    queryFn: async () => gqlRequest(ALL_FEATURE_FLAGS, {}),
-  });
-  const environmentsQuery = useQuery({
-    queryKey: ['allEnvironments'],
-    queryFn: async () => gqlRequest(ALL_ENVIRONMENTS, {}),
-  });
+  const flagsQuery = useAllFeatureFlags();
+  const environmentsQuery = useAllEnvironments();
 
   if (flagsQuery.isPending) return <Loader />;
   if (flagsQuery.isError) return <ErrorBox error={flagsQuery.error} />;

@@ -1,10 +1,18 @@
-import request, { RequestOptions, Variables } from 'graphql-request';
+import { RequestOptions, Variables, GraphQLClient } from 'graphql-request';
 import { TypedDocumentNode } from 'msw/core/graphql';
+import { auth0Client } from './UseAuth.tsx';
 export * from './flag-queries.ts';
 export * from './experiment-queries.ts';
 export * from './environment-queries.ts';
 export * from './sdk-connection-queries.ts';
 
+const gqlClient = new GraphQLClient(
+  String(import.meta.env.VITE_GRAPHQL_SERVICE_URL),
+  {
+    credentials: 'include',
+    mode: 'cors',
+  },
+);
 /**
  * Get a query or mutation function to pass into react-query
  */
@@ -30,8 +38,11 @@ export const gqlRequest = async <
   variables: RequestOptions<V, T>['variables'],
   options?: Omit<RequestOptions<V, T>, 'document' | 'variables'>,
 ) => {
-  const result = await request({
-    url: String(import.meta.env.VITE_GRAPHQL_SERVICE_URL),
+  const accessToken = await auth0Client.getTokenSilently({});
+  const result = await gqlClient.request({
+    requestHeaders: {
+      Authorization: `Bearer ${accessToken}`,
+    },
     document: document as TypedDocumentNode<T, Variables>,
     variables: variables,
     ...options,

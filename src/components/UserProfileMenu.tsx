@@ -3,10 +3,10 @@ import { Text } from '@chakra-ui/react';
 import { MenuRoot, MenuTrigger, MenuContent, MenuItem } from './ui/menu';
 import { Button } from './ui/button';
 import { Link } from 'wouter';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '#/lib/UseAuth';
 
 export function UserProfileMenu() {
-  const { user, logout } = useAuth0();
+  const { user, logout } = useAuth();
   return (
     <MenuRoot positioning={{ placement: 'top' }}>
       <MenuTrigger

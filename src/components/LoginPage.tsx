@@ -1,12 +1,12 @@
-import { useAuth0 } from '@auth0/auth0-react';
 import { Button } from './ui/button';
 import { Card, Stack } from '@chakra-ui/react';
 import LogoBox from './LogoBox';
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
+import { useAuth } from '#/lib/UseAuth';
 
 export default function LoginPage() {
-  const { loginWithPopup, isAuthenticated, getIdTokenClaims } = useAuth0();
+  const { loginWithPopup, isAuthenticated } = useAuth();
   const [params, navigate] = useLocation();
 
   const handleLoginWithPopup = async () => {

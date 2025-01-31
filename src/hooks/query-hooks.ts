@@ -8,6 +8,29 @@ import {
 import TelemetryService from '#/services/TelemetryService';
 import { Environment } from '@avocet/core';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useAuth } from '#/lib/UseAuth';
+
+export const useGetAccessToken = () => {
+  const { getAccessTokenSilently } = useAuth();
+  const [accessToken, setAccessToken] = useState<string>('');
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        setAccessToken(token);
+      } catch (error) {
+        console.error('Error fetching access token:', error);
+        setAccessToken(''); // Set to null or handle errors appropriately
+      }
+    };
+
+    fetchToken();
+  }, [getAccessTokenSilently]);
+
+  return accessToken;
+};
 
 export const useAllFeatureFlags = () =>
   useQuery({

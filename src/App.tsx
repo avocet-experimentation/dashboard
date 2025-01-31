@@ -11,12 +11,12 @@ import TelemetryMain from './components/telemetry/TelemetryMain';
 import SDKConnectionsMain from './components/sdk-connections/SDKConnectionsMain';
 import { Toaster } from './components/ui/toaster';
 import LoginPage from './components/LoginPage';
-import { useAuth0 } from '@auth0/auth0-react';
 import AuthLoader from './AuthLoader';
 import UserProfile from './components/UserProfilePage';
+import { useAuth } from './lib/UseAuth';
 
 export default function App() {
-  const { isAuthenticated, isLoading } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth();
 
   console.log(isAuthenticated);
 
