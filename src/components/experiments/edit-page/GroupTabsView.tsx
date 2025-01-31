@@ -105,19 +105,12 @@ export default function GroupTabsView() {
                     }}
                   />
                 </Flex>
-                <Grid templateColumns="1fr 4fr" alignItems="center">
-                  <GridItem>
-                    <Text>Treatments:</Text>
-                  </GridItem>
-                  <GridItem>
-                    <AddGroupTreatment group={group} idx={idx} />
-                  </GridItem>
-                </Grid>
+                <AddGroupTreatment group={group} />
                 <Stack>
                   {!group.sequence.length ? (
                     <InfoWarning message="No treatments have been selected for this group." />
                   ) : (
-                    <SortableTreatmentList group={group} idx={idx} />
+                    <SortableTreatmentList group={group} />
                   )}
                 </Stack>
                 {experiment?.groups.length > 1 && (

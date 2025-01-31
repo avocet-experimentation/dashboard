@@ -4,10 +4,8 @@ import { useExperimentContext } from './ExperimentContext';
 
 export default function AddGroupTreatment({
   group,
-  idx,
 }: {
   group: ExperimentGroup;
-  idx: number;
 }) {
   const { experiment, useUpdateExperiment } = useExperimentContext();
   const { mutate } = useUpdateExperiment();
@@ -23,6 +21,7 @@ export default function AddGroupTreatment({
 
   return (
     <PageSelect
+      label="Treatments"
       placeholder={
         availableTreatments && availableTreatments.length
           ? 'Add a treatment...'
@@ -40,7 +39,7 @@ export default function AddGroupTreatment({
           );
         }
 
-        experiment.groups[idx].sequence.push(selectedTreatment);
+        group.sequence.push(selectedTreatment);
 
         mutate({ groups: experiment.groups });
       }}

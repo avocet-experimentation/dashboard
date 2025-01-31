@@ -1,6 +1,7 @@
-import { Flex, Heading, Text } from '@chakra-ui/react';
+import { Flex, Heading } from '@chakra-ui/react';
 import ExperimentTable from './table/ExperimentTable';
 import ExperimentCreationModal from './creation-form/ExperimentCreationModal';
+import ExperimentInitModal from './ExperimentInitModal';
 
 export default function ExperimentsMain() {
   return (
@@ -12,11 +13,8 @@ export default function ExperimentsMain() {
         alignItems="center"
       >
         <Heading size="3xl">Experiments</Heading>
-        <ExperimentCreationModal />
-        {/* <ExperimentInitModal
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-          /> */}
+        {/* <ExperimentCreationModal /> */}
+        <ExperimentInitModal />
       </Flex>
       <ExperimentTable />
     </Flex>

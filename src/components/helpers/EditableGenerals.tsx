@@ -1,4 +1,10 @@
-import { Editable, HStack, Text } from '@chakra-ui/react';
+import {
+  Editable,
+  EditableValueChangeDetails,
+  Heading,
+  HStack,
+  Text,
+} from '@chakra-ui/react';
 
 export function EditableGenerals({
   fieldName = '',
@@ -11,20 +17,20 @@ export function EditableGenerals({
   includeName?: boolean;
   defaultValue: string;
   inputType: 'text' | 'number';
-  onValueCommit: any;
+  onValueCommit: (details: EditableValueChangeDetails) => void;
 }) {
   return (
-    <HStack gap={2} alignItems="center">
-      {includeName && <Text>{fieldName}:</Text>}
-      <Editable.Root
-        activationMode="dblclick"
-        defaultValue={defaultValue}
-        fontSize="inherit"
-        onValueCommit={onValueCommit}
-      >
+    <Editable.Root
+      activationMode="dblclick"
+      defaultValue={defaultValue}
+      fontSize="inherit"
+      onValueCommit={onValueCommit}
+    >
+      <HStack gap={2} alignItems="center">
+        {includeName && <Heading size={'sm'}>{fieldName}</Heading>}
         <Editable.Preview _hover={{ bg: 'avocet-hover' }} />
         <Editable.Input type={inputType} />
-      </Editable.Root>
-    </HStack>
+      </HStack>
+    </Editable.Root>
   );
 }
