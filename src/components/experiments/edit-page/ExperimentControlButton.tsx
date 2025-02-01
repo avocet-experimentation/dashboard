@@ -1,5 +1,6 @@
 import ErrorBox from '#/components/helpers/ErrorBox';
 import { Button } from '#/components/ui/button';
+import { Tooltip } from '#/components/ui/tooltip';
 import { useAllFeatureFlags } from '#/hooks/query-hooks';
 import {
   COMPLETE_EXPERIMENT,
@@ -25,22 +26,32 @@ export function StartExperimentButton({
   });
 
   const disabled = useMemo(
-    () => !data || !ExperimentDraft.isReadyToStart(experiment, data),
+    () => !data || !ExperimentDraft.isReadyToStart(experiment, data).isReady,
     [experiment, data],
   );
 
   if (isError) return <ErrorBox error={error} />;
+  const status = data ? ExperimentDraft.isReadyToStart(experiment, data) : null;
+  // const disabled = !status || status.isReady === false;
 
   return (
-    <Button
-      variant="solid"
-      disabled={disabled || isPending}
-      colorPalette="green"
-      onClick={() => mutate()}
+    <Tooltip
+      showArrow
+      disabled={!status || status.isReady}
+      openDelay={50}
+      content={status?.errors.join('\n')}
     >
-      <Power />
-      Start
-    </Button>
+      <Button
+        variant="solid"
+        loading={isPending}
+        disabled={!status || isPending || !status.isReady}
+        colorPalette="green"
+        onClick={() => mutate()}
+      >
+        <Power />
+        Start
+      </Button>
+    </Tooltip>
   );
 }
 
