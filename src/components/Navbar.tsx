@@ -69,14 +69,14 @@ export default function Navbar() {
           <NavText>Experiments</NavText>
         </Link>
       </NavBox>
-      <NavBox>
+      {/* <NavBox> // TODO: remove or fix components
         <Icon>
           <AlignHorizontalDistributeCenter />
         </Icon>
         <Link href="/telemetry" draggable={false}>
           <NavText>Telemetry</NavText>
         </Link>
-      </NavBox>
+      </NavBox> */}
       <NavBox>
         <Icon>
           <Earth />
