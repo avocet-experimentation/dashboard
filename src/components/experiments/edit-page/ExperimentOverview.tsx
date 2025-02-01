@@ -12,6 +12,7 @@ import VariationGroupsSection from './VariationGroupsSection';
 import { useExperimentContext } from './ExperimentContext';
 import { useAllEnvironments } from '#/hooks/query-hooks';
 import PageSection from '#/components/helpers/PageSection';
+import { TotalTraffic } from './TotalTraffic';
 
 /**
  * (WIP) Parent component for all editable fields
@@ -35,30 +36,29 @@ export function ExperimentOverview() {
             mutate({ description: e.value });
           }}
         />
-        <PageEditable
-          label="Hypothesis"
-          initialValue={experiment.hypothesis ?? ''}
-          submitHandler={async (e: EditableValueChangeDetails) => {
-            mutate({ hypothesis: e.value });
-          }}
-        />
-        <PageSection>
-          <PageSelect
-            options={
-              environmentsQuery.data?.map((env) => ({
-                label: env.name,
-                value: env.name,
-              })) ?? []
-            }
-            label="Environment"
-            selected={
-              experiment.environmentName ? [experiment.environmentName] : []
-            }
-            handleValueChange={(selectedEnvIds) =>
-              mutate({ environmentName: selectedEnvIds[0] })
-            }
-          />
-        </PageSection>
+        <Box>
+          <Heading size="xl" marginBottom="15px">
+            Enrollment
+          </Heading>
+          <PageSection>
+            <PageSelect
+              options={
+                environmentsQuery.data?.map((env) => ({
+                  label: env.name,
+                  value: env.name,
+                })) ?? []
+              }
+              label="Environment"
+              selected={
+                experiment.environmentName ? [experiment.environmentName] : []
+              }
+              handleValueChange={(selectedEnvIds) =>
+                mutate({ environmentName: selectedEnvIds[0] })
+              }
+            />
+            <TotalTraffic />
+          </PageSection>
+        </Box>
       </Stack>
       <Box>
         <Heading size="xl" marginBottom="15px">
