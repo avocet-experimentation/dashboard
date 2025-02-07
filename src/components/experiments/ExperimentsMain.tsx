@@ -1,4 +1,4 @@
-import { Flex, Heading } from '@chakra-ui/react';
+import { Flex, Heading, Text } from '@chakra-ui/react';
 import ExperimentTable from './table/ExperimentTable';
 import ExperimentCreationModal from './creation-form/ExperimentCreationModal';
 import ExperimentInitModal from './ExperimentInitModal';
@@ -16,6 +16,7 @@ export default function ExperimentsMain() {
         {/* <ExperimentCreationModal /> */}
         <ExperimentInitModal />
       </Flex>
+      <Text margin="15px 0"></Text>
       <ExperimentTable />
     </Flex>
   );

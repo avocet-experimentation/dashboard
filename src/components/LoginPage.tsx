@@ -18,7 +18,6 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    console.log(isAuthenticated);
     if (isAuthenticated) {
       navigate('/');
     }

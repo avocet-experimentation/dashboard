@@ -17,6 +17,7 @@ export default function SDKConnectionsMain() {
         <Heading size="3xl">SDK Connections</Heading>
         <SDKConnectionManagementModal />
       </Flex>
+      <Text margin="15px 0"></Text>
       <SDKConnectionTable />
     </Flex>
   );

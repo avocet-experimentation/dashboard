@@ -18,8 +18,6 @@ import { useAuth } from './lib/UseAuth';
 export default function App() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  console.log(isAuthenticated);
-
   if (isLoading) return <AuthLoader message="Checking credentials..." />;
 
   if (!isAuthenticated) return <LoginPage />;
