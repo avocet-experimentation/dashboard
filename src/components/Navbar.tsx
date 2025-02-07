@@ -13,6 +13,7 @@ import {
 import { Link } from 'wouter';
 import LogoBox from './LogoBox';
 import { UserProfileMenu } from './UserProfileMenu';
+import ThemeSwitch from './helpers/ThemeSwitch';
 
 const NavBox = chakra('div', {
   base: {
@@ -53,6 +54,9 @@ export default function Navbar() {
       margin="auto"
     >
       <LogoBox withLine={true} withTitle={true} logoSize="65px" />
+
+      <ThemeSwitch />
+
       <NavBox>
         <Icon>
           <Flag />

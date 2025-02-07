@@ -6,7 +6,7 @@ import FeatureFlagsMain from './components/feature-flags/FeatureFlagsMain';
 import ExperimentsMain from './components/experiments/ExperimentsMain';
 import FeatureFlagManagementPage from './components/feature-flags/edit-page/FeatureFlagManagementPage';
 import ExperimentManagementPage from './components/experiments/edit-page/ExperimentManagementPage';
-import EnvironmentsMainPage from './components/environments/EnvironmentsMainPage';
+import EnvironmentsMain from './components/environments/EnvironmentsMain';
 import TelemetryMain from './components/telemetry/TelemetryMain';
 import SDKConnectionsMain from './components/sdk-connections/SDKConnectionsMain';
 import { Toaster } from './components/ui/toaster';
@@ -43,7 +43,7 @@ export default function App() {
             path="/feature-flags/:id"
             component={FeatureFlagManagementPage}
           />
-          <Route path="/environments" component={EnvironmentsMainPage} />
+          <Route path="/environments" component={EnvironmentsMain} />
           <Route path="/experiments" component={ExperimentsMain} />
           <Route path="/experiments/:id" component={ExperimentManagementPage} />
           <Route path="/telemetry" component={TelemetryMain} />
