@@ -28,17 +28,13 @@ export default function SDKConnectionTableRow({
         </Text>
       </Table.Cell>
       <Table.Cell>
-        <Text width="fit-content">
-          {sdkConnection.allowedOrigins.length ? (
-            <ElementListRoot>
-              {sdkConnection.allowedOrigins.map((origin) => (
-                <ElementListItem key={origin}>
-                  <Text>{origin}</Text>
-                </ElementListItem>
-              ))}
-            </ElementListRoot>
-          ) : undefined}
-        </Text>
+        {sdkConnection.allowedOrigins.length ? (
+          <ElementListRoot>
+            {sdkConnection.allowedOrigins.map((origin) => (
+              <ElementListItem key={origin}>{origin}</ElementListItem>
+            ))}
+          </ElementListRoot>
+        ) : undefined}
       </Table.Cell>
       <Table.Cell>
         <Tooltip
