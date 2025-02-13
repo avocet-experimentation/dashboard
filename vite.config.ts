@@ -7,23 +7,8 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
-  // define: {
-  //   VITE_FLAG_SERVICE_URL: JSON.stringify(
-  //     `${process.env.VITE_FLAG_SERVICE_URL}`,
-  //   ),
-  //   VITE_EVENT_SERVICE_URL: JSON.stringify(
-  //     `${process.env.VITE_EVENT_SERVICE_URL}`,
-  //   ),
-  //   VITE_GRAPHQL_SERVICE_URL: JSON.stringify(
-  //     `${process.env.VITE_GRAPHQL_SERVICE_URL}`,
-  //   ),
-  //   VITE_AUTH0_DOMAIN: JSON.stringify(`${process.env.VITE_AUTH0_DOMAIN}`),
-  //   VITE_AUTH0_CLIENT_ID: JSON.stringify(`${process.env.VITE_AUTH0_CLIENT_ID}`),
-  //   VITE_AUTH0_AUDIENCE: JSON.stringify(`${process.env.VITE_AUTH0_AUDIENCE}`),
-  //   VITE_API_SERVER_URL: JSON.stringify(`${process.env.VITE_API_SERVER_URL}`),
-  // },
   preview: {
-    port: 5173,
+    port: 4173,
     strictPort: true,
   },
   server: {
@@ -37,12 +22,16 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./setupTests.ts'],
   },
-  // // proxy setup (only for full stack apps)
-  // server: {
-  //   proxy: {
-  //     "/api": {
-  //       target: "http://localhost:5001",
-  //     },
-  //   },
-  // },
+  build: {
+    target: "ESNext",
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return id.toString().split('node_modules/')[1].split('/')[0].toString();
+          }
+        }
+      }
+    }
+  }
 });
