@@ -8,9 +8,13 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 export default ({ mode }) => {
   process.env = {...process.env, ...loadEnv(mode, process.cwd())};
 
+  const allowedHosts = process.env.VITE_ALLOWED_HOSTS ? 
+    process.env.VITE_ALLOWED_HOSTS.split(",") : [];
+
   return defineConfig({
     plugins: [react(), tsconfigPaths()],
     preview: {
+      allowedHosts: allowedHosts,
       port: 4173,
       strictPort: true,
       proxy: {
